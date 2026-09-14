@@ -7,17 +7,17 @@ import HeroBanner from '../components/ui/HeroBanner';
 import { publicApi } from '../lib/api';
 import { getGeneralWaUrl } from '../utils/whatsapp';
 import { FaWhatsapp, FaEnvelope, FaMapMarkerAlt, FaInstagram } from 'react-icons/fa';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function ContactPage() {
+  const { lang, t } = useLanguage();
+
   const [formData, setFormData] = useState({
     name: '',
-    company: '',
-    email: '',
     phone: '',
-    cooperationType: 'Jasa Konstruksi',
-    projectType: 'Rumah Hunian',
+    cooperationType: lang === 'en' ? 'General Construction' : 'Konstruksi',
+    projectType: lang === 'en' ? 'Residential House' : 'Rumah Hunian',
     location: '',
-    budget: '',
     message: '',
   });
 
@@ -26,12 +26,10 @@ export default function ContactPage() {
 
   const validate = () => {
     const errs = {};
-    if (!formData.name.trim()) errs.name = 'Nama lengkap wajib diisi.';
-    if (!formData.email.trim()) errs.email = 'Email wajib diisi.';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) errs.email = 'Format email tidak valid.';
-    if (!formData.phone.trim()) errs.phone = 'Nomor WhatsApp wajib diisi.';
-    if (!formData.cooperationType) errs.cooperationType = 'Jenis kerja sama wajib dipilih.';
-    if (!formData.message.trim()) errs.message = 'Detail pesan / kebutuhan wajib diisi.';
+    if (!formData.name.trim()) errs.name = lang === 'en' ? 'Full name is required.' : 'Nama lengkap wajib diisi.';
+    if (!formData.phone.trim()) errs.phone = lang === 'en' ? 'WhatsApp number is required.' : 'Nomor WhatsApp wajib diisi.';
+    if (!formData.cooperationType) errs.cooperationType = lang === 'en' ? 'Service type is required.' : 'Jenis layanan wajib dipilih.';
+    if (!formData.message.trim()) errs.message = lang === 'en' ? 'Project details / message required.' : 'Detail pesan / kebutuhan wajib diisi.';
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -49,13 +47,10 @@ export default function ContactPage() {
     try {
       await publicApi.submitInquiry({
         nama: formData.name,
-        perusahaan: formData.company,
-        email: formData.email,
         whatsapp: formData.phone,
-        jenisKerjasama: formData.cooperationType,
+        jenisLayanan: formData.cooperationType,
         jenisProyek: formData.projectType,
         lokasi: formData.location,
-        budget: formData.budget,
         pesan: formData.message,
         sourcePage: '/kontak',
       });
@@ -63,18 +58,14 @@ export default function ContactPage() {
       setStatus('success');
       setFormData({
         name: '',
-        company: '',
-        email: '',
         phone: '',
-        cooperationType: 'Jasa Konstruksi',
-        projectType: 'Rumah Hunian',
+        cooperationType: lang === 'en' ? 'General Construction' : 'Konstruksi',
+        projectType: lang === 'en' ? 'Residential House' : 'Rumah Hunian',
         location: '',
-        budget: '',
         message: '',
       });
     } catch (err) {
       console.warn('API submission error:', err);
-      // Even if network or email fails, if record was saved, show success or graceful message
       setStatus('success');
     }
   };
@@ -84,17 +75,17 @@ export default function ContactPage() {
   return (
     <>
       <SEOHead
-        title="Ajukan Kerja Sama — PT Arsi Karya Unggul"
-        description="Formulir resmi pengajuan kerja sama proyek konstruksi, design & build, fabrikasi, renovasi, dan pengadaan barang bersama PT Arsi Karya Unggul."
+        title={lang === 'en' ? "Official Contact — Arsi Karya" : "Ajukan Kerja Sama — Arsi Karya"}
+        description={lang === 'en' ? "Official inquiry form for construction, design & build, renovation, and landscape projects with Arsi Karya in Bandung, Java — Bali." : "Formulir resmi pengajuan kerja sama proyek konstruksi, design & build, perancangan, renovasi, dan landscape bersama Arsi Karya di Bandung, Jawa — Bali."}
       />
 
       {/* Dark Architectural Hero Banner */}
       <HeroBanner
         bgImage="/projects/project_5.jpg"
         overlayOpacity={0.65}
-        tag="AJUKAN KERJA SAMA"
-        title="Ajukan Kerja Sama"
-        subtitle="Ceritakan kebutuhan proyek atau bentuk kerja sama yang ingin Anda diskusikan bersama Arsi Karya."
+        tag={t.contactPage?.heroTag || "KONTAK"}
+        title={t.contactPage?.heroTitle || "Ajukan Kerja Sama"}
+        subtitle={t.contactPage?.heroSubtitle || "Ceritakan kebutuhan proyek atau bentuk kerja sama yang ingin Anda diskusikan bersama Arsi Karya."}
       />
 
       {/* Main Content Section */}
@@ -104,10 +95,11 @@ export default function ContactPage() {
             
             {/* Left Column: Direct Contact Info & WhatsApp */}
             <div>
-              <SectionTag>INFORMASI KONTAK</SectionTag>
-              <h2>Kantor & Saluran Resmi</h2>
+              <h2>{t.contactPage?.officialTitle || 'Kontak Resmi'}</h2>
               <p style={{ marginTop: '16px', color: 'var(--color-neutral-500)', lineHeight: 1.6 }}>
-                Arsi Karya terbuka untuk mendiskusikan kebutuhan proyek, pekerjaan konstruksi, design & build, fabrikasi, maupun bentuk kerja sama lainnya.
+                {lang === 'en' 
+                  ? 'Arsi Karya is open to discussing your project needs, construction, design & build, renovation, landscape, or corporate partnerships across Bandung, Java — Bali.'
+                  : 'Arsi Karya terbuka untuk mendiskusikan kebutuhan proyek, pekerjaan konstruksi, design & build, renovasi, landscape, maupun bentuk kerja sama lainnya di Bandung, Jawa — Bali.'}
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '36px' }}>
@@ -129,9 +121,9 @@ export default function ContactPage() {
                     <FaMapMarkerAlt />
                   </div>
                   <div>
-                    <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>Alamat Kantor</h4>
+                    <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>{lang === 'en' ? 'Office Address' : 'Alamat Kantor'}</h4>
                     <p style={{ fontSize: '0.925rem', color: 'var(--color-neutral-500)', lineHeight: 1.5 }}>
-                      Bumi Adipura, Jl. Tulip VII No. 21, Rancabolang, Gedebage, Kota Bandung.
+                      {t.footer?.address || 'Bumi Adipura, Jl. Tulip VII No. 21, Rancabolang, Gedebage, Kota Bandung.'}
                     </p>
                   </div>
                 </div>
@@ -154,7 +146,7 @@ export default function ContactPage() {
                     <FaWhatsapp />
                   </div>
                   <div>
-                    <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>WhatsApp / Telepon</h4>
+                    <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>{lang === 'en' ? 'WhatsApp / Phone' : 'WhatsApp / Telepon'}</h4>
                     <a
                       href={generalWaUrl}
                       target="_blank"
@@ -184,7 +176,7 @@ export default function ContactPage() {
                     <FaEnvelope />
                   </div>
                   <div>
-                    <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>Email Resmi</h4>
+                    <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>{lang === 'en' ? 'Official Email' : 'Email Resmi'}</h4>
                     <a
                       href="mailto:arsikaryaunggul@gmail.com"
                       style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-neutral-700)' }}
@@ -233,12 +225,12 @@ export default function ContactPage() {
                   variant="whatsapp"
                   style={{ padding: '14px 28px' }}
                 >
-                  Chat WhatsApp
+                  {lang === 'en' ? 'Chat via WhatsApp' : 'Chat WhatsApp'}
                 </Button>
               </div>
             </div>
 
-            {/* Right Column: Cooperation Form */}
+            {/* Right Column: Simplified Cooperation Form */}
             <div
               style={{
                 backgroundColor: 'var(--color-neutral-50)',
@@ -247,9 +239,9 @@ export default function ContactPage() {
                 border: '1px solid var(--color-neutral-200)',
               }}
             >
-              <h3 style={{ fontSize: '1.35rem', marginBottom: '8px' }}>Formulir Pengajuan Kerja Sama</h3>
+              <h3 style={{ fontSize: '1.35rem', marginBottom: '8px' }}>{t.contactPage?.formTitle || 'Formulir Pengajuan Kerja Sama'}</h3>
               <p style={{ fontSize: '0.9rem', color: 'var(--color-neutral-400)', marginBottom: '24px' }}>
-                Silakan isi data kebutuhan proyek atau bentuk kerja sama di bawah ini.
+                {t.contactPage?.formSubtitle || 'Silakan isi data kebutuhan proyek Anda di bawah ini untuk konsultasi cepat.'}
               </p>
 
               {status === 'success' && (
@@ -263,137 +255,101 @@ export default function ContactPage() {
                   }}
                 >
                   <h4 style={{ color: 'var(--color-primary-300)', fontSize: '1.05rem', marginBottom: '6px' }}>
-                    Pengajuan Anda telah berhasil dikirim.
+                    {t.contactPage?.submitSuccess || 'Pengajuan Anda Berhasil Terkirim! Tim Arsi Karya akan segera menghubungi Anda.'}
                   </h4>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--color-neutral-600)', lineHeight: 1.5 }}>
-                    Terima kasih telah menghubungi Arsi Karya. Tim kami akan meninjau kebutuhan Anda dan menghubungi Anda kembali melalui kontak yang diberikan.
-                  </p>
-                </div>
-              )}
-
-              {status === 'error' && (
-                <div
-                  style={{
-                    backgroundColor: 'rgba(211, 47, 47, 0.08)',
-                    borderLeft: '4px solid #d32f2f',
-                    padding: '20px',
-                    borderRadius: '6px',
-                    marginBottom: '24px',
-                  }}
-                >
-                  <h4 style={{ color: '#d32f2f', fontSize: '1.05rem', marginBottom: '6px' }}>
-                    Pengajuan belum berhasil dikirim.
-                  </h4>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--color-neutral-600)', lineHeight: 1.5 }}>
-                    Silakan periksa kembali data Anda dan coba lagi. Jika masalah berlanjut, Anda dapat menghubungi Arsi Karya melalui WhatsApp.
-                  </p>
                 </div>
               )}
 
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                {/* 1. Nama */}
                 <FormField
-                  label="Nama Lengkap *"
+                  label={t.contactPage?.formName || 'Nama Lengkap'}
                   name="name"
                   required
-                  placeholder="Nama Lengkap Anda"
+                  placeholder={lang === 'en' ? 'Your Full Name' : 'Nama Lengkap Anda'}
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   error={errors.name}
                 />
 
+                {/* 2. WhatsApp */}
                 <FormField
-                  label="Nama Perusahaan / Instansi (Opsional)"
-                  name="company"
-                  placeholder="PT / CV / Instansi / Perorangan"
-                  value={formData.company}
-                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                  label={t.contactPage?.formWa || 'Nomor WhatsApp'}
+                  name="phone"
+                  type="tel"
+                  required
+                  placeholder={lang === 'en' ? 'e.g. +62 81234567890' : 'Contoh: 081234567890'}
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  error={errors.phone}
                 />
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                {/* 3. Jenis Layanan & 4. Jenis Proyek Grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
                   <FormField
-                    label="Email *"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder="nama@email.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    error={errors.email}
-                  />
-
-                  <FormField
-                    label="Nomor WhatsApp *"
-                    name="phone"
-                    type="tel"
-                    required
-                    placeholder="0812xxxx"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    error={errors.phone}
-                  />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                  <FormField
-                    label="Jenis Kerja Sama *"
+                    label={t.contactPage?.formServiceType || 'Jenis Layanan'}
                     name="cooperationType"
                     type="select"
                     required
                     value={formData.cooperationType}
                     onChange={(e) => setFormData({ ...formData, cooperationType: e.target.value })}
                     error={errors.cooperationType}
-                    options={[
-                      'Jasa Konstruksi',
+                    options={lang === 'en' ? [
+                      'Architecture & Planning',
+                      'General Construction',
                       'Design & Build',
-                      'Fabrikasi',
-                      'Pengadaan Barang',
+                      'Renovation',
+                      'Landscape',
+                      'Other'
+                    ] : [
+                      'Perencanaan',
+                      'Konstruksi',
+                      'Design & Build',
                       'Renovasi',
-                      'Pekerjaan Interior',
-                      'Kemitraan / Kerja Sama Bisnis',
+                      'Landscape',
                       'Lainnya'
                     ]}
                   />
 
                   <FormField
-                    label="Jenis Proyek (Opsional)"
+                    label={t.contactPage?.formProjectType || 'Jenis Proyek'}
                     name="projectType"
                     type="select"
+                    required
                     value={formData.projectType}
                     onChange={(e) => setFormData({ ...formData, projectType: e.target.value })}
-                    options={[
+                    options={lang === 'en' ? [
+                      'Residential House',
+                      'Commercial / Shophouse',
+                      'Office Building',
+                      'Landscape & Garden',
+                      'Swimming Pool / Pond'
+                    ] : [
                       'Rumah Hunian',
+                      'Ruko/Komersial',
                       'Gedung Perkantoran',
-                      'Ruko / Komersial',
-                      'Fasilitas Publik / Instansi',
-                      'Lainnya'
+                      'Landscape',
+                      'Kolam Renang/Kolam Ikan'
                     ]}
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                  <FormField
-                    label="Lokasi Proyek (Opsional)"
-                    name="location"
-                    placeholder="Contoh: Bandung / Jakarta"
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  />
-
-                  <FormField
-                    label="Perkiraan Budget (Opsional)"
-                    name="budget"
-                    placeholder="Contoh: Rp 500 Juta - Rp 1 Miliar"
-                    value={formData.budget}
-                    onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
-                  />
-                </div>
-
+                {/* 5. Lokasi */}
                 <FormField
-                  label="Pesan / Kebutuhan *"
+                  label={t.contactPage?.formLocation || 'Lokasi Proyek'}
+                  name="location"
+                  placeholder={lang === 'en' ? 'e.g. Bandung, West Java / Denpasar, Bali' : 'Contoh: Bandung, Jawa Barat / Denpasar, Bali'}
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                />
+
+                {/* 6. Pesan */}
+                <FormField
+                  label={t.contactPage?.formMessage || 'Pesan / Deskripsi Proyek'}
                   name="message"
                   type="textarea"
                   required
-                  placeholder="Ceritakan detail proyek atau bentuk kerja sama yang ingin didiskusikan..."
+                  placeholder={lang === 'en' ? 'Describe your project requirements or questions...' : 'Ceritakan detail proyek atau kebutuhan yang ingin Anda konsultasikan...'}
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   error={errors.message}
@@ -405,7 +361,7 @@ export default function ContactPage() {
                   disabled={status === 'loading'}
                   style={{ marginTop: '8px', justifyContent: 'center' }}
                 >
-                  {status === 'loading' ? 'Mengirim...' : 'Kirim Pengajuan'}
+                  {status === 'loading' ? (lang === 'en' ? 'Submitting...' : 'Mengirim...') : (t.contactPage?.formSubmit || 'Kirim Pengajuan')}
                 </Button>
               </form>
             </div>

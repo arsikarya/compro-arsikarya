@@ -99,7 +99,7 @@
 }
 
 .form-panel {
-    background: #ffffff;
+    background: #f5f5f5;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 24px;
@@ -160,7 +160,7 @@
     border: 1px solid #d1d5db;
     font-size: 0.9rem;
     color: #111827;
-    background: #ffffff;
+    background: #f5f5f5;
     transition: border-color 0.15s ease;
     box-sizing: border-box;
 }

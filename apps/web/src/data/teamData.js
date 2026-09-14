@@ -2,14 +2,14 @@ export const teamData = [
   {
     name: "Fachrul Rozi",
     role: "Direktur",
-    bio: "Memimpin arah strategis perusahaan, komitmen mutu profesionalisme, dan pengembangan kemitraan bisnis di PT Arsi Karya Unggul.",
+    bio: "Memimpin arah strategis perusahaan, komitmen mutu profesionalisme, dan pengembangan kemitraan bisnis di Arsi Karya.",
     image: "/team/fachrul_rozi.png",
     initial: "F"
   },
   {
     name: "Muhammad Arsyi Aufar",
     role: "Direktur Teknik",
-    bio: "Bertanggung jawab atas manajemen teknis lapangan, standar keselamatan kerja, dan pengendalian mutu konstruksi di PT Arsi Karya Unggul.",
+    bio: "Bertanggung jawab atas manajemen teknis lapangan, standar keselamatan kerja, dan pengendalian mutu konstruksi di Arsi Karya.",
     image: "/team/arsyi.jpg",
     initial: "M"
   },

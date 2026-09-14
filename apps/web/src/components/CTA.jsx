@@ -2,13 +2,15 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Button from './ui/Button';
 import { getGeneralWaUrl } from '../utils/whatsapp';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function CTA() {
+  const { t } = useLanguage();
   const ctaPhoto = "/projects/project_8.jpg";
   const generalWaUrl = getGeneralWaUrl();
 
   return (
-    <section id="contact" style={{ backgroundColor: '#0A0A0A', padding: '0', width: '100%', overflow: 'hidden' }}>
+    <section id="contact" style={{ backgroundColor: 'var(--color-dark-bg, #222222)', padding: '0', width: '100%', overflow: 'hidden' }}>
       <div
         style={{
           display: 'grid',
@@ -50,19 +52,19 @@ export default function CTA() {
             alignItems: 'flex-start',
           }}
         >
-          <span className="section-tag section-tag-light">CONTACT US</span>
+          <span className="section-tag section-tag-light">{t.cta?.tag || 'CONTACT US'}</span>
 
           <h2
             style={{
-              fontSize: 'clamp(2.2rem, 3.8vw, 3.2rem)',
+              fontSize: 'clamp(2.1rem, 3.6vw, 3.0rem)',
               fontWeight: 800,
               color: '#ffffff',
-              lineHeight: 1.1,
+              lineHeight: 1.28,
               marginBottom: '32px',
               letterSpacing: '-0.5px',
             }}
           >
-            Ready to work together?
+            {t.cta?.title || 'Ready to work together?'}
           </h2>
 
           <Button
@@ -73,7 +75,7 @@ export default function CTA() {
             showArrow={true}
             style={{ padding: '16px 36px', fontSize: '1rem' }}
           >
-            Konsultasi Gratis
+            {t.nav?.ctaConsultation || 'Konsultasi Gratis'}
           </Button>
         </motion.div>
       </div>

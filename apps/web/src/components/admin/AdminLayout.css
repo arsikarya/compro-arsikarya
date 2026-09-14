@@ -40,7 +40,7 @@
 
 .admin-sidebar {
     width: 260px;
-    background-color: #ffffff;
+    background-color: #f5f5f5;
     border-right: 1px solid #e5e7eb;
     display: flex;
     flex-direction: column;
@@ -152,7 +152,7 @@
 
 .admin-header {
     height: 68px;
-    background-color: #ffffff;
+    background-color: #f5f5f5;
     border-bottom: 1px solid #e5e7eb;
     display: flex;
     align-items: center;

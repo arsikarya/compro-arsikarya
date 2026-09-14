@@ -6,7 +6,7 @@ import Button from '../components/ui/Button';
 export default function NotFound() {
   return (
     <>
-      <SEOHead title="404 — Halaman Tidak Ditemukan | PT Arsi Karya Unggul" />
+      <SEOHead title="404 — Halaman Tidak Ditemukan | Arsi Karya" />
       <section
         style={{
           minHeight: '70vh',

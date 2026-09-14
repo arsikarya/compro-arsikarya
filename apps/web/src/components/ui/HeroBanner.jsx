@@ -5,12 +5,6 @@ import { optimizeImage } from '../../utils/optimizeImage';
 
 /**
  * Reusable Dark Architectural Hero Banner
- * 
- * Composition:
- * Real Image (as background / absolute position with object-fit: cover)
- * + Dark Overlay (rgba(0, 0, 0, 0.55) to rgba(0, 0, 0, 0.75) for visual depth & text readability)
- * + White Editorial Typography
- * + Blue Accent Tags / Subtitles
  */
 export default function HeroBanner({
   bgImage,
@@ -21,7 +15,7 @@ export default function HeroBanner({
   subtitle,
   children,
   style = {},
-  imageAlt = "PT Arsi Karya Unggul",
+  imageAlt = "Arsi Karya",
 }) {
   const optimizedBg = optimizeImage(bgImage);
 
@@ -29,7 +23,7 @@ export default function HeroBanner({
     <section
       style={{
         position: 'relative',
-        backgroundColor: '#0f172a', // Dark architectural slate fallback
+        backgroundColor: '#0f172a',
         color: '#ffffff',
         paddingTop: 'calc(var(--header-height) + 48px)',
         paddingBottom: '72px',
@@ -54,13 +48,12 @@ export default function HeroBanner({
             objectFit: 'cover',
             objectPosition: 'center',
             zIndex: 1,
-            // Ensure no CLS by letting object-fit fill
           }}
-          loading="eager" // Hero / LCP images must load eagerly
+          loading="eager"
         />
       )}
 
-      {/* Dark Overlay Layer for Text Readability & Architectural Depth */}
+      {/* Dark Overlay Layer */}
       <div
         style={{
           position: 'absolute',
@@ -83,7 +76,6 @@ export default function HeroBanner({
           width: '100%',
         }}
       >
-        {/* Detail Page Breadcrumbs Only (Top level passes empty array) */}
         {breadcrumbItems && breadcrumbItems.length > 0 && (
           <Breadcrumb items={breadcrumbItems} />
         )}
@@ -94,10 +86,10 @@ export default function HeroBanner({
           <h1
             style={{
               color: '#ffffff',
-              fontSize: 'clamp(2.1rem, 4.2vw, 3.6rem)',
+              fontSize: 'clamp(2.0rem, 4.0vw, 3.4rem)',
               marginBottom: subtitle ? '16px' : '0px',
-              lineHeight: 1.2,
-              fontWeight: 700,
+              lineHeight: 1.28,
+              fontWeight: 800,
               letterSpacing: '-0.02em',
               textShadow: '0 2px 10px rgba(0, 0, 0, 0.4)',
             }}
@@ -111,7 +103,7 @@ export default function HeroBanner({
             style={{
               fontSize: 'clamp(1rem, 1.8vw, 1.15rem)',
               color: 'var(--color-primary-200)',
-              maxWidth: '720px',
+              maxWidth: '960px',
               lineHeight: 1.6,
               margin: 0,
               textShadow: '0 1px 4px rgba(0, 0, 0, 0.3)',

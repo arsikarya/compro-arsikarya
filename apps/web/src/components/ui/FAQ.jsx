@@ -16,7 +16,7 @@ export default function FAQ({ items = [] }) {
           <div
             key={idx}
             style={{
-              backgroundColor: '#ffffff',
+              backgroundColor: '#f5f5f5',
               borderRadius: 'var(--radius-card)',
               border: '1px solid var(--color-neutral-200)',
               overflow: 'hidden',

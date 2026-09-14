@@ -1,13 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FiArrowRight } from 'react-icons/fi';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Standards() {
+  const { t } = useLanguage();
   const bgPhoto = "https://assets-global.website-files.com/6175e5f51349efa3b3120baa/6181b49dad041b569acca334_about_1.jpg";
   const fgPhoto = "https://assets-global.website-files.com/6175e5f51349efa3b3120baa/617f0115cb238076480b00d5_img_5.jpg";
 
   return (
-    <section className="section-padding" style={{ backgroundColor: '#ffffff' }}>
+    <section className="section-padding" style={{ backgroundColor: '#f5f5f5' }}>
       <div className="container">
         <div
           style={{
@@ -35,19 +37,19 @@ export default function Standards() {
                 marginBottom: '16px',
               }}
             >
-              — WHY US
+              {t.standards?.tag || '— WHY US'}
             </span>
 
             <h2
               style={{
-                fontSize: 'clamp(2.2rem, 3.8vw, 3rem)',
+                fontSize: 'clamp(2.1rem, 3.6vw, 2.9rem)',
                 fontWeight: 800,
                 color: 'var(--color-text-main)',
-                lineHeight: 1.12,
+                lineHeight: 1.28,
                 marginBottom: '24px',
               }}
             >
-              We conduct all business with the highest standards
+              {t.standards?.title || 'We conduct all business with the highest standards'}
             </h2>
 
             <p
@@ -58,11 +60,11 @@ export default function Standards() {
                 marginBottom: '36px',
               }}
             >
-              Phasellus at eu adipiscing orci, est cras. Sed sed pulvinar sollicitudin purus tincidunt volutpat. Duis id diam commodo eros. Turpis proin molestie ut rhoncus.
+              {t.standards?.desc || 'Setiap proyek dikelola dengan transparansi biaya, ketepatan waktu, dan pemenuhan standar kualifikasi teknis bangunan yang presisi.'}
             </p>
 
             <a href="#about" className="btn-primary" style={{ backgroundColor: 'var(--color-dark)', borderColor: 'var(--color-dark)' }}>
-              <span>LEARN MORE</span>
+              <span>{t.standards?.btnMore || 'LEARN MORE'}</span>
               <FiArrowRight />
             </a>
           </motion.div>
@@ -102,7 +104,7 @@ export default function Standards() {
                 height: '280px',
                 borderRadius: '4px',
                 overflow: 'hidden',
-                border: '8px solid #ffffff',
+                border: '8px solid #f5f5f5',
                 boxShadow: '0 20px 40px rgba(0,0,0,0.18)',
                 outline: '3px solid var(--color-primary)',
               }}

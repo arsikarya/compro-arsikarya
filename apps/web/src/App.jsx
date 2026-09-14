@@ -70,7 +70,7 @@ function MainLayout() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#f5f5f5' }}>
       <Navbar />
       <main style={{ flexGrow: 1 }}>
         <Routes>
@@ -94,13 +94,17 @@ function MainLayout() {
   );
 }
 
+import { LanguageProvider } from './context/LanguageContext';
+
 export default function App() {
   return (
     <HelmetProvider>
-      <Router>
-        <ScrollToTop />
-        <MainLayout />
-      </Router>
+      <LanguageProvider>
+        <Router>
+          <ScrollToTop />
+          <MainLayout />
+        </Router>
+      </LanguageProvider>
     </HelmetProvider>
   );
 }

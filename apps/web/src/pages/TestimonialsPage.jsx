@@ -2,63 +2,62 @@ import React, { useState, useEffect } from 'react';
 import SEOHead from '../components/ui/SEOHead';
 import HeroBanner from '../components/ui/HeroBanner';
 import { publicApi } from '../lib/api';
-import { DEFAULT_CLIENT_TESTIMONIALS } from '../data/testimonialsData';
+import { getTestimonialsData } from '../data/testimonialsData';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function TestimonialsPage() {
-  const [testimonials, setTestimonials] = useState(DEFAULT_CLIENT_TESTIMONIALS);
+  const { lang, t } = useLanguage();
+  const rawList = getTestimonialsData(lang);
+  const defaultItems = rawList.map(item => ({
+    id: item.id,
+    quote: item.content,
+    clientName: item.name,
+    clientRole: item.role,
+    imageUrl: item.avatar,
+  }));
+
+  const [testimonials, setTestimonials] = useState(defaultItems);
+
+  useEffect(() => {
+    setTestimonials(defaultItems);
+  }, [lang]);
 
   useEffect(() => {
     publicApi.getTestimonials()
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
-          setTestimonials(data);
+          const mapped = data.map(item => ({
+            id: item.id,
+            quote: lang === 'en' ? (item.contentEn || item.quote || item.content) : (item.quote || item.content),
+            clientName: lang === 'en' ? (item.nameEn || item.clientName) : item.clientName,
+            clientRole: lang === 'en' ? (item.roleEn || item.clientRole || item.projectName) : (item.clientRole || item.projectName || 'Klien Arsi Karya'),
+            imageUrl: item.imageUrl || item.avatar || '/projects/project_2.jpg',
+          }));
+          setTestimonials(mapped);
         }
       })
-      .catch(() => {
-        // Fallback to DEFAULT_CLIENT_TESTIMONIALS
-      });
-  }, []);
+      .catch(() => {});
+  }, [lang]);
 
   return (
     <>
       <SEOHead
-        title="Testimoni Klien — PT Arsi Karya Unggul"
-        description="Ulasan dan testimoni langsung pengalaman klien bekerja sama dengan PT Arsi Karya Unggul."
+        title={lang === 'en' ? "Client Testimonials — Arsi Karya" : "Testimoni Klien — Arsi Karya"}
+        description={lang === 'en' ? "Direct reviews and client testimonials on working with Arsi Karya." : "Ulasan dan testimoni langsung pengalaman klien bekerja sama dengan Arsi Karya."}
       />
 
       {/* Dark Architectural Hero Banner */}
       <HeroBanner
         bgImage="/projects/project_6.jpg"
         overlayOpacity={0.65}
-        tag="TESTIMONI KLIEN"
-        title="Pengalaman Bekerjasama"
-        subtitle="Kepuasan dan kepercayan klien adalah tolok ukur utama keberhasilan pengerjaan proyek kami."
+        tag={t.testimonialsPage?.heroTag || "TESTIMONI KLIEN"}
+        title={t.testimonialsPage?.heroTitle || "Pengalaman Bekerjasama"}
+        subtitle={t.testimonialsPage?.heroSubtitle || "Kepuasan dan kepercayaan klien adalah tolok ukur utama keberhasilan pengerjaan proyek kami."}
       />
 
       <section className="section-padding" style={{ backgroundColor: 'var(--color-neutral-50)' }}>
         <div className="container">
-          {/* Section Header with Accent Bar */}
-          <div style={{ marginBottom: '48px' }}>
-            <h2
-              style={{
-                fontSize: 'clamp(2.2rem, 3.8vw, 3rem)',
-                fontWeight: 800,
-                color: 'var(--color-neutral-800)',
-                lineHeight: 1.15,
-                margin: '0 0 12px 0',
-              }}
-            >
-              Testimoni Client
-            </h2>
-            <div
-              style={{
-                width: '60px',
-                height: '3px',
-                backgroundColor: '#c48b59',
-                borderRadius: '2px',
-              }}
-            />
-          </div>
+
 
           {/* Testimonial Cards Grid */}
           <div
@@ -68,11 +67,11 @@ export default function TestimonialsPage() {
               gap: '32px',
             }}
           >
-            {testimonials.map((t) => (
+            {testimonials.map((item) => (
               <div
-                key={t.id}
+                key={item.id}
                 style={{
-                  backgroundColor: '#ffffff',
+                  backgroundColor: '#f5f5f5',
                   borderRadius: '16px',
                   border: '1px solid var(--color-neutral-200)',
                   padding: '32px',
@@ -93,7 +92,7 @@ export default function TestimonialsPage() {
                       margin: 0,
                     }}
                   >
-                    {t.quote}
+                    "{item.quote}"
                   </p>
 
                   <div style={{ marginTop: '24px' }}>
@@ -113,7 +112,7 @@ export default function TestimonialsPage() {
                         margin: '0 0 4px 0',
                       }}
                     >
-                      {t.clientName}
+                      {item.clientName}
                     </h4>
                     <p
                       style={{
@@ -122,7 +121,7 @@ export default function TestimonialsPage() {
                         margin: 0,
                       }}
                     >
-                      {t.clientRole || t.projectName || 'Klien PT Arsi Karya Unggul'}
+                      {item.clientRole || (lang === 'en' ? 'Arsi Karya Client' : 'Klien Arsi Karya')}
                     </p>
                   </div>
                 </div>
@@ -138,8 +137,8 @@ export default function TestimonialsPage() {
                   }}
                 >
                   <img
-                    src={t.imageUrl || '/projects/project_2.jpg'}
-                    alt={t.clientName}
+                    src={item.imageUrl || '/projects/project_2.jpg'}
+                    alt={item.clientName}
                     onError={(e) => {
                       e.currentTarget.src = '/projects/project_2.jpg';
                     }}

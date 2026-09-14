@@ -1,75 +1,59 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiCheck, FiX, FiLayers, FiCompass, FiCpu, FiPackage } from 'react-icons/fi';
+import { FiCheck, FiX, FiLayers, FiCompass, FiCpu, FiPackage, FiArrowRight } from 'react-icons/fi';
 import Button from './ui/Button';
+import { useLanguage } from '../context/LanguageContext';
+import { getServicesData } from '../data/servicesData';
 
 export default function Services() {
+  const { lang, t } = useLanguage();
+  const rawServices = getServicesData(lang);
+
+  const iconMap = {
+    perencanaan: <FiCompass style={{ fontSize: '1.4rem', color: '#1e293b' }} />,
+    konstruksi: <FiLayers style={{ fontSize: '1.4rem', color: '#1e293b' }} />,
+    'design-build': <FiCpu style={{ fontSize: '1.4rem', color: '#1e293b' }} />,
+    renovasi: <FiLayers style={{ fontSize: '1.4rem', color: '#1e293b' }} />,
+    landscape: <FiPackage style={{ fontSize: '1.4rem', color: '#1e293b' }} />,
+  };
+
   const galleryImages = [
     { 
       url: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=1200&auto=format&fit=crop", 
       fallback: "/projects/project_8.jpg",
-      alt: "Konstruksi Baja & Fabrikasi Lapangan 1" 
+      alt: "Konstruksi Steel Fabrication 1" 
     },
     { 
       url: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?q=80&w=1200&auto=format&fit=crop", 
       fallback: "/projects/gallery_1.jpg",
-      alt: "Pembangunan Gedung & Scaffolding 2" 
+      alt: "Building Construction 2" 
     },
     { 
       url: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1200&auto=format&fit=crop", 
       fallback: "/projects/gallery_3.jpg",
-      alt: "Pengelasan Presisi & Finishing 3" 
+      alt: "Architectural Finishing 3" 
     },
   ];
 
-  const servicesList = [
-    {
-      num: '01',
-      title: 'Konstruksi (General Contractor)',
-      desc: 'Pekerjaan kontraktor umum untuk bangunan rumah, kantor, dan fasilitas umum dengan alur terstruktur.',
-      fullDesc: 'Jasa kontraktor umum profesional mengelola persiapan lahan, fondasi, struktur beton/baja, hingga finishing akhir.',
-      icon: <FiLayers style={{ fontSize: '1.4rem', color: '#1e293b' }} />,
-      features: ['Struktur Beton Bertulang', 'Instalasi Listrik & Sanitari', 'Pengawasan QC Lapangan'],
-      slug: 'konstruksi',
-    },
-    {
-      num: '02',
-      title: 'Design & Build',
-      desc: 'Layanan terpadu perencanaan Arsitektur, Desain Interior, dan Infrastruktur dalam satu pintu.',
-      fullDesc: 'Integrasi penuh antara perancangan gambar arsitektur dan pelaksanaan fisik lapangan untuk efisiensi budget.',
-      icon: <FiCompass style={{ fontSize: '1.4rem', color: '#1e293b' }} />,
-      features: ['Desain 3D Visualisasi', 'Gambar Kerja Detail', 'Satu Penanggung Jawab Penuh'],
-      slug: 'design-build',
-    },
-    {
-      num: '03',
-      title: 'Fabrikasi Struktur',
-      desc: 'Workshop fabrikasi komponen baja, kanopi, pagar arsitektural, dan prafabrikasi presisi.',
-      fullDesc: 'Pembuatan komponen struktur baja presisi di workshop pabrikasi siap rakit di lokasi proyek.',
-      icon: <FiCpu style={{ fontSize: '1.4rem', color: '#1e293b' }} />,
-      features: ['Fabrikasi Rangka Baja', 'Komponen Prafabrikasi', 'Coating Anti-Karat'],
-      slug: 'fabrikasi',
-    },
-    {
-      num: '04',
-      title: 'Pengadaan Barang',
-      desc: 'Penyediaan material konstruksi dan perlengkapan proyek berstandar spesifikasi verified.',
-      fullDesc: 'Pengadaan material bangunan berkualitas tinggi untuk proyek instansi pemerintah dan swasta.',
-      icon: <FiPackage style={{ fontSize: '1.4rem', color: '#1e293b' }} />,
-      features: ['Suplai Material Verified', 'Sertifikasi Pabrikan', 'Pengiriman On-Time'],
-      slug: 'pengadaan-barang',
-    },
-  ];
+  const servicesList = rawServices.map((s, idx) => ({
+    num: `0${idx + 1}`,
+    title: s.title,
+    desc: s.shortDesc,
+    fullDesc: s.fullDesc,
+    icon: iconMap[s.slug] || <FiLayers style={{ fontSize: '1.4rem', color: '#1e293b' }} />,
+    features: s.scopeList ? s.scopeList.slice(0, 3) : [],
+    slug: s.slug,
+  }));
 
   const [selectedService, setSelectedService] = useState(null);
 
   return (
-    <section id="services" style={{ backgroundColor: '#ffffff', width: '100%', overflow: 'hidden' }}>
-      {/* 1. 100% Full Viewport Width Dark Split Banner (Matching Albion Reference) */}
+    <section id="services" style={{ backgroundColor: '#f5f5f5', width: '100%', overflow: 'hidden' }}>
+      {/* 1. 100% Full Viewport Width Dark Split Banner */}
       <div
         style={{
           position: 'relative',
-          backgroundColor: '#0c1015',
+          backgroundColor: 'var(--color-dark-bg, #222222)',
           color: '#ffffff',
           width: '100%',
           overflow: 'hidden',
@@ -88,7 +72,9 @@ export default function Services() {
           <div
             style={{
               position: 'relative',
-              height: '420px',
+              width: '100%',
+              height: '100%',
+              minHeight: '360px',
               overflow: 'hidden',
             }}
           >
@@ -109,7 +95,8 @@ export default function Services() {
               style={{
                 position: 'absolute',
                 inset: 0,
-                background: 'linear-gradient(to right, rgba(12, 16, 21, 0) 30%, rgba(12, 16, 21, 0.95) 100%)',
+                background: 'linear-gradient(to left, #222222 0%, rgba(34, 34, 34, 0.85) 30%, rgba(34, 34, 34, 0) 65%)',
+                pointerEvents: 'none',
               }}
             />
           </div>
@@ -128,19 +115,19 @@ export default function Services() {
               alignItems: 'flex-start',
             }}
           >
-            <span className="section-tag section-tag-light">WHAT WE DO</span>
+            <span className="section-tag section-tag-light">{t.servicesSection?.visionTag || 'VISI PERUSAHAAN'}</span>
 
             <h2
               style={{
-                fontSize: 'clamp(2.4rem, 4vw, 3.5rem)',
+                fontSize: 'clamp(2.25rem, 3.8vw, 3.3rem)',
                 fontWeight: 800,
                 color: '#ffffff',
-                lineHeight: 1.1,
+                lineHeight: 1.25,
                 marginBottom: '20px',
                 letterSpacing: '-0.5px',
               }}
             >
-              We know how to deliver your vision
+              {t.servicesSection?.visionTitle || 'We know how to deliver your vision'}
             </h2>
 
             <p
@@ -152,7 +139,7 @@ export default function Services() {
                 maxWidth: '520px',
               }}
             >
-              PT Arsi Karya Unggul menghadirkan layanan konstruksi terpadu dengan eksekusi amanah dan profesional di Bandung.
+              {t.servicesSection?.visionDesc || 'Arsi Karya menghadirkan layanan konstruksi terpadu dengan eksekusi amanah dan profesional di Bandung, Jawa — Bali.'}
             </p>
 
             <Button
@@ -166,7 +153,7 @@ export default function Services() {
                 fontWeight: 700,
               }}
             >
-              Our Services
+              {t.servicesSection?.btnServices || 'Layanan Kami'}
             </Button>
           </motion.div>
         </div>
@@ -177,7 +164,7 @@ export default function Services() {
         style={{
           width: '100%',
           padding: '16px',
-          backgroundColor: '#ffffff',
+          backgroundColor: '#f5f5f5',
         }}
       >
         <div
@@ -218,30 +205,24 @@ export default function Services() {
       </div>
 
       {/* 3. 4-Column Services Grid */}
-      <div id="services-list" style={{ backgroundColor: '#ffffff', color: 'var(--color-text-main)', padding: '96px 0' }}>
+      <div id="services-list" style={{ backgroundColor: '#f5f5f5', color: 'var(--color-text-main)', padding: '96px 0' }}>
         <div className="container">
           <div style={{ maxWidth: '720px', marginBottom: '60px' }}>
-            <span className="section-tag">OUR EXPERTISE</span>
+            <span className="section-tag">{t.servicesSection?.expertiseTag || 'LAYANAN SPESIALIS'}</span>
 
             <h2
               style={{
-                fontSize: 'clamp(2.2rem, 3.8vw, 3rem)',
+                fontSize: 'clamp(2.1rem, 3.6vw, 2.9rem)',
                 fontWeight: 800,
                 color: 'var(--color-text-main)',
-                lineHeight: 1.12,
+                lineHeight: 1.28,
               }}
             >
-              We construct spaces where amazing things happen
+              {t.servicesSection?.expertiseTitle || 'We construct spaces where amazing things happen'}
             </h2>
           </div>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-              gap: '40px',
-            }}
-          >
+          <div className="home-services-grid">
             {servicesList.map((service, idx) => (
               <motion.div
                 key={idx}
@@ -252,51 +233,109 @@ export default function Services() {
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  padding: '32px 28px',
+                  borderRadius: '14px',
+                  border: '1px solid var(--color-neutral-200)',
+                  backgroundColor: '#f5f5f5',
                   cursor: 'pointer',
+                  transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--color-primary-300)';
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.06)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--color-neutral-200)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
                 }}
                 onClick={() => setSelectedService(service)}
               >
-                {/* Static Square Icon Badge */}
-                <div
-                  style={{
-                    width: '48px',
-                    height: '48px',
-                    backgroundColor: '#f0f4f8',
-                    borderRadius: '4px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: '24px',
-                  }}
-                >
-                  {service.icon}
+                <div>
+                  {/* Square Icon Badge */}
+                  <div
+                    style={{
+                      width: '52px',
+                      height: '52px',
+                      backgroundColor: 'var(--color-primary-100)',
+                      color: 'var(--color-primary-300)',
+                      borderRadius: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.4rem',
+                      marginBottom: '24px',
+                    }}
+                  >
+                    {service.icon}
+                  </div>
+
+                  <h3
+                    style={{
+                      fontSize: '1.25rem',
+                      fontWeight: 800,
+                      fontFamily: 'var(--font-body)',
+                      marginBottom: '12px',
+                      color: 'var(--color-neutral-800)',
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {service.title}
+                  </h3>
+
+                  <p
+                    style={{
+                      fontSize: '0.95rem',
+                      color: 'var(--color-neutral-500)',
+                      lineHeight: 1.6,
+                      margin: 0,
+                    }}
+                  >
+                    {service.desc}
+                  </p>
                 </div>
 
-                <h3
+                <div
                   style={{
-                    fontSize: '1.25rem',
+                    marginTop: '24px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    fontSize: '0.875rem',
                     fontWeight: 700,
-                    marginBottom: '12px',
-                    color: 'var(--color-text-main)',
-                    lineHeight: 1.25,
+                    color: 'var(--color-primary-300)',
                   }}
                 >
-                  {service.title}
-                </h3>
-
-                <p
-                  style={{
-                    fontSize: '0.95rem',
-                    color: 'var(--color-text-muted)',
-                    lineHeight: 1.6,
-                  }}
-                >
-                  {service.desc}
-                </p>
+                  <span>{lang === 'en' ? 'View Service Details' : 'Lihat Detail Layanan'}</span>
+                  <FiArrowRight />
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
+
+        <style>{`
+          .home-services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+            width: 100%;
+          }
+
+          @media (max-width: 1024px) {
+            .home-services-grid {
+              grid-template-columns: repeat(2, 1fr);
+            }
+          }
+
+          @media (max-width: 640px) {
+            .home-services-grid {
+              grid-template-columns: 1fr;
+            }
+          }
+        `}</style>
       </div>
 
       {/* Service Detail Modal */}
@@ -325,7 +364,7 @@ export default function Services() {
               exit={{ scale: 0.9, y: 20 }}
               onClick={(e) => e.stopPropagation()}
               style={{
-                backgroundColor: '#ffffff',
+                backgroundColor: '#f5f5f5',
                 color: 'var(--color-text-main)',
                 borderRadius: '8px',
                 maxWidth: '600px',
@@ -352,9 +391,6 @@ export default function Services() {
                 <div style={{ width: '40px', height: '40px', backgroundColor: '#f0f4f8', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {selectedService.icon}
                 </div>
-                <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--color-primary-300)' }}>
-                  SERVICE {selectedService.num}
-                </span>
               </div>
 
               <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '16px' }}>{selectedService.title}</h2>
@@ -362,7 +398,7 @@ export default function Services() {
                 {selectedService.fullDesc}
               </p>
 
-              <h4 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '12px' }}>Scope Utama:</h4>
+              <h4 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '12px' }}>{lang === 'en' ? 'Main Scope:' : 'Scope Utama:'}</h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '32px' }}>
                 {selectedService.features.map((f, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -378,7 +414,7 @@ export default function Services() {
                 variant="primary"
                 style={{ width: '100%', justifyContent: 'center' }}
               >
-                Lihat Detail Layanan
+                {lang === 'en' ? 'View Service Details' : 'Lihat Detail Layanan'}
               </Button>
             </motion.div>
           </motion.div>

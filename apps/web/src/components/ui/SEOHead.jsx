@@ -2,9 +2,9 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 export default function SEOHead({
-  title = "PT Arsi Karya Unggul — Membangun Tuntas, Unggul Dalam Kualitas",
-  description = "PT Arsi Karya Unggul adalah perusahaan jasa konstruksi, design & build (arsitektur, interior, infrastruktur), fabrikasi, dan pengadaan barang terpercaya berbasis di Bandung.",
-  keywords = "konstruksi bandung, kontraktor bandung, design and build, arsitektur bandung, desain interior, fabrikasi baja, pengadaan barang",
+  title = "Arsi Karya — Membangun Tuntas, Unggul Dalam Kualitas",
+  description = "Arsi Karya adalah perusahaan jasa konstruksi, design & build (arsitektur, interior, infrastruktur), renovasi, dan pengadaan barang terpercaya berbasis di Bandung, Jawa — Bali.",
+  keywords = "konstruksi bandung, kontraktor bandung, design and build, arsitektur bandung, desain interior, renovasi rumah, pengadaan barang",
   canonicalUrl = "https://arsikarya.vercel.app",
   ogType = "website",
   schemaJson,
@@ -12,7 +12,7 @@ export default function SEOHead({
   const defaultSchema = {
     "@context": "https://schema.org",
     "@type": "GeneralContractor",
-    "name": "PT Arsi Karya Unggul",
+    "name": "Arsi Karya",
     "alternateName": "ARSI KARYA",
     "url": "https://arsikarya.vercel.app",
     "logo": "https://arsikarya.vercel.app/logo.png",

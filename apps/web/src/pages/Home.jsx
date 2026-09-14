@@ -13,8 +13,8 @@ export default function Home() {
   return (
     <>
       <SEOHead
-        title="PT Arsi Karya Unggul — Membangun Tuntas, Unggul Dalam Kualitas"
-        description="PT Arsi Karya Unggul adalah perusahaan jasa konstruksi, design & build (arsitektur & interior), fabrikasi, dan pengadaan barang terpercaya di Bandung."
+        title="Arsi Karya — Membangun Tuntas, Unggul Dalam Kualitas"
+        description="Arsi Karya adalah perusahaan jasa konstruksi, design & build (arsitektur & interior), renovasi, dan pengadaan barang terpercaya di Bandung, Jawa — Bali."
       />
       <Hero />
       <Stats />

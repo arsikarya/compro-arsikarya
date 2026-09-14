@@ -2,12 +2,20 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { FiCheckCircle } from 'react-icons/fi';
 import Button from './ui/Button';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function About() {
+  const { lang, t } = useLanguage();
+
   const aboutImg1 = "https://assets-global.website-files.com/6175e5f51349efa3b3120baa/6181b49dad041b569acca334_about_1.jpg";
   const aboutImg2 = "https://assets-global.website-files.com/6175e5f51349efa3b3120baa/6181bc9593b65751777cb76b_about_a4.jpg";
 
-  const keyPoints = [
+  const keyPoints = lang === 'en' ? [
+    'Precision Architecture & Structural Planning',
+    'Efficient & Structured Construction Execution',
+    'Material Quality Control & Safety Standards',
+    'Transparent Progress & Maintenance Warranty',
+  ] : [
     'Perencanaan Arsitektur & Struktur Presisi',
     'Eksekusi Konstruksi Efisien & Terstruktur',
     'Pengawasan Mutu Bahan & Standar Keselamatan',
@@ -15,7 +23,7 @@ export default function About() {
   ];
 
   return (
-    <section id="about" className="section-padding" style={{ backgroundColor: '#ffffff', overflow: 'hidden' }}>
+    <section id="about" className="section-padding" style={{ backgroundColor: '#f5f5f5', overflow: 'hidden' }}>
       <div className="container">
         <div
           style={{
@@ -32,18 +40,18 @@ export default function About() {
             transition={{ duration: 0.7 }}
             viewport={{ once: true }}
           >
-            <span className="section-tag">WHY US</span>
+            <span className="section-tag">{t.about?.tag || 'TENTANG KAMI'}</span>
 
             <h2
               style={{
-                fontSize: 'clamp(2.2rem, 3.5vw, 3rem)',
+                fontSize: 'clamp(2.1rem, 3.4vw, 2.9rem)',
                 fontWeight: 800,
                 color: 'var(--color-text-main)',
                 marginBottom: '20px',
-                lineHeight: 1.15,
+                lineHeight: 1.25,
               }}
             >
-              We create things that matter
+              {t.about?.title || 'We create things that matter'}
             </h2>
 
             <p
@@ -54,11 +62,11 @@ export default function About() {
                 marginBottom: '28px',
               }}
             >
-              PT Arsi Karya Unggul melayani jasa kontraktor umum, design & build, fabrikasi, dan pengadaan barang terpercaya berpusat di Kota Bandung.
+              {t.about?.desc1 || 'Arsi Karya melayani jasa kontraktor umum, design & build, renovasi, dan pengadaan barang terpercaya berpusat di Bandung, Jawa — Bali.'}
             </p>
 
             {/* Checklist */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '36px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {keyPoints.map((pt, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <FiCheckCircle style={{ color: 'var(--color-primary-300)', fontSize: '1.2rem', flexShrink: 0 }} />
@@ -68,10 +76,6 @@ export default function About() {
                 </div>
               ))}
             </div>
-
-            <Button to="/tentang-kami" variant="primary">
-              More About Us
-            </Button>
           </motion.div>
 
           {/* Right Column: Visual Composite Grid */}
@@ -111,7 +115,7 @@ export default function About() {
                 height: '200px',
                 borderRadius: '8px',
                 overflow: 'hidden',
-                border: '6px solid #ffffff',
+                border: '6px solid #f5f5f5',
                 boxShadow: '0 15px 30px rgba(0,86,151,0.2)',
                 display: 'none',
               }}

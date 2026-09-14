@@ -2,45 +2,41 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { publicApi } from '../lib/api';
-
-const DEFAULT_TESTIMONIALS = [
-  {
-    quote: "Pengawasan mutu dan transparansi laporan berkala PT Arsi Karya Unggul memberikan rasa tenang selama seluruh proses pembangunan rumah kami.",
-    author: "MR. ERWAN",
-    company: "The Old Heritage Project",
-  },
-  {
-    quote: "Eksekusi presisi fasad ACP dan peremajaan gedung kantor diselesaikan dengan sangat rapi dan tepat waktu sesuai standar instansi.",
-    author: "TIM TEKNIK KPPN",
-    company: "KPPN Pekalongan",
-  },
-  {
-    quote: "Konsep Design & Build terbukti efisien. Perencanaan 3D hingga hasil fisik rumah hunian di Buah Batu persis sesuai ekspektasi kami.",
-    author: "IBU DEWI",
-    company: "The Verdant Pavilion",
-  },
-];
+import { useLanguage } from '../context/LanguageContext';
+import { getTestimonialsData } from '../data/testimonialsData';
 
 export default function Testimonials() {
+  const { lang, t } = useLanguage();
   const bgImg = "https://assets-global.website-files.com/6175e5f51349efa3b3120baa/617c967a42c0beed800a8b23_contact.jpg";
 
-  const [testimonials, setTestimonials] = useState(DEFAULT_TESTIMONIALS);
+  const rawList = getTestimonialsData(lang);
+  const defaultList = rawList.map(item => ({
+    quote: item.content,
+    author: item.name.toUpperCase(),
+    company: item.role,
+  }));
+
+  const [testimonials, setTestimonials] = useState(defaultList);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    setTestimonials(defaultList);
+  }, [lang]);
 
   useEffect(() => {
     publicApi.getTestimonials()
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
-          const mapped = data.map(t => ({
-            quote: t.quote,
-            author: t.clientName?.toUpperCase() || 'KLIEN ARSI KARYA',
-            company: t.clientRole || t.projectName || 'Arsi Karya Project',
+          const mapped = data.map(item => ({
+            quote: lang === 'en' ? (item.contentEn || item.quote || item.content) : item.quote || item.content,
+            author: item.clientName?.toUpperCase() || (lang === 'en' ? 'ARSI KARYA CLIENT' : 'KLIEN ARSI KARYA'),
+            company: item.clientRole || item.projectName || 'Arsi Karya Project',
           }));
           setTestimonials(mapped);
         }
       })
       .catch(() => {});
-  }, []);
+  }, [lang]);
 
   return (
     <section
@@ -48,7 +44,7 @@ export default function Testimonials() {
         position: 'relative',
         minHeight: '520px',
         width: '100%',
-        backgroundColor: '#0c1015',
+        backgroundColor: 'var(--color-dark-bg, #222222)',
         color: '#ffffff',
         display: 'flex',
         alignItems: 'center',
@@ -97,18 +93,18 @@ export default function Testimonials() {
             viewport={{ once: true }}
             style={{ maxWidth: '620px', marginLeft: 'auto' }}
           >
-            <span className="section-tag section-tag-light">TESTIMONIALS</span>
+            <span className="section-tag section-tag-light">{t.testimonialsSection?.tag || 'TESTIMONI'}</span>
 
             <h2
               style={{
-                fontSize: 'clamp(2.4rem, 4vw, 3.5rem)',
+                fontSize: 'clamp(2.25rem, 3.8vw, 3.3rem)',
                 fontWeight: 800,
                 color: '#ffffff',
-                lineHeight: 1.1,
+                lineHeight: 1.28,
                 marginBottom: '32px',
               }}
             >
-              What our clients say
+              {t.testimonialsSection?.title || 'What our clients say'}
             </h2>
 
             <AnimatePresence mode="wait">

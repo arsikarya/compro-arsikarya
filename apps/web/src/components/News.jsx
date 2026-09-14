@@ -3,30 +3,18 @@ import { motion } from 'framer-motion';
 import { FiArrowUpRight } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import { publicApi } from '../lib/api';
-
-const DEFAULT_NEWS = [
-  {
-    id: "cara-menentukan-kebutuhan-jasa-konstruksi",
-    slug: "cara-menentukan-kebutuhan-jasa-konstruksi",
-    title: 'Cara Menentukan Kebutuhan Jasa Konstruksi untuk Proyek Anda',
-    excerpt: 'Memulai proyek pembangunan membutuhkan pemahaman mendasar mengenai scope pekerjaan dan penentuan jenis kontraktor.',
-  },
-  {
-    id: "apa-yang-perlu-disiapkan-sebelum-renovasi-rumah",
-    slug: "apa-yang-perlu-disiapkan-sebelum-renovasi-rumah",
-    title: 'Apa yang Perlu Disiapkan Sebelum Memulai Renovasi Rumah?',
-    excerpt: 'Renovasi rumah tanpa perencanaan matang sering memicu masalah kebocoran biaya dan waktu. Simak persiapan penting.',
-  },
-  {
-    id: "design-and-build-satu-alur-perencanaan-eksekusi",
-    slug: "design-and-build-satu-alur-perencanaan-eksekusi",
-    title: 'Design & Build: Satu Alur dari Perencanaan hingga Pelaksanaan',
-    excerpt: 'Pelajari efisiensi biaya dan kemudahan kontrol proyek dalam satu komando terpadu perencanaan dan konstruksi.',
-  },
-];
+import { useLanguage } from '../context/LanguageContext';
+import { getArticlesData } from '../data/articlesData';
 
 export default function News() {
-  const [newsList, setNewsList] = useState(DEFAULT_NEWS);
+  const { lang, t } = useLanguage();
+  const rawArticles = getArticlesData(lang);
+
+  const [newsList, setNewsList] = useState(rawArticles);
+
+  useEffect(() => {
+    setNewsList(getArticlesData(lang));
+  }, [lang]);
 
   useEffect(() => {
     publicApi.getArticles()
@@ -35,31 +23,31 @@ export default function News() {
           const mapped = data.slice(0, 3).map(a => ({
             id: a.id || a.slug,
             slug: a.slug,
-            title: a.title,
-            excerpt: a.excerpt || a.content?.substring(0, 120) || '',
+            title: lang === 'en' ? (a.titleEn || a.title) : a.title,
+            excerpt: lang === 'en' ? (a.excerptEn || a.excerpt || a.contentEn?.substring(0, 120) || '') : (a.excerpt || a.content?.substring(0, 120) || ''),
           }));
           setNewsList(mapped);
         }
       })
       .catch(() => {});
-  }, []);
+  }, [lang]);
 
   return (
-    <section id="news" className="section-padding" style={{ backgroundColor: '#ffffff' }}>
+    <section id="news" className="section-padding" style={{ backgroundColor: '#f5f5f5' }}>
       <div className="container">
         {/* Section Header */}
         <div style={{ maxWidth: '650px', marginBottom: '60px' }}>
-          <span className="section-tag">LATEST NEWS</span>
+          <span className="section-tag">{t.news?.tag || 'LATEST NEWS'}</span>
 
           <h2
             style={{
-              fontSize: 'clamp(2.2rem, 3.8vw, 3rem)',
+              fontSize: 'clamp(2.1rem, 3.6vw, 2.9rem)',
               fontWeight: 800,
               color: 'var(--color-text-main)',
-              lineHeight: 1.12,
+              lineHeight: 1.28,
             }}
           >
-            It's an exciting time in the construction industry
+            {t.news?.title || "It's an exciting time in the construction industry"}
           </h2>
         </div>
 
@@ -110,7 +98,9 @@ export default function News() {
                   <h3
                     style={{
                       fontSize: '1.25rem',
-                      fontWeight: 700,
+                      fontWeight: 800,
+                      WebkitTextStroke: '0.35px currentColor',
+                      letterSpacing: '-0.02em',
                       color: 'var(--color-text-main)',
                       lineHeight: 1.3,
                     }}

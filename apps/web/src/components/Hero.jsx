@@ -4,8 +4,10 @@ import { FiArrowUpRight } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import Button from './ui/Button';
 import { getGeneralWaUrl } from '../utils/whatsapp';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Hero() {
+  const { t } = useLanguage();
   const videoMp4 = "https://cdn.prod.website-files.com/6175e5f51349efa3b3120baa/6179fd5c38ec05cd8ff9df2b_background_video-transcode.mp4";
   const videoWebm = "https://cdn.prod.website-files.com/6175e5f51349efa3b3120baa/6179fd5c38ec05cd8ff9df2b_background_video-transcode.webm";
 
@@ -13,16 +15,16 @@ export default function Hero() {
 
   const bottomNavItems = [
     {
-      title: 'KONSTRUKSI',
+      title: t.hero.item1,
       link: '/layanan/konstruksi',
     },
     {
-      title: 'DESIGN & BUILD',
+      title: t.hero.item2,
       link: '/layanan/design-build',
     },
     {
-      title: 'FABRIKASI',
-      link: '/layanan/fabrikasi',
+      title: t.hero.item3,
+      link: '/layanan/renovasi',
     },
   ];
 
@@ -37,12 +39,12 @@ export default function Hero() {
         flexDirection: 'column',
         justifyContent: 'space-between',
         paddingTop: 'var(--header-height)',
-        backgroundColor: '#0a0d12',
+        backgroundColor: 'var(--color-dark-bg, #222222)',
         color: '#ffffff',
         overflow: 'hidden',
       }}
     >
-      {/* Background HTML5 Video — direct autoplay without static poster image */}
+      {/* Background HTML5 Video */}
       <div
         style={{
           position: 'absolute',
@@ -96,19 +98,20 @@ export default function Hero() {
           justifyContent: 'center',
           alignItems: 'flex-start',
           width: '100%',
-          paddingTop: '80px',
-          paddingBottom: '40px',
+          paddingTop: '20px',
+          paddingBottom: '20px',
         }}
       >
-        <div style={{ width: '100%', maxWidth: '1050px', textAlign: 'left', marginLeft: 0, marginRight: 'auto' }}>
+        <div style={{ maxWidth: '900px' }}>
+          {/* Main Title Heading */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             style={{
-              fontSize: 'clamp(2.6rem, 5.2vw, 4.6rem)',
+              fontSize: 'clamp(2.4rem, 4.9vw, 4.3rem)',
               fontWeight: 800,
-              lineHeight: 1.1,
+              lineHeight: 1.25,
               color: '#ffffff',
               letterSpacing: '-0.02em',
               marginBottom: '24px',
@@ -116,8 +119,8 @@ export default function Hero() {
               textAlign: 'left',
             }}
           >
-            Membangun Tuntas,<br />
-            Unggul Dalam Kualitas
+            {t.hero.titleLine1}<br />
+            {t.hero.titleLine2}
           </motion.h1>
 
           <motion.p
@@ -134,13 +137,49 @@ export default function Hero() {
               textAlign: 'left',
             }}
           >
-            Proses yang terstruktur, komunikasi yang jelas, dan kualitas yang terjaga<br />
-            untuk mewujudkan proyek Anda dengan lebih tenang dan terarah.
+            {t.hero.subtitle}
           </motion.p>
+
+          {/* Action CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '16px',
+              marginTop: '32px',
+              flexWrap: 'wrap',
+            }}
+          >
+            <Button
+              to="/proyek"
+              variant="primary"
+              style={{
+                padding: '14px 28px',
+                fontSize: '0.95rem',
+                boxShadow: 'none',
+              }}
+            >
+              {t.hero.btnProjects}
+            </Button>
+
+            <Button
+              to="/layanan"
+              variant="outline-light"
+              style={{
+                padding: '14px 28px',
+                fontSize: '0.95rem',
+              }}
+            >
+              {t.hero.btnServices}
+            </Button>
+          </motion.div>
         </div>
       </div>
 
-      {/* Bottom Bar matching Albion Webflow layout */}
+      {/* Bottom Bar */}
       <div
         style={{
           position: 'relative',

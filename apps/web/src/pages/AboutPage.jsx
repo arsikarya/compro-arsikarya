@@ -3,26 +3,70 @@ import SectionTag from '../components/ui/SectionTag';
 import SEOHead from '../components/ui/SEOHead';
 import Button from '../components/ui/Button';
 import HeroBanner from '../components/ui/HeroBanner';
-import { teamData } from '../data/teamData';
+import { FiCheckCircle, FiTarget, FiCompass, FiShield, FiAward, FiEye } from 'react-icons/fi';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function AboutPage() {
-  const direksiTeam = teamData.filter(m => m.role === 'Direktur' || m.role === 'Direktur Teknik');
-  const operationalTeam = teamData.filter(m => m.role !== 'Direktur' && m.role !== 'Direktur Teknik');
+  const { lang, t } = useLanguage();
+
+  const visiMisiPoints = lang === 'en' ? [
+    {
+      title: "Quality Standards & Precision",
+      desc: "Prioritizing precise material specifications, measured engineering analysis, and strict QC supervision at every construction stage.",
+      icon: <FiCheckCircle style={{ color: 'var(--color-primary-300)', fontSize: '1.25rem' }} />
+    },
+    {
+      title: "Transparency & Integrity",
+      desc: "Presenting honest, structured Bill of Quantities (RAB) and delivering transparent periodic progress reports.",
+      icon: <FiShield style={{ color: 'var(--color-primary-300)', fontSize: '1.25rem' }} />
+    },
+    {
+      title: "Design Innovation & Functionality",
+      desc: "Combining modern architectural aesthetics with practical space functionality to create long-term investment value.",
+      icon: <FiCompass style={{ color: 'var(--color-primary-300)', fontSize: '1.25rem' }} />
+    },
+    {
+      title: "Safety & Post-Handover Warranty",
+      desc: "Ensuring site work safety and providing official maintenance warranty after Handover (BAST).",
+      icon: <FiAward style={{ color: 'var(--color-primary-300)', fontSize: '1.25rem' }} />
+    }
+  ] : [
+    {
+      title: "Standar Mutu & Presisi",
+      desc: "Mengedepankan ketepatan spesifikasi bahan, analisis teknik terukur, dan pengawasan QC ketat di setiap tahap pembangunan.",
+      icon: <FiCheckCircle style={{ color: 'var(--color-primary-300)', fontSize: '1.25rem' }} />
+    },
+    {
+      title: "Transparansi & Kejujuran",
+      desc: "Menyajikan Rencana Anggaran Biaya (RAB) yang terstruktur, jujur, serta memberikan laporan progres berkala yang transparan.",
+      icon: <FiShield style={{ color: 'var(--color-primary-300)', fontSize: '1.25rem' }} />
+    },
+    {
+      title: "Inovasi Desain & Fungsionalitas",
+      desc: "Memadukan estetika arsitektur modern dengan kepraktisan fungsi ruang untuk menciptakan nilai investasi jangka panjang.",
+      icon: <FiCompass style={{ color: 'var(--color-primary-300)', fontSize: '1.25rem' }} />
+    },
+    {
+      title: "Keamanan & Garansi Purna Kerja",
+      desc: "Menjamin keselamatan kerja di lapangan serta memberikan garansi pemeliharaan resmi pasca Berita Acara Serah Terima (BAST).",
+      icon: <FiAward style={{ color: 'var(--color-primary-300)', fontSize: '1.25rem' }} />
+    }
+  ];
 
   return (
     <>
       <SEOHead
-        title="Tentang Kami — PT Arsi Karya Unggul"
-        description="Profil PT Arsi Karya Unggul: Kontraktor Umum dan Design & Build di Bandung dengan posisi bisnis fokus pada proses terstruktur, kontrol kualitas, dan eksekusi efisien."
+        title={lang === 'en' ? "About Us — Arsi Karya" : "Tentang Kami — Arsi Karya"}
+        description={lang === 'en' ? "Arsi Karya Profile: General construction, renovation, and Design & Build company in Bandung, Java — Bali focused on structured workflows and tested quality." : "Profil Arsi Karya: Perusahaan jasa kontraktor umum, renovasi, dan Design & Build di Bandung, Jawa — Bali berfokus pada alur terstruktur dan kualitas teruji."}
       />
 
       {/* Dark Architectural Hero Banner */}
       <HeroBanner
         bgImage="/projects/project_2.jpg"
         overlayOpacity={0.65}
-        tag="TENTANG KAMI"
-        title="PT ARSI KARYA UNGGUL"
-        subtitle="“Membangun Tuntas, Unggul Dalam Kualitas”"
+        tag={t.aboutPage?.heroTag || "TENTANG PERUSAHAAN"}
+        title={t.aboutPage?.heroTitle || "Tentang Arsi Karya"}
+        subtitle={t.aboutPage?.heroSubtitle || "“Membangun Tuntas, Unggul Dalam Kualitas”"}
       />
 
       {/* Company Positioning & Profile */}
@@ -30,18 +74,18 @@ export default function AboutPage() {
         <div className="container">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '48px', alignItems: 'center' }}>
             <div>
-              <SectionTag>PROFIL PERUSAHAAN</SectionTag>
-              <h2>Komitmen Profesionalisme dalam Dunia Konstruksi</h2>
+              <SectionTag>{t.aboutPage?.profileTag || 'PROFIL PERUSAHAAN'}</SectionTag>
+              <h2>{t.aboutPage?.profileTitle || 'Komitmen Profesionalisme dalam Dunia Konstruksi'}</h2>
               <p style={{ marginTop: '20px', lineHeight: 1.7, color: 'var(--color-neutral-500)' }}>
-                <strong>PT ARSI KARYA UNGGUL</strong> adalah perusahaan jasa konstruksi dan <em>Design & Build</em> berkedudukan di Kota Bandung yang berfokus pada alur kerja terstruktur, eksekusi efisien, pengendalian mutu material, komunikasi jelas, dan kontrol proyek yang konsisten.
+                {t.aboutPage?.profileBody1 || 'ARSI KARYA adalah perusahaan jasa konstruksi...'}
               </p>
               <p style={{ marginTop: '16px', lineHeight: 1.7, color: 'var(--color-neutral-500)' }}>
-                Kami memadukan kemampuan kompetensi teknis konstruksi dengan kepekaan desain arsitektural untuk memberikan hasil akhir yang kokoh, fungsional, dan bernilai tinggi bagi klien instansi pemerintah, swasta, maupun perorangan.
+                {t.aboutPage?.profileBody2 || 'Kami memadukan kemampuan kompetensi teknis...'}
               </p>
 
               <div style={{ marginTop: '32px' }}>
                 <Button to="/kontak" variant="primary">
-                  Konsultasi Bersama Tim Kami
+                  {lang === 'en' ? 'Consult With Us' : 'Konsultasi Bersama Kami'}
                 </Button>
               </div>
             </div>
@@ -49,34 +93,34 @@ export default function AboutPage() {
             <div>
               {/* Architectural Visual Feature Banner */}
               <div style={{ height: '240px', borderRadius: 'var(--radius-card)', overflow: 'hidden', marginBottom: '24px', position: 'relative', border: '1px solid var(--color-neutral-200)' }}>
-                <img src="/projects/project_3.jpg" alt="PT Arsi Karya Unggul Office & Projects" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img src="/projects/project_3.jpg" alt="Arsi Karya Office & Projects" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)', padding: '16px 20px', color: '#ffffff', fontSize: '0.85rem', fontWeight: 600 }}>
-                  Gedung & Proyek PT Arsi Karya Unggul
+                  {lang === 'en' ? 'Arsi Karya Building & Projects' : 'Gedung & Proyek Arsi Karya'}
                 </div>
               </div>
 
               <div style={{ backgroundColor: 'var(--color-neutral-50)', padding: '32px', borderRadius: 'var(--radius-card)', border: '1px solid var(--color-neutral-200)' }}>
-                <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', color: 'var(--color-primary-300)' }}>Identitas Perusahaan</h3>
+                <h3 style={{ fontSize: '1.2rem', marginBottom: '16px', color: 'var(--color-primary-300)' }}>{lang === 'en' ? 'Company Identity' : 'Identitas Perusahaan'}</h3>
                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '0.925rem' }}>
                   <li>
-                    <strong style={{ color: 'var(--color-neutral-700)' }}>Nama Legal:</strong><br />
-                    PT ARSI KARYA UNGGUL
-                  </li>
-                  <li>
-                    <strong style={{ color: 'var(--color-neutral-700)' }}>Brand Dagang:</strong><br />
+                    <strong style={{ color: 'var(--color-neutral-700)' }}>{lang === 'en' ? 'Brand Name:' : 'Brand Dagang:'}</strong><br />
                     ARSI KARYA
                   </li>
                   <li>
-                    <strong style={{ color: 'var(--color-neutral-700)' }}>Slogan Utama:</strong><br />
-                    “Membangun Tuntas, Unggul Dalam Kualitas”
+                    <strong style={{ color: 'var(--color-neutral-700)' }}>{lang === 'en' ? 'Main Slogan:' : 'Slogan Utama:'}</strong><br />
+                    {lang === 'en' ? '“Building Thoroughly, Superior in Quality”' : '“Membangun Tuntas, Unggul Dalam Kualitas”'}
                   </li>
                   <li>
-                    <strong style={{ color: 'var(--color-neutral-700)' }}>Kantor Operasional:</strong><br />
-                    Bumi Adipura, Jl. Tulip VII No. 21, Rancabolang, Gedebage, Kota Bandung.
+                    <strong style={{ color: 'var(--color-neutral-700)' }}>{lang === 'en' ? 'Operational Region:' : 'Wilayah Operasional:'}</strong><br />
+                    Bandung, Java — Bali
                   </li>
                   <li>
-                    <strong style={{ color: 'var(--color-neutral-700)' }}>Layanan Utama:</strong><br />
-                    Konstruksi, Design & Build, Fabrikasi, Pengadaan Barang
+                    <strong style={{ color: 'var(--color-neutral-700)' }}>{lang === 'en' ? 'Office Address:' : 'Alamat Kantor:'}</strong><br />
+                    Bumi Adipura, Jl. Tulip VII No. 21, Rancabolang, Gedebage, Bandung.
+                  </li>
+                  <li>
+                    <strong style={{ color: 'var(--color-neutral-700)' }}>{lang === 'en' ? 'Core Services:' : 'Layanan Utama:'}</strong><br />
+                    {lang === 'en' ? 'Planning, Construction, Design & Build, Renovation, Landscape' : 'Perencanaan, Konstruksi, Design & Build, Renovasi, Landscape'}
                   </li>
                 </ul>
               </div>
@@ -85,105 +129,109 @@ export default function AboutPage() {
         </div>
       </section>
 
-
-
-      {/* Verified Leadership & Team Section */}
+      {/* Aesthetic Visi & Misi Section */}
       <section className="section-padding" style={{ backgroundColor: 'var(--color-neutral-50)', borderTop: '1px solid var(--color-neutral-200)' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto 50px auto' }}>
-            <SectionTag>TIM KAMI</SectionTag>
+          <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 60px auto' }}>
+            <SectionTag>{t.aboutPage?.visiMisiTag || 'VISI & MISI'}</SectionTag>
             <h2 style={{ fontSize: 'clamp(2rem, 3.5vw, 2.75rem)', fontWeight: 800, color: 'var(--color-neutral-800)' }}>
-              Tim Profesional PT Arsi Karya Unggul
+              {lang === 'en' ? 'Commitment Foundation & Future Direction' : 'Landasan Komitmen & Arah Masa Depan'}
             </h2>
-            <p style={{ color: 'var(--color-neutral-400)', marginTop: '12px', fontSize: '1rem', lineHeight: 1.6 }}>
-              Didukung oleh SDM berpengalaman di bidang manajemen teknik konstruksi, perancangan arsitektur, dan operasional proyek.
+            <p style={{ color: 'var(--color-neutral-400)', marginTop: '14px', fontSize: '1.05rem', lineHeight: 1.6 }}>
+              {lang === 'en' ? 'To be a trusted construction and design partner delivering sturdy, aesthetic, efficient, and sustainable projects.' : 'Menjadi mitra konstruksi dan perancangan terpercaya yang menghadirkan karya fisik kokoh, estetis, efisien, dan berkelanjutan.'}
             </p>
           </div>
 
-          {/* Baris 1: Direktur & Direktur Teknik (2 Kotak Sejajar) */}
-          <div style={{ marginBottom: '32px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px', maxWidth: '900px', margin: '0 auto' }}>
-              {direksiTeam.map((member, idx) => (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px', alignItems: 'stretch' }}>
+            {/* Left Card: VISI PERUSAHAAN */}
+            <div
+              style={{
+                backgroundColor: '#f5f5f5',
+                borderRadius: 'var(--radius-card)',
+                border: '1px solid var(--color-neutral-200)',
+                overflow: 'hidden',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between'
+              }}
+            >
+              <div style={{ position: 'relative', height: '240px', overflow: 'hidden' }}>
+                <img
+                  src="/projects/project_4.jpg"
+                  alt="Arsi Karya Visi Feature"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
                 <div
-                  key={idx}
                   style={{
-                    backgroundColor: '#ffffff',
-                    padding: '40px 32px',
-                    borderRadius: 'var(--radius-card)',
-                    border: '1px solid var(--color-neutral-200)',
-                    textAlign: 'center',
-                    boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'linear-gradient(to top, rgba(0,86,151,0.85) 0%, rgba(0,86,151,0.2) 100%)',
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    padding: '24px',
+                    color: '#ffffff'
                   }}
                 >
-                  <div
-                    style={{
-                      width: '90px',
-                      height: '90px',
-                      borderRadius: '50%',
-                      backgroundColor: 'var(--color-primary-100)',
-                      color: 'var(--color-primary-300)',
-                      margin: '0 auto 20px auto',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '2rem',
-                      fontWeight: 700,
-                    }}
-                  >
-                    {member.initial || member.name.charAt(0)}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <FiEye style={{ fontSize: '1.8rem' }} />
+                    <span style={{ fontSize: '1.2rem', fontWeight: 800, fontFamily: 'var(--font-body)', letterSpacing: '0.05em' }}>{t.aboutPage?.visiTag || 'VISI UTAMA'}</span>
                   </div>
-                  <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '6px', color: 'var(--color-neutral-800)' }}>{member.name}</h3>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--color-primary-300)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '0.08em' }}>
-                    {member.role}
-                  </div>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--color-neutral-500)', lineHeight: 1.6 }}>{member.bio}</p>
                 </div>
-              ))}
-            </div>
-          </div>
+              </div>
 
-          {/* Baris 2: Staff Umum & Kepala Studio Kreatif (2 Kotak Sejajar) */}
-          <div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px', maxWidth: '900px', margin: '0 auto' }}>
-              {operationalTeam.map((member, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    backgroundColor: '#ffffff',
-                    padding: '40px 32px',
-                    borderRadius: 'var(--radius-card)',
-                    border: '1px solid var(--color-neutral-200)',
-                    textAlign: 'center',
-                    boxShadow: '0 2px 10px rgba(0,0,0,0.03)',
-                  }}
-                >
-                  <div
-                    style={{
-                      width: '90px',
-                      height: '90px',
-                      borderRadius: '50%',
-                      backgroundColor: 'var(--color-primary-100)',
-                      color: 'var(--color-primary-300)',
-                      margin: '0 auto 20px auto',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '2rem',
-                      fontWeight: 700,
-                    }}
-                  >
-                    {member.initial || member.name.charAt(0)}
-                  </div>
-                  <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '6px', color: 'var(--color-neutral-800)' }}>{member.name}</h3>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--color-primary-300)', fontWeight: 800, textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '0.08em' }}>
-                    {member.role}
-                  </div>
-                  <p style={{ fontSize: '0.9rem', color: 'var(--color-neutral-500)', lineHeight: 1.6 }}>{member.bio}</p>
+              <div style={{ padding: '36px 32px 40px 32px', flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <h3 style={{ fontSize: '1.35rem', fontWeight: 800, WebkitTextStroke: '0.35px currentColor', letterSpacing: '-0.02em', fontFamily: 'var(--font-body)', color: 'var(--color-neutral-800)', marginBottom: '16px', lineHeight: 1.3 }}>
+                  {t.aboutPage?.visiTitle || 'Menjadi Pelaksana Konstruksi...'}
+                </h3>
+                <p style={{ color: 'var(--color-neutral-500)', lineHeight: 1.7, fontSize: '0.975rem' }}>
+                  {t.aboutPage?.visiBody || 'Kami bertekad menjadi entitas...'}
+                </p>
+              </div>
+            </div>
+
+            {/* Right Card: MISI PERUSAHAAN List */}
+            <div
+              style={{
+                backgroundColor: '#f5f5f5',
+                borderRadius: 'var(--radius-card)',
+                border: '1px solid var(--color-neutral-200)',
+                padding: '36px 32px',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: 'var(--color-primary-100)', color: 'var(--color-primary-300)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem' }}>
+                  <FiTarget />
                 </div>
-              ))}
-            </div>
-          </div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-body)', color: 'var(--color-neutral-800)', letterSpacing: '0.04em' }}>
+                  {t.aboutPage?.misiTag || 'MISI PERUSAHAAN'}
+                </h3>
+              </div>
 
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                {visiMisiPoints.map((item, idx) => (
+                  <div key={idx} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                    <div style={{ marginTop: '2px', flexShrink: 0 }}>
+                      {item.icon}
+                    </div>
+                    <div>
+                      <h4 style={{ fontSize: '1rem', fontWeight: 800, fontFamily: 'var(--font-body)', color: 'var(--color-neutral-800)', marginBottom: '4px' }}>
+                        {item.title}
+                      </h4>
+                      <p style={{ fontSize: '0.9rem', color: 'var(--color-neutral-500)', lineHeight: 1.5 }}>
+                        {item.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
         </div>
       </section>
     </>

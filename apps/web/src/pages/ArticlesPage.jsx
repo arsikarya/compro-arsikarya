@@ -3,100 +3,249 @@ import { Link, useParams } from 'react-router-dom';
 import SectionTag from '../components/ui/SectionTag';
 import SEOHead from '../components/ui/SEOHead';
 import Button from '../components/ui/Button';
-import Breadcrumb from '../components/ui/Breadcrumb';
 import HeroBanner from '../components/ui/HeroBanner';
-import { articlesData } from '../data/articlesData';
+import CTA from '../components/CTA';
+import { getArticlesData } from '../data/articlesData';
+import { FaUserCircle, FaClock, FaCalendarAlt } from 'react-icons/fa';
+import { FiArrowUpRight } from 'react-icons/fi';
+import { useLanguage } from '../context/LanguageContext';
+
+export function ArticleCard({ article }) {
+  const { t } = useLanguage();
+  if (!article) return null;
+
+  return (
+    <Link
+      to={`/artikel/${article.slug}`}
+      style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', height: '100%' }}
+    >
+      <div
+        style={{
+          borderRadius: 'var(--radius-card)',
+          overflow: 'hidden',
+          border: '1px solid var(--color-neutral-200)',
+          backgroundColor: '#f5f5f5',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          transition: 'transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease',
+          height: '100%',
+          cursor: 'pointer',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = 'var(--color-primary-300)';
+          e.currentTarget.style.transform = 'translateY(-4px)';
+          e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.06)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = 'var(--color-neutral-200)';
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = 'none';
+        }}
+      >
+        <div>
+          <div style={{ height: '220px', backgroundColor: 'var(--color-neutral-200)', overflow: 'hidden' }}>
+            <img 
+              src={article.thumbnail || '/projects/project_2.jpg'} 
+              alt={article.title} 
+              onError={(e) => { e.currentTarget.src = '/projects/project_2.jpg'; }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+            />
+          </div>
+          <div style={{ padding: '24px' }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--color-primary-300)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '8px' }}>
+              {article.category} • {article.date}
+            </div>
+            <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-body)', fontWeight: 800, WebkitTextStroke: '0.35px currentColor', letterSpacing: '-0.02em', marginBottom: '10px', lineHeight: 1.35, color: 'var(--color-neutral-800)' }}>
+              {article.title}
+            </h3>
+            <p style={{ fontSize: '0.9rem', color: 'var(--color-neutral-500)', lineHeight: 1.6 }}>{article.excerpt}</p>
+          </div>
+        </div>
+        <div style={{ padding: '0 24px 24px 24px' }}>
+          <Button variant="primary" style={{ pointerEvents: 'none', width: '100%' }}>
+            {t.articlesPage?.readMore || 'Baca Selengkapnya →'}
+          </Button>
+        </div>
+      </div>
+    </Link>
+  );
+}
 
 export default function ArticlesPage() {
   const { articleSlug } = useParams();
-  const [activeCat, setActiveCat] = useState('Semua');
+  const { lang, t } = useLanguage();
+  const articlesData = getArticlesData(lang);
+
+  const [activeCat, setActiveCat] = useState(lang === 'en' ? 'All' : 'Semua');
 
   // Single Article Reader View (/artikel/:slug)
   if (articleSlug) {
     const article = articlesData.find((a) => a.slug === articleSlug);
 
     if (article) {
+      const otherArticles = articlesData.filter((a) => a.id !== article.id);
+
       return (
         <>
           <SEOHead
-            title={`${article.title} — PT Arsi Karya Unggul`}
+            title={`${article.title} — Arsi Karya`}
             description={article.excerpt}
           />
-          {/* Dark Architectural Hero Banner */}
+
           <HeroBanner
             bgImage={article.thumbnail}
             overlayOpacity={0.65}
             imageAlt={article.title}
-            breadcrumbItems={[{ label: 'Artikel', to: '/artikel' }]}
-            tag={`${article.category} • ${article.date}`}
+            tag={article.category}
             title={article.title}
-            subtitle={`Penulis: ${article.author} • ${article.readTime}`}
+            subtitle={`${article.date}`}
           />
 
-          <section className="section-padding" style={{ backgroundColor: 'var(--color-neutral-0)', paddingTop: '40px' }}>
-            <div className="container" style={{ maxWidth: '840px' }}>
+          <section className="section-padding" style={{ backgroundColor: 'var(--color-neutral-0)', paddingTop: '48px' }}>
+            <div className="container" style={{ maxWidth: '780px' }}>
               
-              {/* Top Back Navigation */}
+              {/* Back Navigation Link */}
               <Link 
                 to="/artikel" 
                 style={{ 
                   display: 'inline-flex', 
                   alignItems: 'center', 
                   gap: '8px', 
-                  marginBottom: '24px', 
+                  marginBottom: '28px', 
                   color: 'var(--color-primary-300)', 
                   fontWeight: 700, 
                   fontSize: '0.9rem',
                   textDecoration: 'none'
                 }}
               >
-                ← Kembali ke Artikel
+                {t.articleDetail?.backBtn || '← Kembali ke Artikel'}
               </Link>
 
-              <div style={{ height: '380px', backgroundColor: 'var(--color-neutral-200)', borderRadius: '8px', overflow: 'hidden', marginBottom: '40px' }}>
-                <img src={article.thumbnail} alt={article.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-
+              {/* Medium Editorial Content Block */}
               <div
-                style={{ fontSize: '1.05rem', lineHeight: 1.8, color: 'var(--color-neutral-600)' }}
+                className="medium-article-reader"
                 dangerouslySetInnerHTML={{ __html: article.content }}
               />
+              {/* Related Articles Suggestions (ArticleCard style) */}
+              {otherArticles.length > 0 && (
+                <div style={{ marginTop: '64px', paddingTop: '48px', borderTop: '1px solid var(--color-neutral-200)' }}>
+                  <SectionTag>{lang === 'en' ? 'RECOMMENDED READING' : 'REKOMENDASI BACAAN'}</SectionTag>
+                  <h3 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '32px', marginTop: '8px' }}>{t.articlesPage?.otherArticles || 'Artikel Terkait Lainnya'}</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px' }}>
+                    {otherArticles.slice(0, 2).map((oa) => (
+                      <ArticleCard key={oa.id} article={oa} />
+                    ))}
+                  </div>
+                </div>
+              )}
 
-              <div style={{ marginTop: '60px', paddingTop: '32px', borderTop: '1px solid var(--color-neutral-200)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-                <Button to="/artikel" variant="secondary">
-                  Kembali ke Artikel
-                </Button>
-                <Button to="/kontak" variant="primary">
-                  Ajukan Kerja Sama
-                </Button>
-              </div>
             </div>
           </section>
+
+          <CTA />
+
+          <style>{`
+            .medium-article-reader {
+              font-size: 1.1rem;
+              line-height: 1.9;
+              color: var(--color-neutral-700, #334155);
+              font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+            }
+
+            .medium-article-reader p {
+              margin-top: 0;
+              margin-bottom: 28px;
+              letter-spacing: -0.003em;
+            }
+
+            .medium-article-reader p.lead {
+              font-size: 1.2rem;
+              line-height: 1.85;
+              color: var(--color-neutral-800);
+              font-weight: 500;
+              margin-bottom: 36px;
+            }
+
+            .medium-article-reader h2,
+            .medium-article-reader h3 {
+              font-family: var(--font-heading, sans-serif);
+              font-weight: 800;
+              color: var(--color-neutral-800, #0f172a);
+              letter-spacing: -0.018em;
+              line-height: 1.35;
+              margin-top: 48px;
+              margin-bottom: 20px;
+              font-size: 1.55rem;
+              padding-top: 8px;
+            }
+
+            .medium-article-reader h2:first-child,
+            .medium-article-reader h3:first-child {
+              margin-top: 0;
+            }
+
+            .medium-article-reader ul,
+            .medium-article-reader ol {
+              margin-top: 12px;
+              margin-bottom: 32px;
+              padding-left: 24px;
+            }
+
+            .medium-article-reader li {
+              margin-bottom: 12px;
+              line-height: 1.8;
+              color: var(--color-neutral-700);
+            }
+
+            .medium-article-reader blockquote {
+              border-left: 4px solid var(--color-primary-300, #005697);
+              background-color: var(--color-primary-100, #e6f0fa);
+              padding: 22px 28px;
+              margin: 40px 0;
+              border-radius: 0 12px 12px 0;
+              font-size: 1.075rem;
+              font-style: italic;
+              color: var(--color-primary-400, #003e6d);
+              line-height: 1.75;
+            }
+
+            .medium-article-reader strong {
+              color: var(--color-neutral-800, #0f172a);
+              font-weight: 700;
+            }
+
+            .medium-article-reader em {
+              font-style: italic;
+            }
+          `}</style>
         </>
       );
     }
   }
 
-  // Articles Directory View (/artikel) — TOP-LEVEL HAS NO BREADCRUMB
-  const categories = ['Semua', 'Konstruksi', 'Renovasi', 'Desain', 'Material', 'Project Story'];
+  // Articles Directory View (/artikel)
+  const categories = lang === 'en' 
+    ? ['All', 'Construction Guide', 'Renovation Tips', 'Design Innovation']
+    : ['Semua', 'Panduan Konstruksi', 'Tips Renovasi', 'Inovasi Desain'];
 
-  const filtered = activeCat === 'Semua'
+  const filtered = (activeCat === 'Semua' || activeCat === 'All')
     ? articlesData
     : articlesData.filter((a) => a.category === activeCat);
 
   return (
     <>
       <SEOHead
-        title="Artikel & Wawasan Konstruksi — PT Arsi Karya Unggul"
-        description="Panduan, edukasi, dan informasi seputar renovasi rumah, jasa kontraktor, material bangunan, dan perencanaan budget."
+        title={lang === 'en' ? "Articles & Insights — Arsi Karya" : "Artikel & Wawasan Konstruksi — Arsi Karya"}
+        description={lang === 'en' ? "Guides, education, and insights on house renovation, contracting services, materials, and budgeting." : "Panduan, edukasi, dan informasi seputar renovasi rumah, jasa kontraktor, material bangunan, dan perencanaan budget."}
       />
 
       <HeroBanner
         bgImage="/projects/project_4.jpg"
         overlayOpacity={0.65}
-        tag="ARTIKEL & EDUKASI"
-        title="Wawasan & Edukasi Pembangunan"
-        subtitle="Informasi praktis seputar dunia konstruksi, tren arsitektur, dan tips perencanaan anggaran proyek."
+        tag={t.articlesPage?.heroTag || "ARTIKEL & EDUKASI"}
+        title={t.articlesPage?.heroTitle || "Wawasan & Edukasi Pembangunan"}
+        subtitle={t.articlesPage?.heroSubtitle || "Informasi praktis seputar dunia konstruksi, tren arsitektur, dan tips perencanaan anggaran proyek."}
       />
 
       <section className="section-padding" style={{ backgroundColor: 'var(--color-neutral-0)' }}>
@@ -108,15 +257,16 @@ export default function ArticlesPage() {
                 key={idx}
                 onClick={() => setActiveCat(cat)}
                 style={{
-                  padding: '10px 20px',
+                  padding: '10px 22px',
                   borderRadius: '30px',
                   fontSize: '0.9rem',
                   fontWeight: 600,
                   cursor: 'pointer',
                   border: activeCat === cat ? '1px solid var(--color-primary-300)' : '1px solid var(--color-neutral-200)',
-                  backgroundColor: activeCat === cat ? 'var(--color-primary-300)' : '#ffffff',
+                  backgroundColor: activeCat === cat ? 'var(--color-primary-300)' : 'transparent',
                   color: activeCat === cat ? '#ffffff' : 'var(--color-neutral-600)',
-                  transition: 'all 0.2s ease',
+                  transition: 'all 0.25s ease',
+                  boxShadow: activeCat === cat ? '0 4px 14px rgba(0, 86, 151, 0.2)' : 'none',
                 }}
               >
                 {cat}
@@ -124,46 +274,33 @@ export default function ArticlesPage() {
             ))}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px' }}>
+          <div className="albion-articles-grid">
             {filtered.map((art) => (
-              <div
-                key={art.id}
-                style={{
-                  borderRadius: 'var(--radius-card)',
-                  overflow: 'hidden',
-                  border: '1px solid var(--color-neutral-200)',
-                  backgroundColor: '#ffffff',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <div>
-                  <div style={{ height: '220px', backgroundColor: 'var(--color-neutral-200)', overflow: 'hidden' }}>
-                    <img 
-                      src={art.thumbnail} 
-                      alt={art.title} 
-                      onError={(e) => { e.currentTarget.src = '/projects/project_2.jpg'; }}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                    />
-                  </div>
-                  <div style={{ padding: '24px' }}>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--color-primary-300)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '8px' }}>
-                      {art.category} • {art.date}
-                    </div>
-                    <h2 style={{ fontSize: '1.2rem', marginBottom: '10px', lineHeight: 1.4 }}>{art.title}</h2>
-                    <p style={{ fontSize: '0.9rem', color: 'var(--color-neutral-400)', lineHeight: 1.6 }}>{art.excerpt}</p>
-                  </div>
-                </div>
-                <div style={{ padding: '0 24px 24px 24px' }}>
-                  <Button to={`/artikel/${art.slug}`} variant="primary">
-                    Baca Selengkapnya
-                  </Button>
-                </div>
-              </div>
+              <ArticleCard key={art.id} article={art} />
             ))}
           </div>
         </div>
+
+        <style>{`
+          .albion-articles-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            width: 100%;
+          }
+
+          @media (max-width: 1024px) {
+            .albion-articles-grid {
+              grid-template-columns: repeat(2, 1fr);
+            }
+          }
+
+          @media (max-width: 640px) {
+            .albion-articles-grid {
+              grid-template-columns: 1fr;
+            }
+          }
+        `}</style>
       </section>
     </>
   );
