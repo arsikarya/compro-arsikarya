@@ -28,14 +28,6 @@ export default function AdminContentHub() {
             bgColor: '#ecfdf5',
         },
         {
-            title: 'Tim & Manajemen (Team)',
-            description: 'Kelola profil anggota tim, posisi, foto profil, serta susunan manajemen.',
-            path: '/admin/team',
-            icon: FiUsers,
-            color: '#d97706',
-            bgColor: '#fffbeb',
-        },
-        {
             title: 'Proyek & Portfolio',
             description: 'Kelola portofolio pekerjaan, kategori proyek, lokasi, dan galeri foto.',
             path: '/admin/projects',

@@ -23,14 +23,14 @@ export const siteSettingsService = {
 
         // Fallback default row
         const [inserted] = await db.insert(siteSettings).values({
-            companyName: 'PT ARSI KARYA UNGGUL',
+            companyName: 'Arsi Karya',
             tagline: 'Membangun Tuntas, Unggul Dalam Kualitas',
             phone: '+62 899-7932-802',
             whatsapp: '+62 899-7932-802',
-            email: 'arsikaryaunggul@gmail.com',
+            email: 'webarsikarya@gmail.com',
             address: 'Bumi Adipura, Jl. Tulip VII No. 21, Rancabolang, Gedebage, Kota Bandung.',
             instagram: 'arsikarya.build',
-            seoTitle: 'PT ARSI KARYA UNGGUL — Kontraktor & Design Build',
+            seoTitle: 'Arsi Karya — Kontraktor & Design Build',
             seoDescription: 'Kontraktor spesialis Konstruksi, Design & Build, Fabrikasi, dan Pengadaan Barang.',
         }).returning();
         return inserted;

@@ -10,7 +10,6 @@ import { articleService } from '../services/articleService.js';
 import { testimonialService } from '../services/testimonialService.js';
 import { inquiryService } from '../services/inquiryService.js';
 import { siteSettingsService } from '../services/siteSettingsService.js';
-import { teamService } from '../services/teamService.js';
 import { authService } from '../services/authService.js';
 
 const router = Router();
@@ -213,17 +212,6 @@ router.get('/labs/creations', async (req, res) => {
         res.json(data);
     } catch (error) {
         console.error('Error fetching creations:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-// Team members (Public)
-router.get('/team', async (_req, res) => {
-    try {
-        const data = await teamService.listTeamMembers(true);
-        res.json(data);
-    } catch (error) {
-        console.error('Error fetching team members:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

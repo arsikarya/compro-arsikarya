@@ -27,7 +27,7 @@ export default function AdminLogin() {
 
     const handleReset = (e) => {
         e.preventDefault();
-        alert('Password reset link has been sent to afdalramdan@gmail.com');
+        alert('Password reset link has been sent to webarsikarya@gmail.com');
         setIsReset(false);
     };
 
@@ -35,8 +35,8 @@ export default function AdminLogin() {
         <div className="admin-login-layout">
             <div className="admin-login-card animate-fade-in">
                 <div className="admin-login-header">
-                    <h2><strong>CMS</strong> HQ</h2>
-                    <p className="text-secondary">Manage your portfolio</p>
+                    <h2><strong>ARSI KARYA</strong> CMS</h2>
+                    <p className="text-secondary">Manage your company website</p>
                 </div>
 
                 {error && (
@@ -49,7 +49,7 @@ export default function AdminLogin() {
                     <form onSubmit={handleLogin} className="admin-login-form">
                         <div className="form-group">
                             <label>Email</label>
-                            <input type="email" className="form-input" placeholder="admin@admin.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                            <input type="email" className="form-input" placeholder="webarsikarya@gmail.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
                         </div>
                         <div className="form-group">
                             <label>Password</label>
@@ -68,11 +68,11 @@ export default function AdminLogin() {
                 ) : (
                     <form onSubmit={handleReset} className="admin-login-form">
                         <p className="reset-desc">
-                            Enter your email Address. We will send a reset link to your registered email (afdalramdan@gmail.com).
+                            Enter your email Address. We will send a reset link to your registered email (webarsikarya@gmail.com).
                         </p>
                         <div className="form-group">
                             <label>Email Address</label>
-                            <input type="email" className="form-input" placeholder="afdalramdan@gmail.com" required />
+                            <input type="email" className="form-input" placeholder="webarsikarya@gmail.com" required />
                         </div>
 
                         <div className="login-actions">

@@ -137,13 +137,6 @@ export default function AdminLayout() {
                         <span>Layanan</span>
                     </Link>
                     <Link
-                        to="/admin/team"
-                        className={`admin-nav-link ${isActive('/admin/team') ? 'active' : ''}`}
-                    >
-                        <FiUsers size={18} />
-                        <span>Tim Kami</span>
-                    </Link>
-                    <Link
                         to="/admin/articles"
                         className={`admin-nav-link ${isActive('/admin/articles') ? 'active' : ''}`}
                     >

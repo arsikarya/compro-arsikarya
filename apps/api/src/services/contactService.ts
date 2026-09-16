@@ -54,7 +54,7 @@ export const contactService = {
         submittedAt?: string;
     }) {
         const [page] = await db.select().from(contactPage).limit(1);
-        const targetEmail = page?.email || 'arsikaryaunggul@gmail.com';
+        const targetEmail = page?.email || 'webarsikarya@gmail.com';
 
         if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) {
             console.warn('SMTP_EMAIL or SMTP_PASSWORD not set. Email not actually sent.');
@@ -74,7 +74,7 @@ export const contactService = {
             to: targetEmail,
             subject: `Pengajuan Kerja Sama Baru — ${data.name}`,
             text: `
-Pengajuan Kerja Sama Baru — PT Arsi Karya Unggul
+Pengajuan Kerja Sama Baru — Arsi Karya
 
 Nama Lengkap: ${data.name}
 Nama Perusahaan / Instansi: ${data.company || '-'}

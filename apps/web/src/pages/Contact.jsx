@@ -7,16 +7,16 @@ import './Contact.css';
 
 export default function Contact() {
     const [contactData, setContactData] = useState({
-        phone: '6287777299033',
-        email: 'afdalramdan@gmail.com',
-        location: 'Cimahi, Indonesia'
+        phone: '+62 899-7932-802',
+        email: 'webarsikarya@gmail.com',
+        location: 'Bandung, Indonesia'
     });
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
         email: '',
         phone: '',
-        projectType: 'Web Design',
+        projectType: 'Design & Build',
         message: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,8 +72,8 @@ export default function Contact() {
             transition={{ duration: 0.3 }}
         >
             <Helmet>
-                <title>Contact Us - Afdal Ramdan</title>
-                <meta name="description" content="Contact Afdal Ramdan for your next project." />
+                <title>Contact Us - PT ARSI KARYA UNGGUL</title>
+                <meta name="description" content="Hubungi PT ARSI KARYA UNGGUL untuk kebutuhan konstruksi dan renovasi Anda." />
             </Helmet>
 
             <div className="contact-page">
@@ -81,7 +81,7 @@ export default function Contact() {
                     <div className="contact-info-panel">
                         <div className="info-content">
                             <h3>Contact Information</h3>
-                            <p>Please fill out the form, and I will get back to you within 24 hours.</p>
+                            <p>Please fill out the form, and our team will get back to you within 24 hours.</p>
 
                             <div className="info-details">
                                 {contactData?.phone && (
@@ -134,19 +134,19 @@ export default function Contact() {
                             </div>
 
                             <div className="form-group project-type-group">
-                                <label className="group-label">What kind of website do you need?</label>
+                                <label className="group-label">What kind of service do you need?</label>
                                 <div className="radio-group">
                                     <label className="radio-label">
-                                        <input type="radio" name="projectType" value="Web Design" checked={formData.projectType === 'Web Design'} onChange={handleChange} />
-                                        <span className="radio-custom"></span> Web Design
+                                        <input type="radio" name="projectType" value="Design & Build" checked={formData.projectType === 'Design & Build'} onChange={handleChange} />
+                                        <span className="radio-custom"></span> Design & Build
                                     </label>
                                     <label className="radio-label">
-                                        <input type="radio" name="projectType" value="Web Development" checked={formData.projectType === 'Web Development'} onChange={handleChange} />
-                                        <span className="radio-custom"></span> Web Development
+                                        <input type="radio" name="projectType" value="Konstruksi" checked={formData.projectType === 'Konstruksi'} onChange={handleChange} />
+                                        <span className="radio-custom"></span> Konstruksi
                                     </label>
                                     <label className="radio-label">
-                                        <input type="radio" name="projectType" value="Logo Design" checked={formData.projectType === 'Logo Design'} onChange={handleChange} />
-                                        <span className="radio-custom"></span> Logo Design
+                                        <input type="radio" name="projectType" value="Renovasi" checked={formData.projectType === 'Renovasi'} onChange={handleChange} />
+                                        <span className="radio-custom"></span> Renovasi
                                     </label>
                                     <label className="radio-label">
                                         <input type="radio" name="projectType" value="Other" checked={formData.projectType === 'Other'} onChange={handleChange} />
@@ -175,10 +175,10 @@ export default function Contact() {
 
             <footer className="home-footer delay-300 animate-fade-in">
                 <p className="text-secondary text-sm">
-                    All designs on this website were created by Afdal Ramdan Daman Huri
+                    © PT ARSI KARYA UNGGUL. All rights reserved.
                 </p>
                 <p className="text-secondary text-sm" style={{ textAlign: 'right' }}>
-                    © 2026 All rights reserved.
+                    Bandung, Indonesia
                 </p>
             </footer>
         </motion.div>

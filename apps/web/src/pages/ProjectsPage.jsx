@@ -20,10 +20,38 @@ export default function ProjectsPage() {
 
   const [activeCategory, setActiveCategory] = useState(lang === 'en' ? 'All' : 'Semua');
   const [apiProject, setApiProject] = useState(null);
+  const [apiProjectsList, setApiProjectsList] = useState([]);
   const [loading, setLoading] = useState(Boolean(projectSlug));
 
   useEffect(() => {
     setActiveCategory(lang === 'en' ? 'All' : 'Semua');
+  }, [lang]);
+
+  useEffect(() => {
+    publicApi.getProjects()
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const mapped = data.map((item) => ({
+            id: item.id,
+            title: lang === 'en' ? (item.titleEn || item.title) : item.title,
+            slug: item.slug,
+            category: item.category || 'Design & Build',
+            categoryEn: item.categoryEn || item.category,
+            location: item.location,
+            client: item.clientName || item.client,
+            year: item.year,
+            thumbnail: item.coverImageUrl || item.thumbnail || '/projects/project_1.jpg',
+            coverImageUrl: item.coverImageUrl || item.thumbnail || '/projects/project_1.jpg',
+            description: lang === 'en' ? (item.descriptionEn || item.description) : item.description,
+            scope: item.scope,
+            process: item.process,
+            features: item.features || [],
+            gallery: item.gallery || [],
+          }));
+          setApiProjectsList(mapped);
+        }
+      })
+      .catch(() => {});
   }, [lang]);
 
   useEffect(() => {
@@ -255,9 +283,11 @@ export default function ProjectsPage() {
     ? ['All', 'Design & Build', 'Facade & Exterior', 'Finishing & Interior', 'Construction & Maintenance', 'Infrastructure']
     : ['Semua', 'Design & Build', 'Fasad & Eksterior', 'Finishing & Interior', 'Konstruksi & Maintenance', 'Infrastruktur'];
 
+  const allProjects = apiProjectsList.length > 0 ? apiProjectsList : projectsData;
+
   const filteredProjects = (activeCategory === 'Semua' || activeCategory === 'All')
-    ? projectsData
-    : projectsData.filter((p) => p.category === activeCategory || (lang === 'en' && p.categoryEn === activeCategory));
+    ? allProjects
+    : allProjects.filter((p) => p.category === activeCategory || (lang === 'en' && p.categoryEn === activeCategory));
 
   return (
     <>

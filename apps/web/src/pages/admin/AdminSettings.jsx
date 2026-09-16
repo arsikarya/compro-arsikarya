@@ -5,15 +5,15 @@ import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { FiSave, FiCheckCircle } from 'react-icons/fi';
 
 export default function AdminSettings() {
-    const [companyName, setCompanyName] = useState('PT ARSI KARYA UNGGUL');
+    const [companyName, setCompanyName] = useState('Arsi Karya');
     const [tagline, setTagline] = useState('Membangun Tuntas, Unggul Dalam Kualitas');
     const [phone, setPhone] = useState('+62 899-7932-802');
     const [whatsapp, setWhatsapp] = useState('+62 899-7932-802');
-    const [email, setEmail] = useState('arsikaryaunggul@gmail.com');
+    const [email, setEmail] = useState('webarsikarya@gmail.com');
     const [address, setAddress] = useState('Bumi Adipura, Jl. Tulip VII No. 21, Rancabolang, Gedebage, Kota Bandung.');
     const [instagram, setInstagram] = useState('arsikarya.build');
     const [logoUrl, setLogoUrl] = useState('');
-    const [seoTitle, setSeoTitle] = useState('PT ARSI KARYA UNGGUL — Kontraktor & Design Build');
+    const [seoTitle, setSeoTitle] = useState('Arsi Karya — Kontraktor & Design Build');
     const [seoDescription, setSeoDescription] = useState('Kontraktor spesialis Konstruksi, Design & Build, Fabrikasi, dan Pengadaan Barang.');
     const [socialImageUrl, setSocialImageUrl] = useState('');
 
@@ -26,15 +26,15 @@ export default function AdminSettings() {
         adminApi.getSettings()
             .then(data => {
                 if (data) {
-                    setCompanyName(data.companyName || 'PT ARSI KARYA UNGGUL');
+                    setCompanyName(data.companyName || 'Arsi Karya');
                     setTagline(data.tagline || 'Membangun Tuntas, Unggul Dalam Kualitas');
                     setPhone(data.phone || '+62 899-7932-802');
                     setWhatsapp(data.whatsapp || '+62 899-7932-802');
-                    setEmail(data.email || 'arsikaryaunggul@gmail.com');
+                    setEmail(data.email || 'webarsikarya@gmail.com');
                     setAddress(data.address || 'Bumi Adipura, Jl. Tulip VII No. 21, Rancabolang, Gedebage, Kota Bandung.');
                     setInstagram(data.instagram || 'arsikarya.build');
                     setLogoUrl(data.logoUrl || '');
-                    setSeoTitle(data.seoTitle || 'PT ARSI KARYA UNGGUL — Kontraktor & Design Build');
+                    setSeoTitle(data.seoTitle || 'Arsi Karya — Kontraktor & Design Build');
                     setSeoDescription(data.seoDescription || 'Kontraktor spesialis Konstruksi, Design & Build, Fabrikasi, dan Pengadaan Barang.');
                     setSocialImageUrl(data.socialImageUrl || '');
                 }
@@ -81,7 +81,7 @@ export default function AdminSettings() {
             <div className="admin-page-header">
                 <div>
                     <h3 className="page-heading">Pengaturan Website</h3>
-                    <p className="page-subheading">Kelola profil resmi PT ARSI KARYA UNGGUL, kontak, logo, dan default SEO.</p>
+                    <p className="page-subheading">Kelola profil resmi Arsi Karya, kontak, logo, dan default SEO.</p>
                 </div>
                 <button onClick={handleSave} className="btn-cms btn-cms-primary" disabled={saving}>
                     <FiSave size={16} style={{ marginRight: '6px' }} />

@@ -11,5 +11,4 @@ export * from './testimonials.js';
 export * from './inquiries.js';
 export * from './media.js';
 export * from './siteSettings.js';
-export * from './team.js';
 export * from './activityLogs.js';

@@ -19,7 +19,7 @@ export default function AdminContactEditor() {
                 if (data) {
                     setWhatsappNumber(data.whatsappNumber || '');
                     setDefaultMessage(data.defaultMessage || '');
-                    setEmail(data.email || 'afdalramdan@gmail.com');
+                    setEmail(data.email || 'webarsikarya@gmail.com');
                     setPhone(data.phone || '');
                     setLocation(data.location || '');
                 }
@@ -63,17 +63,17 @@ export default function AdminContactEditor() {
 
                     <div className="form-group" style={{ marginBottom: '16px' }}>
                         <label>Email Address</label>
-                        <input type="email" className="form-input text-lg" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="e.g. afdalramdan@gmail.com" />
+                        <input type="email" className="form-input text-lg" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="e.g. webarsikarya@gmail.com" />
                     </div>
 
                     <div className="form-group" style={{ marginBottom: '16px' }}>
                         <label>Phone Number (Display)</label>
-                        <input type="text" className="form-input text-lg" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="e.g. +62 812 3456 7890" />
+                        <input type="text" className="form-input text-lg" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="e.g. +62 899-7932-802" />
                     </div>
 
                     <div className="form-group" style={{ marginBottom: '32px' }}>
                         <label>Location / Address</label>
-                        <input type="text" className="form-input text-lg" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. 102 Street 2714 Don" />
+                        <input type="text" className="form-input text-lg" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. Bandung, Indonesia" />
                     </div>
 
                     <h4 className="panel-title" style={{ borderTop: '1px solid var(--card-border)', paddingTop: '24px', marginTop: '24px' }}>WhatsApp Integration</h4>

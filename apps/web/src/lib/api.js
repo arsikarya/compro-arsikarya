@@ -46,7 +46,6 @@ export const publicApi = {
         return api(`/labs/creations${qs ? `?${qs}` : ''}`);
     },
     getCategories: () => api('/labs/categories'),
-    getTeam: () => api('/team'),
     requestPasswordReset: (email) => api('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
     resetPassword: (token, password) => api('/auth/reset-password', { method: 'POST', body: JSON.stringify({ token, password }) }),
 };
@@ -102,14 +101,6 @@ export const adminApi = {
     // Site Settings
     getSettings: () => api('/admin/settings'),
     updateSettings: (data) => api('/admin/settings', { method: 'PUT', body: JSON.stringify(data) }),
-
-    // Team CMS
-    getTeam: () => api('/admin/team'),
-    getTeamMember: (id) => api(`/admin/team/${id}`),
-    createTeamMember: (data) => api('/admin/team', { method: 'POST', body: JSON.stringify(data) }),
-    updateTeamMember: (id, data) => api(`/admin/team/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-    deleteTeamMember: (id) => api(`/admin/team/${id}`, { method: 'DELETE' }),
-    reorderTeamMembers: (ids) => api('/admin/team/reorder', { method: 'POST', body: JSON.stringify({ ids }) }),
 
     // User Management (Super Admin)
     getUsers: () => api('/admin/users'),

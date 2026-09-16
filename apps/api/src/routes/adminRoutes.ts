@@ -13,7 +13,6 @@ import { mediaService } from '../services/mediaService.js';
 import { siteSettingsService } from '../services/siteSettingsService.js';
 import { statsService } from '../services/statsService.js';
 import { userService } from '../services/userService.js';
-import { teamService } from '../services/teamService.js';
 import { activityLogService } from '../services/activityLogService.js';
 import { requireSuperAdmin } from '../middleware/requireSuperAdmin.js';
 
@@ -666,7 +665,8 @@ router.post('/users', requireSuperAdmin, async (req, res) => {
 
 router.put('/users/:id/role-status', requireSuperAdmin, async (req, res) => {
     try {
-        const updated = await userService.updateUserRoleOrStatus(req.params.id, req.body);
+        const userId = String(req.params.id);
+        const updated = await userService.updateUserRoleOrStatus(userId, req.body);
         const reqUser = (req as any).user;
         await activityLogService.log({
             userId: reqUser?.id,
@@ -685,8 +685,9 @@ router.put('/users/:id/role-status', requireSuperAdmin, async (req, res) => {
 
 router.post('/users/:id/reset-password', requireSuperAdmin, async (req, res) => {
     try {
+        const userId = String(req.params.id);
         const { password } = req.body;
-        const result = await userService.resetUserPassword(req.params.id, password);
+        const result = await userService.resetUserPassword(userId, password);
         const reqUser = (req as any).user;
         await activityLogService.log({
             userId: reqUser?.id,
@@ -694,7 +695,7 @@ router.post('/users/:id/reset-password', requireSuperAdmin, async (req, res) => 
             userRole: 'SUPER_ADMIN',
             action: 'RESET_PASSWORD_USER',
             entity: 'User',
-            details: `Super Admin mereset kata sandi user ID: ${req.params.id}`,
+            details: `Super Admin mereset kata sandi user ID: ${userId}`,
         });
         res.json(result);
     } catch (error: any) {
@@ -705,7 +706,8 @@ router.post('/users/:id/reset-password', requireSuperAdmin, async (req, res) => 
 
 router.delete('/users/:id', requireSuperAdmin, async (req, res) => {
     try {
-        const result = await userService.deleteUser(req.params.id);
+        const userId = String(req.params.id);
+        const result = await userService.deleteUser(userId);
         const reqUser = (req as any).user;
         await activityLogService.log({
             userId: reqUser?.id,
@@ -719,114 +721,6 @@ router.delete('/users/:id', requireSuperAdmin, async (req, res) => {
     } catch (error: any) {
         console.error('Error deleting user:', error);
         res.status(400).json({ error: error?.message || 'Internal server error' });
-    }
-});
-
-// ==================== TEAM MEMBERS ====================
-
-router.get('/team', async (_req, res) => {
-    try {
-        const data = await teamService.listTeamMembers(false);
-        res.json(data);
-    } catch (error: any) {
-        console.error('Error fetching team members:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-router.get('/team/:id', async (req, res) => {
-    try {
-        const member = await teamService.getTeamMemberById(Number(req.params.id));
-        if (!member) {
-            res.status(404).json({ error: 'Team member not found' });
-            return;
-        }
-        res.json(member);
-    } catch (error: any) {
-        console.error('Error fetching team member:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-router.post('/team', async (req, res) => {
-    try {
-        const { name, position } = req.body;
-        if (!name || !position) {
-            res.status(400).json({ error: 'Nama dan Jabatan wajib diisi' });
-            return;
-        }
-        const member = await teamService.createTeamMember(req.body);
-        const reqUser = (req as any).user;
-        await activityLogService.log({
-            userId: reqUser?.id,
-            userName: reqUser?.name || 'Admin',
-            action: 'MEMBUAT_TIM',
-            entity: 'Team',
-            details: `Menambahkan anggota tim baru: ${member.name} (${member.position})`,
-        });
-        res.status(201).json(member);
-    } catch (error: any) {
-        console.error('Error creating team member:', error);
-        res.status(500).json({ error: error?.message || 'Internal server error' });
-    }
-});
-
-router.put('/team/:id', async (req, res) => {
-    try {
-        const member = await teamService.updateTeamMember(Number(req.params.id), req.body);
-        if (!member) {
-            res.status(404).json({ error: 'Team member not found' });
-            return;
-        }
-        const reqUser = (req as any).user;
-        await activityLogService.log({
-            userId: reqUser?.id,
-            userName: reqUser?.name || 'Admin',
-            action: 'UPDATE_TIM',
-            entity: 'Team',
-            details: `Memperbarui anggota tim: ${member.name}`,
-        });
-        res.json(member);
-    } catch (error: any) {
-        console.error('Error updating team member:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-router.delete('/team/:id', async (req, res) => {
-    try {
-        const deleted = await teamService.deleteTeamMember(Number(req.params.id));
-        if (!deleted) {
-            res.status(404).json({ error: 'Team member not found' });
-            return;
-        }
-        const reqUser = (req as any).user;
-        await activityLogService.log({
-            userId: reqUser?.id,
-            userName: reqUser?.name || 'Admin',
-            action: 'HAPUS_TIM',
-            entity: 'Team',
-            details: `Menghapus anggota tim: ${deleted.name}`,
-        });
-        res.json({ message: 'Team member deleted', member: deleted });
-    } catch (error: any) {
-        console.error('Error deleting team member:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-router.post('/team/reorder', async (req, res) => {
-    try {
-        const { ids } = req.body;
-        if (!Array.isArray(ids)) {
-            res.status(400).json({ error: 'ids must be an array' });
-            return;
-        }
-        await teamService.reorderTeamMembers(ids);
-        res.json({ message: 'Team members reordered successfully' });
-    } catch (error: any) {
-        console.error('Error reordering team members:', error);
-        res.status(500).json({ error: 'Internal server error' });
     }
 });
 

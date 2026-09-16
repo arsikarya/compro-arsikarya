@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import SectionTag from '../components/ui/SectionTag';
 import SEOHead from '../components/ui/SEOHead';
@@ -6,8 +6,7 @@ import Button from '../components/ui/Button';
 import HeroBanner from '../components/ui/HeroBanner';
 import CTA from '../components/CTA';
 import { getArticlesData } from '../data/articlesData';
-import { FaUserCircle, FaClock, FaCalendarAlt } from 'react-icons/fa';
-import { FiArrowUpRight } from 'react-icons/fi';
+import { publicApi } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
 
 export function ArticleCard({ article }) {
@@ -46,7 +45,7 @@ export function ArticleCard({ article }) {
         <div>
           <div style={{ height: '220px', backgroundColor: 'var(--color-neutral-200)', overflow: 'hidden' }}>
             <img 
-              src={article.thumbnail || '/projects/project_2.jpg'} 
+              src={article.thumbnail || article.coverImageUrl || '/projects/project_2.jpg'} 
               alt={article.title} 
               onError={(e) => { e.currentTarget.src = '/projects/project_2.jpg'; }}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
@@ -75,16 +74,74 @@ export function ArticleCard({ article }) {
 export default function ArticlesPage() {
   const { articleSlug } = useParams();
   const { lang, t } = useLanguage();
-  const articlesData = getArticlesData(lang);
+  const staticArticles = getArticlesData(lang);
 
+  const [articlesList, setArticlesList] = useState(staticArticles);
+  const [apiSingleArticle, setApiSingleArticle] = useState(null);
   const [activeCat, setActiveCat] = useState(lang === 'en' ? 'All' : 'Semua');
+
+  useEffect(() => {
+    setActiveCat(lang === 'en' ? 'All' : 'Semua');
+  }, [lang]);
+
+  // Fetch all articles for directory view
+  useEffect(() => {
+    publicApi.getArticles()
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const mapped = data.map((item) => ({
+            id: item.id,
+            slug: item.slug,
+            title: lang === 'en' ? (item.titleEn || item.title) : item.title,
+            category: item.category || 'Panduan Konstruksi',
+            date: item.publishedDate 
+              ? new Date(item.publishedDate).toISOString().split('T')[0] 
+              : '2026-03-10',
+            thumbnail: item.coverImageUrl || item.thumbnail || '/projects/project_2.jpg',
+            coverImageUrl: item.coverImageUrl || item.thumbnail || '/projects/project_2.jpg',
+            excerpt: lang === 'en' ? (item.excerptEn || item.excerpt) : item.excerpt,
+            content: lang === 'en' ? (item.contentEn || item.content) : item.content,
+            author: item.author || 'Arsi Karya Team',
+          }));
+          setArticlesList(mapped);
+        }
+      })
+      .catch(() => {});
+  }, [lang]);
+
+  // Fetch single article if articleSlug is present
+  useEffect(() => {
+    if (articleSlug) {
+      publicApi.getArticle(articleSlug)
+        .then((data) => {
+          if (data) {
+            setApiSingleArticle({
+              id: data.id,
+              slug: data.slug,
+              title: lang === 'en' ? (data.titleEn || data.title) : data.title,
+              category: data.category || 'Panduan Konstruksi',
+              date: data.publishedDate 
+                ? new Date(data.publishedDate).toISOString().split('T')[0] 
+                : '2026-03-10',
+              thumbnail: data.coverImageUrl || data.thumbnail || '/projects/project_2.jpg',
+              coverImageUrl: data.coverImageUrl || data.thumbnail || '/projects/project_2.jpg',
+              excerpt: lang === 'en' ? (data.excerptEn || data.excerpt) : data.excerpt,
+              content: lang === 'en' ? (data.contentEn || data.content) : data.content,
+              author: data.author || 'Arsi Karya Team',
+            });
+          }
+        })
+        .catch(() => {});
+    }
+  }, [articleSlug, lang]);
 
   // Single Article Reader View (/artikel/:slug)
   if (articleSlug) {
-    const article = articlesData.find((a) => a.slug === articleSlug);
+    const fallbackArticle = articlesList.find((a) => a.slug === articleSlug);
+    const article = apiSingleArticle || fallbackArticle;
 
     if (article) {
-      const otherArticles = articlesData.filter((a) => a.id !== article.id);
+      const otherArticles = articlesList.filter((a) => a.id !== article.id);
 
       return (
         <>
@@ -94,7 +151,7 @@ export default function ArticlesPage() {
           />
 
           <HeroBanner
-            bgImage={article.thumbnail}
+            bgImage={article.thumbnail || article.coverImageUrl}
             overlayOpacity={0.65}
             imageAlt={article.title}
             tag={article.category}
@@ -225,13 +282,16 @@ export default function ArticlesPage() {
   }
 
   // Articles Directory View (/artikel)
-  const categories = lang === 'en' 
+  const staticCategories = lang === 'en' 
     ? ['All', 'Construction Guide', 'Renovation Tips', 'Design Innovation']
     : ['Semua', 'Panduan Konstruksi', 'Tips Renovasi', 'Inovasi Desain'];
 
+  const dynamicCategories = Array.from(new Set(articlesList.map((a) => a.category))).filter(Boolean);
+  const categories = Array.from(new Set([lang === 'en' ? 'All' : 'Semua', ...staticCategories.slice(1), ...dynamicCategories]));
+
   const filtered = (activeCat === 'Semua' || activeCat === 'All')
-    ? articlesData
-    : articlesData.filter((a) => a.category === activeCat);
+    ? articlesList
+    : articlesList.filter((a) => a.category === activeCat);
 
   return (
     <>
@@ -245,7 +305,7 @@ export default function ArticlesPage() {
         overlayOpacity={0.65}
         tag={t.articlesPage?.heroTag || "ARTIKEL & EDUKASI"}
         title={t.articlesPage?.heroTitle || "Wawasan & Edukasi Pembangunan"}
-        subtitle={t.articlesPage?.heroSubtitle || "Informasi praktis seputar dunia konstruksi, tren arsitektur, dan tips perencanaan anggaran proyek."}
+        subtitle={t.articlesPage?.heroSubtitle || "Informasi practical seputar dunia konstruksi, tren arsitektur, dan tips perencanaan anggaran proyek."}
       />
 
       <section className="section-padding" style={{ backgroundColor: 'var(--color-neutral-0)' }}>

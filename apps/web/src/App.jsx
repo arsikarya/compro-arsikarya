@@ -28,7 +28,6 @@ import AdminProjects from './pages/admin/AdminProjects';
 import AdminProjectEditor from './pages/admin/AdminProjectEditor';
 import AdminServices from './pages/admin/AdminServices';
 import AdminServiceEditor from './pages/admin/AdminServiceEditor';
-import AdminTeam from './pages/admin/AdminTeam';
 import AdminArticles from './pages/admin/AdminArticles';
 import AdminArticleEditor from './pages/admin/AdminArticleEditor';
 import AdminTestimonials from './pages/admin/AdminTestimonials';
@@ -70,7 +69,6 @@ function MainLayout() {
           <Route path="services" element={<AdminServices />} />
           <Route path="services/new" element={<AdminServiceEditor />} />
           <Route path="services/:id/edit" element={<AdminServiceEditor />} />
-          <Route path="team" element={<AdminTeam />} />
           <Route path="articles" element={<AdminArticles />} />
           <Route path="articles/new" element={<AdminArticleEditor />} />
           <Route path="articles/:id/edit" element={<AdminArticleEditor />} />
