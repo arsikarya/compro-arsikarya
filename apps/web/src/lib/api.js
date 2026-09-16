@@ -46,6 +46,9 @@ export const publicApi = {
         return api(`/labs/creations${qs ? `?${qs}` : ''}`);
     },
     getCategories: () => api('/labs/categories'),
+    getTeam: () => api('/team'),
+    requestPasswordReset: (email) => api('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
+    resetPassword: (token, password) => api('/auth/reset-password', { method: 'POST', body: JSON.stringify({ token, password }) }),
 };
 
 export const adminApi = {
@@ -94,10 +97,29 @@ export const adminApi = {
     getMedia: () => api('/admin/media'),
     saveMedia: (data) => api('/admin/media', { method: 'POST', body: JSON.stringify(data) }),
     deleteMedia: (id) => api(`/admin/media/${id}`, { method: 'DELETE' }),
+    checkMediaUsage: (id) => api(`/admin/media/usage-check/${id}`),
 
     // Site Settings
     getSettings: () => api('/admin/settings'),
     updateSettings: (data) => api('/admin/settings', { method: 'PUT', body: JSON.stringify(data) }),
+
+    // Team CMS
+    getTeam: () => api('/admin/team'),
+    getTeamMember: (id) => api(`/admin/team/${id}`),
+    createTeamMember: (data) => api('/admin/team', { method: 'POST', body: JSON.stringify(data) }),
+    updateTeamMember: (id, data) => api(`/admin/team/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    deleteTeamMember: (id) => api(`/admin/team/${id}`, { method: 'DELETE' }),
+    reorderTeamMembers: (ids) => api('/admin/team/reorder', { method: 'POST', body: JSON.stringify({ ids }) }),
+
+    // User Management (Super Admin)
+    getUsers: () => api('/admin/users'),
+    createUser: (data) => api('/admin/users', { method: 'POST', body: JSON.stringify(data) }),
+    updateUserRoleOrStatus: (id, data) => api(`/admin/users/${id}/role-status`, { method: 'PUT', body: JSON.stringify(data) }),
+    resetUserPassword: (id, password) => api(`/admin/users/${id}/reset-password`, { method: 'POST', body: JSON.stringify({ password }) }),
+    deleteUser: (id) => api(`/admin/users/${id}`, { method: 'DELETE' }),
+
+    // Activity Logs
+    getActivityLogs: () => api('/admin/activity-logs'),
 
     // AI Chat & Labs
     getAiChat: () => api('/admin/ai-chat'),

@@ -17,17 +17,25 @@ import NotFound from './pages/NotFound';
 // Admin imports
 import AdminLayout from './components/admin/AdminLayout';
 import AdminLogin from './pages/admin/AdminLogin';
+import AdminForgotPassword from './pages/admin/AdminForgotPassword';
+import AdminResetPassword from './pages/admin/AdminResetPassword';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminContentHub from './pages/admin/AdminContentHub';
+import AdminHomeEditor from './pages/admin/AdminHomeEditor';
+import AdminAboutEditor from './pages/admin/AdminAboutEditor';
+import AdminContactEditor from './pages/admin/AdminContactEditor';
 import AdminProjects from './pages/admin/AdminProjects';
 import AdminProjectEditor from './pages/admin/AdminProjectEditor';
 import AdminServices from './pages/admin/AdminServices';
 import AdminServiceEditor from './pages/admin/AdminServiceEditor';
+import AdminTeam from './pages/admin/AdminTeam';
 import AdminArticles from './pages/admin/AdminArticles';
 import AdminArticleEditor from './pages/admin/AdminArticleEditor';
 import AdminTestimonials from './pages/admin/AdminTestimonials';
 import AdminInquiries from './pages/admin/AdminInquiries';
 import AdminInquiryDetail from './pages/admin/AdminInquiryDetail';
 import AdminMedia from './pages/admin/AdminMedia';
+import AdminUsers from './pages/admin/AdminUsers';
 import AdminSettings from './pages/admin/AdminSettings';
 
 // Scroll to top on route change
@@ -47,15 +55,22 @@ function MainLayout() {
     return (
       <Routes>
         <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/forgot-password" element={<AdminForgotPassword />} />
+        <Route path="/admin/reset-password" element={<AdminResetPassword />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="content" element={<AdminContentHub />} />
+          <Route path="content/home" element={<AdminHomeEditor />} />
+          <Route path="content/about" element={<AdminAboutEditor />} />
+          <Route path="content/contact" element={<AdminContactEditor />} />
           <Route path="projects" element={<AdminProjects />} />
           <Route path="projects/new" element={<AdminProjectEditor />} />
           <Route path="projects/:id/edit" element={<AdminProjectEditor />} />
           <Route path="services" element={<AdminServices />} />
           <Route path="services/new" element={<AdminServiceEditor />} />
           <Route path="services/:id/edit" element={<AdminServiceEditor />} />
+          <Route path="team" element={<AdminTeam />} />
           <Route path="articles" element={<AdminArticles />} />
           <Route path="articles/new" element={<AdminArticleEditor />} />
           <Route path="articles/:id/edit" element={<AdminArticleEditor />} />
@@ -63,6 +78,7 @@ function MainLayout() {
           <Route path="inquiries" element={<AdminInquiries />} />
           <Route path="inquiries/:id" element={<AdminInquiryDetail />} />
           <Route path="media" element={<AdminMedia />} />
+          <Route path="users" element={<AdminUsers />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>
       </Routes>

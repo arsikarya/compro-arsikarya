@@ -10,6 +10,8 @@ import {
     FiInbox, 
     FiImage, 
     FiSettings, 
+    FiUsers,
+    FiLayers,
     FiLogOut, 
     FiMenu, 
     FiX,
@@ -114,6 +116,13 @@ export default function AdminLayout() {
 
                     <p className="admin-nav-heading">KONTEN</p>
                     <Link
+                        to="/admin/content"
+                        className={`admin-nav-link ${isActive('/admin/content') ? 'active' : ''}`}
+                    >
+                        <FiFolder size={18} />
+                        <span>Semua Konten</span>
+                    </Link>
+                    <Link
                         to="/admin/projects"
                         className={`admin-nav-link ${isActive('/admin/projects') ? 'active' : ''}`}
                     >
@@ -126,6 +135,13 @@ export default function AdminLayout() {
                     >
                         <FiBriefcase size={18} />
                         <span>Layanan</span>
+                    </Link>
+                    <Link
+                        to="/admin/team"
+                        className={`admin-nav-link ${isActive('/admin/team') ? 'active' : ''}`}
+                    >
+                        <FiUsers size={18} />
+                        <span>Tim Kami</span>
                     </Link>
                     <Link
                         to="/admin/articles"
@@ -159,6 +175,20 @@ export default function AdminLayout() {
                         <FiImage size={18} />
                         <span>Media</span>
                     </Link>
+
+                    {/* Show Users management for SUPER_ADMIN */}
+                    {(session?.user?.role === 'SUPER_ADMIN' || !session?.user?.role || session?.user?.role === 'SUPER_ADMIN') && (
+                        <>
+                            <p className="admin-nav-heading">PENGGUNA</p>
+                            <Link
+                                to="/admin/users"
+                                className={`admin-nav-link ${isActive('/admin/users') ? 'active' : ''}`}
+                            >
+                                <FiUsers size={18} />
+                                <span>Kelola Users</span>
+                            </Link>
+                        </>
+                    )}
 
                     <p className="admin-nav-heading">WEBSITE</p>
                     <Link

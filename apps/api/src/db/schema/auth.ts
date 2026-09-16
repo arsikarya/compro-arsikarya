@@ -6,6 +6,8 @@ export const user = pgTable('user', {
     email: text('email').notNull().unique(),
     emailVerified: boolean('email_verified').notNull().default(false),
     image: text('image'),
+    role: text('role').notNull().default('ADMIN'), // 'SUPER_ADMIN' | 'ADMIN'
+    status: text('status').notNull().default('active'), // 'active' | 'inactive'
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
@@ -44,4 +46,13 @@ export const verification = pgTable('verification', {
     expiresAt: timestamp('expires_at').notNull(),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const passwordResetToken = pgTable('password_reset_token', {
+    id: text('id').primaryKey(),
+    email: text('email').notNull(),
+    token: text('token').notNull().unique(),
+    expiresAt: timestamp('expires_at').notNull(),
+    used: boolean('used').notNull().default(false),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
 });

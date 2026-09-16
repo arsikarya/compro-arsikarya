@@ -10,6 +10,8 @@ import { articleService } from '../services/articleService.js';
 import { testimonialService } from '../services/testimonialService.js';
 import { inquiryService } from '../services/inquiryService.js';
 import { siteSettingsService } from '../services/siteSettingsService.js';
+import { teamService } from '../services/teamService.js';
+import { authService } from '../services/authService.js';
 
 const router = Router();
 
@@ -215,13 +217,47 @@ router.get('/labs/creations', async (req, res) => {
     }
 });
 
-router.get('/labs/categories', async (_req, res) => {
+// Team members (Public)
+router.get('/team', async (_req, res) => {
     try {
-        const data = await labsService.getCategories();
+        const data = await teamService.listTeamMembers(true);
         res.json(data);
     } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error('Error fetching team members:', error);
         res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Password Reset Request (Public)
+router.post('/auth/forgot-password', async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            res.status(400).json({ error: 'Email wajib diisi' });
+            return;
+        }
+        const origin = req.headers.origin || `${req.protocol}://${req.get('host')}`;
+        const result = await authService.requestPasswordReset(email, origin);
+        res.json(result);
+    } catch (error: any) {
+        console.error('Error requesting password reset:', error);
+        res.status(500).json({ error: error?.message || 'Internal server error' });
+    }
+});
+
+// Password Reset Verification & Submission (Public)
+router.post('/auth/reset-password', async (req, res) => {
+    try {
+        const { token, password } = req.body;
+        if (!token || !password) {
+            res.status(400).json({ error: 'Token dan kata sandi baru wajib diisi' });
+            return;
+        }
+        const result = await authService.verifyAndResetPassword(token, password);
+        res.json(result);
+    } catch (error: any) {
+        console.error('Error executing password reset:', error);
+        res.status(400).json({ error: error?.message || 'Internal server error' });
     }
 });
 

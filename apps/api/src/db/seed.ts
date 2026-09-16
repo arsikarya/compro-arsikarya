@@ -8,6 +8,10 @@ import { aiChatSettings } from './schema/aiChat.js';
 import { creations } from './schema/labs.js';
 import { auth } from '../lib/auth.js';
 
+import { teamMembers } from './schema/team.js';
+import { user } from './schema/auth.js';
+import { eq } from 'drizzle-orm';
+
 async function seed() {
     console.log('🌱 Seeding database with production data...');
 
@@ -16,7 +20,7 @@ async function seed() {
     try {
         await auth.api.signUpEmail({
             body: {
-                name: 'Admin',
+                name: 'Super Admin',
                 email: 'admin@admin.com',
                 password: 'admin123',
             },
@@ -24,6 +28,34 @@ async function seed() {
         console.log('  ✓ Admin user created: admin@admin.com / admin123');
     } catch (error: any) {
         console.log('  ✓ Admin user check done');
+    }
+
+    // Set role SUPER_ADMIN & status active for admin@admin.com
+    await db.update(user)
+        .set({ role: 'SUPER_ADMIN', status: 'active', name: 'Super Admin' })
+        .where(eq(user.email, 'admin@admin.com'));
+
+    // Seed team members if empty
+    const existingTeam = await db.select().from(teamMembers);
+    if (existingTeam.length === 0) {
+        await db.insert(teamMembers).values([
+            {
+                name: 'Afdal Ramdan',
+                position: 'Lead Architect & Designer',
+                bio: 'Berpengalaman lebih dari 4 tahun dalam desain arsitektur, interior, dan manajemen proyek konstruksi.',
+                profileImageUrl: 'https://res.cloudinary.com/dd6rhidl4/image/upload/v1778328969/Profile-Afdal_qzfpt6.png',
+                sortOrder: 0,
+                isActive: true,
+            },
+            {
+                name: 'Tim Arsi Karya',
+                position: 'Kontraktor & Engineering',
+                bio: 'Tim profesional dalam bidang teknik sipil, konstruksi, dan pengadaan barang berkualitas tinggi.',
+                profileImageUrl: 'https://res.cloudinary.com/dd6rhidl4/image/upload/v1778327969/99_Group_oisiqt.png',
+                sortOrder: 1,
+                isActive: true,
+            }
+        ]);
     }
 
     // ==================== 2. Home Page ====================

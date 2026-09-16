@@ -6,14 +6,19 @@ import './AdminDashboard.css';
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState(null);
+    const [activityLogs, setActivityLogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     const fetchStats = async () => {
         try {
             setLoading(true);
-            const data = await adminApi.getStats();
+            const [data, logs] = await Promise.all([
+                adminApi.getStats(),
+                adminApi.getActivityLogs?.().catch(() => [])
+            ]);
             setStats(data);
+            setActivityLogs(logs || []);
         } catch (err) {
             console.error('Failed to load stats:', err);
             setError(err.message || 'Gagal memuat statistik dashboard');
@@ -255,6 +260,30 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             </div>
+
+            {/* Activity Logs Feed */}
+            {activityLogs && activityLogs.length > 0 && (
+                <div style={{ marginTop: '24px', background: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '20px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                        <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#111827' }}>Aktivitas Admin Terbaru</h4>
+                        <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>Real-time Audit Log</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {activityLogs.slice(0, 8).map((log) => (
+                            <div key={log.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: '#f9fafb', borderRadius: '8px', border: '1px solid #f3f4f6' }}>
+                                <div>
+                                    <span style={{ fontWeight: 600, color: '#111827', fontSize: '0.85rem' }}>{log.userName}</span>
+                                    <span style={{ margin: '0 8px', color: '#9ca3af' }}>•</span>
+                                    <span style={{ fontSize: '0.85rem', color: '#4b5563' }}>{log.details || log.action}</span>
+                                </div>
+                                <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
+                                    {new Date(log.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

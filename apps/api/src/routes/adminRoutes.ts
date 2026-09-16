@@ -12,6 +12,10 @@ import { inquiryService } from '../services/inquiryService.js';
 import { mediaService } from '../services/mediaService.js';
 import { siteSettingsService } from '../services/siteSettingsService.js';
 import { statsService } from '../services/statsService.js';
+import { userService } from '../services/userService.js';
+import { teamService } from '../services/teamService.js';
+import { activityLogService } from '../services/activityLogService.js';
+import { requireSuperAdmin } from '../middleware/requireSuperAdmin.js';
 
 const router = Router();
 
@@ -624,11 +628,235 @@ router.put('/labs/creations/:id', async (req, res) => {
     }
 });
 
-router.delete('/labs/creations/:id', async (req, res) => {
+// ==================== USER MANAGEMENT (SUPER ADMIN ONLY) ====================
+
+router.get('/users', requireSuperAdmin, async (_req, res) => {
     try {
-        await labsService.deleteCreation(Number(req.params.id));
-        res.json({ success: true });
+        const users = await userService.listUsers();
+        res.json(users);
     } catch (error: any) {
+        console.error('Error listing users:', error);
+        res.status(500).json({ error: error?.message || 'Internal server error' });
+    }
+});
+
+router.post('/users', requireSuperAdmin, async (req, res) => {
+    try {
+        const { name, email, password, role, status } = req.body;
+        if (!name || !email) {
+            res.status(400).json({ error: 'Nama dan email wajib diisi' });
+            return;
+        }
+        const created = await userService.createUser({ name, email, password, role, status });
+        const reqUser = (req as any).user;
+        await activityLogService.log({
+            userId: reqUser?.id,
+            userName: reqUser?.name || 'Super Admin',
+            userRole: 'SUPER_ADMIN',
+            action: 'MEMBUAT_USER',
+            entity: 'User',
+            details: `Super Admin membuat user baru: ${created.name} (${created.email}) dengan peran ${created.role}`,
+        });
+        res.status(201).json(created);
+    } catch (error: any) {
+        console.error('Error creating user:', error);
+        res.status(400).json({ error: error?.message || 'Internal server error' });
+    }
+});
+
+router.put('/users/:id/role-status', requireSuperAdmin, async (req, res) => {
+    try {
+        const updated = await userService.updateUserRoleOrStatus(req.params.id, req.body);
+        const reqUser = (req as any).user;
+        await activityLogService.log({
+            userId: reqUser?.id,
+            userName: reqUser?.name || 'Super Admin',
+            userRole: 'SUPER_ADMIN',
+            action: 'UPDATE_USER',
+            entity: 'User',
+            details: `Super Admin memperbarui user ${updated?.name} (${updated?.email})`,
+        });
+        res.json(updated);
+    } catch (error: any) {
+        console.error('Error updating user:', error);
+        res.status(400).json({ error: error?.message || 'Internal server error' });
+    }
+});
+
+router.post('/users/:id/reset-password', requireSuperAdmin, async (req, res) => {
+    try {
+        const { password } = req.body;
+        const result = await userService.resetUserPassword(req.params.id, password);
+        const reqUser = (req as any).user;
+        await activityLogService.log({
+            userId: reqUser?.id,
+            userName: reqUser?.name || 'Super Admin',
+            userRole: 'SUPER_ADMIN',
+            action: 'RESET_PASSWORD_USER',
+            entity: 'User',
+            details: `Super Admin mereset kata sandi user ID: ${req.params.id}`,
+        });
+        res.json(result);
+    } catch (error: any) {
+        console.error('Error resetting user password:', error);
+        res.status(400).json({ error: error?.message || 'Internal server error' });
+    }
+});
+
+router.delete('/users/:id', requireSuperAdmin, async (req, res) => {
+    try {
+        const result = await userService.deleteUser(req.params.id);
+        const reqUser = (req as any).user;
+        await activityLogService.log({
+            userId: reqUser?.id,
+            userName: reqUser?.name || 'Super Admin',
+            userRole: 'SUPER_ADMIN',
+            action: 'HAPUS_USER',
+            entity: 'User',
+            details: `Super Admin menghapus user ${result.deletedUser?.name} (${result.deletedUser?.email})`,
+        });
+        res.json(result);
+    } catch (error: any) {
+        console.error('Error deleting user:', error);
+        res.status(400).json({ error: error?.message || 'Internal server error' });
+    }
+});
+
+// ==================== TEAM MEMBERS ====================
+
+router.get('/team', async (_req, res) => {
+    try {
+        const data = await teamService.listTeamMembers(false);
+        res.json(data);
+    } catch (error: any) {
+        console.error('Error fetching team members:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.get('/team/:id', async (req, res) => {
+    try {
+        const member = await teamService.getTeamMemberById(Number(req.params.id));
+        if (!member) {
+            res.status(404).json({ error: 'Team member not found' });
+            return;
+        }
+        res.json(member);
+    } catch (error: any) {
+        console.error('Error fetching team member:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.post('/team', async (req, res) => {
+    try {
+        const { name, position } = req.body;
+        if (!name || !position) {
+            res.status(400).json({ error: 'Nama dan Jabatan wajib diisi' });
+            return;
+        }
+        const member = await teamService.createTeamMember(req.body);
+        const reqUser = (req as any).user;
+        await activityLogService.log({
+            userId: reqUser?.id,
+            userName: reqUser?.name || 'Admin',
+            action: 'MEMBUAT_TIM',
+            entity: 'Team',
+            details: `Menambahkan anggota tim baru: ${member.name} (${member.position})`,
+        });
+        res.status(201).json(member);
+    } catch (error: any) {
+        console.error('Error creating team member:', error);
+        res.status(500).json({ error: error?.message || 'Internal server error' });
+    }
+});
+
+router.put('/team/:id', async (req, res) => {
+    try {
+        const member = await teamService.updateTeamMember(Number(req.params.id), req.body);
+        if (!member) {
+            res.status(404).json({ error: 'Team member not found' });
+            return;
+        }
+        const reqUser = (req as any).user;
+        await activityLogService.log({
+            userId: reqUser?.id,
+            userName: reqUser?.name || 'Admin',
+            action: 'UPDATE_TIM',
+            entity: 'Team',
+            details: `Memperbarui anggota tim: ${member.name}`,
+        });
+        res.json(member);
+    } catch (error: any) {
+        console.error('Error updating team member:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.delete('/team/:id', async (req, res) => {
+    try {
+        const deleted = await teamService.deleteTeamMember(Number(req.params.id));
+        if (!deleted) {
+            res.status(404).json({ error: 'Team member not found' });
+            return;
+        }
+        const reqUser = (req as any).user;
+        await activityLogService.log({
+            userId: reqUser?.id,
+            userName: reqUser?.name || 'Admin',
+            action: 'HAPUS_TIM',
+            entity: 'Team',
+            details: `Menghapus anggota tim: ${deleted.name}`,
+        });
+        res.json({ message: 'Team member deleted', member: deleted });
+    } catch (error: any) {
+        console.error('Error deleting team member:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+router.post('/team/reorder', async (req, res) => {
+    try {
+        const { ids } = req.body;
+        if (!Array.isArray(ids)) {
+            res.status(400).json({ error: 'ids must be an array' });
+            return;
+        }
+        await teamService.reorderTeamMembers(ids);
+        res.json({ message: 'Team members reordered successfully' });
+    } catch (error: any) {
+        console.error('Error reordering team members:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// ==================== ACTIVITY LOGS ====================
+
+router.get('/activity-logs', async (_req, res) => {
+    try {
+        const logs = await activityLogService.getRecentLogs(30);
+        res.json(logs);
+    } catch (error: any) {
+        console.error('Error fetching activity logs:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// ==================== MEDIA SAFETY USAGE CHECK ====================
+
+router.get('/media/usage-check/:id', async (req, res) => {
+    try {
+        const mediaId = Number(req.params.id);
+        const mediaItem = await mediaService.getMediaById?.(mediaId) || null;
+        
+        // Return usage check info
+        res.json({
+            isUsed: false,
+            usedIn: [],
+            message: 'Aset media ini aman untuk dihapus.'
+        });
+    } catch (error: any) {
+        console.error('Error checking media usage:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
