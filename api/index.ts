@@ -20,7 +20,8 @@ app.use(cors({
 }));
 
 // Better Auth handler
-app.all(['/api/auth/*', '/auth/*'], toNodeHandler(auth));
+app.all('/api/auth/*', toNodeHandler(auth));
+app.all('/auth/*', toNodeHandler(auth));
 
 app.use(express.json());
 app.use(cookieParser());
