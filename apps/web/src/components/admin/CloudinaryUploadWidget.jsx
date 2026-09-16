@@ -15,8 +15,8 @@ const CloudinaryUploadWidget = ({ onUploadSuccess, buttonText = "Upload Image", 
             if (widgetRef.current) return; // Prevent multiple initializations
             cloudinaryRef.current = window.cloudinary;
             widgetRef.current = cloudinaryRef.current.createUploadWidget({
-                cloudName: 'dd6rhidl4',
-                uploadPreset: 'portfolio_uploads',
+                cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dd6rhidl4',
+                uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'portfolio_uploads',
                 sources: ['local', 'url', 'camera', 'google_drive'],
                 multiple: false,
                 clientAllowedFormats: ['image'],

@@ -3,10 +3,10 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { toNodeHandler } from 'better-auth/node';
-import { auth } from '../apps/api/src/lib/auth';
-import { requireAuth } from '../apps/api/src/middleware/requireAuth';
-import publicRoutes from '../apps/api/src/routes/publicRoutes';
-import adminRoutes from '../apps/api/src/routes/adminRoutes';
+import { auth } from '../apps/api/src/lib/auth.js';
+import { requireAuth } from '../apps/api/src/middleware/requireAuth.js';
+import publicRoutes from '../apps/api/src/routes/publicRoutes.js';
+import adminRoutes from '../apps/api/src/routes/adminRoutes.js';
 
 const app = express();
 // CORS
@@ -20,17 +20,17 @@ app.use(cors({
 }));
 
 // Better Auth handler
-app.all('/api/auth/*', toNodeHandler(auth));
+app.all(['/api/auth/*', '/auth/*'], toNodeHandler(auth));
 
 app.use(express.json());
 app.use(cookieParser());
 
-app.use('/api', publicRoutes);
-app.use('/api/admin', requireAuth, adminRoutes);
-
-app.get('/api/health', (_req, res) => {
+app.get(['/api/health', '/health'], (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+app.use(['/api/admin', '/admin'], requireAuth, adminRoutes);
+app.use(['/api', '/'], publicRoutes);
 
 // Temporary migration endpoint to fix production DB
 app.get('/api/debug/migrate', async (_req, res) => {
