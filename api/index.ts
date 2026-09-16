@@ -9,11 +9,11 @@ import publicRoutes from '../apps/api/src/routes/publicRoutes';
 import adminRoutes from '../apps/api/src/routes/adminRoutes';
 
 const app = express();
-
 // CORS
-const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:5173';
 app.use(cors({
-    origin: corsOrigin,
+    origin: (origin, callback) => {
+        callback(null, true);
+    },
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Better-Auth-Token'],
     exposedHeaders: ['set-auth-token'],
