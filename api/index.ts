@@ -25,12 +25,11 @@ app.all(['/api/auth/*', '/auth/*'], toNodeHandler(auth));
 app.use(express.json());
 app.use(cookieParser());
 
-app.get(['/api/health', '/health'], (_req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
+app.use('/api/admin', requireAuth, adminRoutes);
+app.use('/admin', requireAuth, adminRoutes);
 
-app.use(['/api/admin', '/admin'], requireAuth, adminRoutes);
-app.use(['/api', '/'], publicRoutes);
+app.use('/api', publicRoutes);
+app.use('/', publicRoutes);
 
 // Temporary migration endpoint to fix production DB
 app.get('/api/debug/migrate', async (_req, res) => {
