@@ -263,17 +263,25 @@ export default function ProjectsPage() {
     }
   }
 
-  // Filter Categories Overview (/proyek)
-  const staticCategories = lang === 'en' 
-    ? ['All', 'Design & Build', 'Facade & Exterior', 'Finishing & Interior', 'Construction & Maintenance', 'Infrastructure']
-    : ['Semua', 'Design & Build', 'Fasad & Eksterior', 'Finishing & Interior', 'Konstruksi & Maintenance', 'Infrastruktur'];
+  // 5 Official Service Categories (Perencanaan, Konstruksi, Design & Build, Renovasi, Landscape)
+  const categories = lang === 'en' 
+    ? ['All', 'Planning & Design', 'Construction', 'Design & Build', 'Renovation', 'Landscape']
+    : ['Semua', 'Perencanaan', 'Konstruksi', 'Design & Build', 'Renovasi', 'Landscape'];
 
-  const dynamicCategories = Array.from(new Set(apiProjectsList.map((p) => p.category))).filter(Boolean);
-  const categories = Array.from(new Set([lang === 'en' ? 'All' : 'Semua', ...staticCategories.slice(1), ...dynamicCategories]));
+  const categoryMap = {
+    'Planning & Design': 'Perencanaan',
+    'Construction': 'Konstruksi',
+    'Design & Build': 'Design & Build',
+    'Renovation': 'Renovasi',
+    'Landscape': 'Landscape',
+  };
 
   const filteredProjects = (activeCategory === 'Semua' || activeCategory === 'All')
     ? apiProjectsList
-    : apiProjectsList.filter((p) => p.category === activeCategory || (lang === 'en' && p.categoryEn === activeCategory));
+    : apiProjectsList.filter((p) => {
+        const targetCategory = categoryMap[activeCategory] || activeCategory;
+        return p.category === targetCategory || p.category === activeCategory;
+      });
 
   return (
     <>

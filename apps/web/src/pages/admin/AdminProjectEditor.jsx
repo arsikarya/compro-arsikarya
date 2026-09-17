@@ -226,12 +226,11 @@ export default function AdminProjectEditor() {
                             <div className="form-group">
                                 <label className="form-label required">Kategori / Jenis Proyek</label>
                                 <select className="form-input" value={category} onChange={(e) => setCategory(e.target.value)}>
+                                    <option value="Perencanaan">Perencanaan</option>
                                     <option value="Konstruksi">Konstruksi</option>
                                     <option value="Design & Build">Design & Build</option>
-                                    <option value="Fabrikasi">Fabrikasi</option>
-                                    <option value="Pengadaan Barang">Pengadaan Barang</option>
                                     <option value="Renovasi">Renovasi</option>
-                                    <option value="Lainnya">Lainnya</option>
+                                    <option value="Landscape">Landscape</option>
                                 </select>
                             </div>
 

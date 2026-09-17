@@ -122,7 +122,7 @@ async function runSeed() {
         {
             title: 'Pekerjaan Fasad ACP Gedung Kantor KPPN Pekalongan',
             slug: 'fasad-acp-kppn-pekalongan',
-            category: 'Fasad & Eksterior',
+            category: 'Konstruksi',
             company: 'CV Aryasatya Jaya Konstruksi',
             location: 'KPPN Pekalongan, Jawa Tengah',
             year: '2024',
@@ -158,7 +158,7 @@ async function runSeed() {
         {
             title: 'Pekerjaan Finishing Rumah Mr. Hyogi',
             slug: 'finishing-rumah-mr-hyogi',
-            category: 'Finishing & Interior',
+            category: 'Renovasi',
             company: 'Arsi Karya',
             location: 'Bandung, Jawa — Bali',
             year: '2025',
@@ -194,7 +194,7 @@ async function runSeed() {
         {
             title: 'Pekerjaan Interior Ruang Pantry dan Rooftop KPPN Pekalongan',
             slug: 'interior-pantry-rooftop-kppn',
-            category: 'Interior & Renovasi',
+            category: 'Renovasi',
             company: 'PT Berka Semesta Guna Aksara',
             location: 'KPPN Pekalongan, Jawa Tengah',
             year: '2026',
@@ -212,7 +212,7 @@ async function runSeed() {
         {
             title: 'Pemeliharaan Gedung & Treatment Ruang Kerja Tim HKT LLDIKTI Wilayah IV',
             slug: 'treatment-ruang-hkt-lldikti-iv',
-            category: 'Renovasi & Pemeliharaan',
+            category: 'Renovasi',
             company: 'CV Aryasatya Jaya Konstruksi',
             location: 'LLDIKTI Wilayah IV, Bandung',
             year: '2024',
@@ -230,7 +230,7 @@ async function runSeed() {
         {
             title: 'Renovasi Lapangan Tenis LLDIKTI Wilayah IV Bandung',
             slug: 'renovasi-lapangan-tenis-lldikti-iv',
-            category: 'Infrastruktur & Outdoor',
+            category: 'Konstruksi',
             company: 'CV Aryasatya Jaya Konstruksi',
             location: 'LLDIKTI Wilayah IV, Bandung',
             year: '2024',
@@ -248,7 +248,7 @@ async function runSeed() {
         {
             title: 'Pengadaan Mebelair & Interior Kantor LLDIKTI Wilayah IV Bandung',
             slug: 'pengadaan-mebelair-lldikti-iv',
-            category: 'Pengadaan Barang & Interior',
+            category: 'Renovasi',
             company: 'CV Aryasatya Jaya Konstruksi',
             location: 'LLDIKTI Wilayah IV, Bandung',
             year: '2024',
@@ -266,7 +266,7 @@ async function runSeed() {
         {
             title: 'Konstruksi Gudang Structural Steel & Mezzanin Pabrik Subang',
             slug: 'konstruksi-gudang-steel-subang',
-            category: 'Konstruksi & Fabrikasi',
+            category: 'Konstruksi',
             company: 'Arsi Karya',
             location: 'Kawasan Industri Subang, Jawa Barat',
             year: '2025',
@@ -284,7 +284,7 @@ async function runSeed() {
         {
             title: 'Renovasi Fasad Modern Ruko Komersial Dago Bandung',
             slug: 'renovasi-fasad-ruko-dago',
-            category: 'Renovasi & Fasad',
+            category: 'Renovasi',
             company: 'Arsi Karya',
             location: 'Jalan Ir. H. Juanda (Dago), Bandung',
             year: '2025',
@@ -302,7 +302,7 @@ async function runSeed() {
         {
             title: 'Villa Eco-Lodge & Landscape Architecture Lembang',
             slug: 'villa-eco-lodge-lembang',
-            category: 'Design & Build & Landscape',
+            category: 'Landscape',
             company: 'Arsi Karya',
             location: 'Lembang, Bandung Barat',
             year: '2026',
@@ -320,7 +320,7 @@ async function runSeed() {
         {
             title: 'Pembangunan Residensial Cluster Minimalis Buah Batu',
             slug: 'residensial-cluster-buah-batu',
-            category: 'General Contractor',
+            category: 'Konstruksi',
             company: 'Arsi Karya',
             location: 'Buah Batu, Kota Bandung',
             year: '2025',
