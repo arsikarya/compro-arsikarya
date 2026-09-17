@@ -76,7 +76,8 @@ export default function ArticlesPage() {
   const { lang, t } = useLanguage();
   const staticArticles = getArticlesData(lang);
 
-  const [articlesList, setArticlesList] = useState(staticArticles);
+  const [articlesList, setArticlesList] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [apiSingleArticle, setApiSingleArticle] = useState(null);
   const [activeCat, setActiveCat] = useState(lang === 'en' ? 'All' : 'Semua');
 
@@ -86,6 +87,7 @@ export default function ArticlesPage() {
 
   // Fetch all articles for directory view
   useEffect(() => {
+    setLoading(true);
     publicApi.getArticles()
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
@@ -104,9 +106,14 @@ export default function ArticlesPage() {
             author: item.author || 'Arsi Karya Team',
           }));
           setArticlesList(mapped);
+        } else {
+          setArticlesList(staticArticles);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        setArticlesList(staticArticles);
+      })
+      .finally(() => setLoading(false));
   }, [lang]);
 
   // Fetch single article if articleSlug is present
@@ -137,7 +144,7 @@ export default function ArticlesPage() {
 
   // Single Article Reader View (/artikel/:slug)
   if (articleSlug) {
-    const fallbackArticle = articlesList.find((a) => a.slug === articleSlug);
+    const fallbackArticle = articlesList.find((a) => a.slug === articleSlug) || staticArticles.find((a) => a.slug === articleSlug);
     const article = apiSingleArticle || fallbackArticle;
 
     if (article) {
@@ -305,10 +312,10 @@ export default function ArticlesPage() {
         overlayOpacity={0.65}
         tag={t.articlesPage?.heroTag || "ARTIKEL & EDUKASI"}
         title={t.articlesPage?.heroTitle || "Wawasan & Edukasi Pembangunan"}
-        subtitle={t.articlesPage?.heroSubtitle || "Informasi practical seputar dunia konstruksi, tren arsitektur, dan tips perencanaan anggaran proyek."}
+        subtitle={t.articlesPage?.heroSubtitle || "Informasi praktis seputar dunia konstruksi, tren arsitektur, dan tips perencanaan anggaran proyek."}
       />
 
-      <section className="section-padding" style={{ backgroundColor: 'var(--color-neutral-0)' }}>
+      <section className="section-padding" style={{ backgroundColor: 'var(--color-neutral-0)', minHeight: '400px' }}>
         <div className="container">
           {/* Category Filter */}
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '48px' }}>
@@ -334,11 +341,18 @@ export default function ArticlesPage() {
             ))}
           </div>
 
-          <div className="albion-articles-grid">
-            {filtered.map((art) => (
-              <ArticleCard key={art.id} article={art} />
-            ))}
-          </div>
+          {loading ? (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+              <div className="spinner" style={{ width: '40px', height: '40px', border: '3px solid #e2e8f0', borderTop: '3px solid var(--color-primary-300)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+              <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+            </div>
+          ) : (
+            <div className="albion-articles-grid">
+              {filtered.map((art) => (
+                <ArticleCard key={art.id} article={art} />
+              ))}
+            </div>
+          )}
         </div>
 
         <style>{`
