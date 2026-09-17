@@ -12,22 +12,24 @@ import { getProjectWaUrl } from '../utils/whatsapp';
 import { publicApi } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
 
-
 export default function ProjectsPage() {
   const { projectSlug } = useParams();
   const { lang, t } = useLanguage();
-  const projectsData = getProjectsData(lang);
+  const staticProjects = getProjectsData(lang);
 
   const [activeCategory, setActiveCategory] = useState(lang === 'en' ? 'All' : 'Semua');
   const [apiProject, setApiProject] = useState(null);
   const [apiProjectsList, setApiProjectsList] = useState([]);
-  const [loading, setLoading] = useState(Boolean(projectSlug));
+  const [listLoading, setListLoading] = useState(true);
+  const [detailLoading, setDetailLoading] = useState(Boolean(projectSlug));
 
   useEffect(() => {
     setActiveCategory(lang === 'en' ? 'All' : 'Semua');
   }, [lang]);
 
+  // Fetch list of projects from DB
   useEffect(() => {
+    setListLoading(true);
     publicApi.getProjects()
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
@@ -49,31 +51,46 @@ export default function ProjectsPage() {
             gallery: item.gallery || [],
           }));
           setApiProjectsList(mapped);
+        } else {
+          setApiProjectsList(staticProjects);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        setApiProjectsList(staticProjects);
+      })
+      .finally(() => setListLoading(false));
   }, [lang]);
 
+  // Fetch single project detail if projectSlug is present
   useEffect(() => {
     if (projectSlug) {
-      setLoading(true);
+      setDetailLoading(true);
       publicApi.getProject(projectSlug)
         .then((data) => {
           if (data) setApiProject(data);
         })
         .catch(() => {})
-        .finally(() => setLoading(false));
+        .finally(() => setDetailLoading(false));
     }
-  }, [projectSlug]);
+  }, [projectSlug, lang]);
 
   // Single Project Detail View (/proyek/:slug)
   if (projectSlug) {
-    const fallbackProject = projectsData.find((p) => p.slug === projectSlug);
+    const fallbackProject = staticProjects.find((p) => p.slug === projectSlug);
     const project = apiProject || fallbackProject;
 
+    if (detailLoading) {
+      return (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+          <div className="spinner" style={{ width: '40px', height: '40px', border: '3px solid #e2e8f0', borderTop: '3px solid var(--color-primary-300)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+          <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+        </div>
+      );
+    }
+
     if (project) {
-      const sameCategory = projectsData.filter((p) => p.id !== project.id && p.category === project.category);
-      const otherProjects = projectsData.filter((p) => p.id !== project.id && p.category !== project.category);
+      const sameCategory = apiProjectsList.filter((p) => p.id !== project.id && p.category === project.category);
+      const otherProjects = apiProjectsList.filter((p) => p.id !== project.id && p.category !== project.category);
       const relatedProjects = [...sameCategory, ...otherProjects].slice(0, 3);
 
       const coverImg = project.coverImageUrl || project.thumbnail || '/projects/project_1.jpg';
@@ -126,96 +143,64 @@ export default function ProjectsPage() {
           />
           <AlbionGridStyles />
 
-          {/* Albion Top Cover Image (Full Width Banner) */}
-          <div style={{ width: '100%', marginTop: '80px', overflow: 'hidden' }}>
-            <img 
-              src={coverImg} 
-              alt={project.title} 
-              style={{
-                width: '100%',
-                maxHeight: '520px',
-                objectFit: 'cover',
-                display: 'block',
-              }}
-            />
-          </div>
+          <HeroBanner
+            bgImage={coverImg}
+            overlayOpacity={0.65}
+            imageAlt={project.title}
+            tag={project.category}
+            title={project.title}
+            subtitle={project.client ? `${t.projectDetail?.clientLabel || 'Klien'}: ${project.client} • ${project.year || ''}` : ''}
+          />
 
           <section className="section-padding" style={{ backgroundColor: 'var(--color-neutral-0)', paddingTop: '48px' }}>
-            <div className="container" style={{ maxWidth: '980px' }}>
+            <div className="container" style={{ maxWidth: '880px' }}>
               
-              {/* Top Back Navigation */}
+              {/* Back Navigation Link */}
               <Link 
                 to="/proyek" 
                 style={{ 
                   display: 'inline-flex', 
                   alignItems: 'center', 
                   gap: '8px', 
-                  marginBottom: '24px', 
+                  marginBottom: '28px', 
                   color: 'var(--color-primary-300)', 
                   fontWeight: 700, 
                   fontSize: '0.9rem',
                   textDecoration: 'none'
                 }}
               >
-                {t.projectDetail?.backBtn || '← Kembali ke Proyek'}
+                {t.projectDetail?.backBtn || '← Kembali ke Portofolio'}
               </Link>
 
-              {/* Title Header */}
-              <div style={{ marginBottom: '32px' }}>
-                <h1 
-                  style={{ 
-                    fontSize: 'clamp(2.1rem, 3.8vw, 3.0rem)', 
-                    fontWeight: 800, 
-                    color: 'var(--color-neutral-700)', 
-                    lineHeight: 1.28, 
-                    marginTop: '8px',
-                    letterSpacing: '-0.02em' 
-                  }}
-                >
-                  {project.title}
-                </h1>
-              </div>
-
-              {/* Project Specification Metadata Panel */}
-              <div 
-                style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-                  gap: '24px', 
-                  backgroundColor: 'var(--color-neutral-50)', 
-                  padding: '28px 32px', 
-                  borderRadius: 'var(--radius-card)', 
-                  border: '1px solid var(--color-neutral-200)',
-                  marginBottom: '48px'
-                }}
-              >
-                <div>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--color-neutral-400)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>{t.projectDetail?.category || 'Jenis Proyek'}</span>
-                  <div style={{ fontSize: '0.975rem', fontWeight: 700, color: 'var(--color-neutral-700)', marginTop: '4px' }}>{project.category || '-'}</div>
-                </div>
-
-                <div>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--color-neutral-400)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>{t.projectDetail?.location || 'Lokasi'}</span>
-                  <div style={{ fontSize: '0.975rem', fontWeight: 700, color: 'var(--color-neutral-700)', marginTop: '4px' }}>{project.location || '-'}</div>
-                </div>
-
-                <div>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--color-neutral-400)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>{t.projectDetail?.year || 'Tahun'}</span>
-                  <div style={{ fontSize: '0.975rem', fontWeight: 700, color: 'var(--color-neutral-700)', marginTop: '4px' }}>{project.year || '-'}</div>
-                </div>
-
-                <div>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--color-neutral-400)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>{lang === 'en' ? 'Client / Project Owner' : 'Pemberi Kerja / Klien'}</span>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-neutral-700)', marginTop: '4px' }}>
-                    {project.clientContext || project.companyListed || project.company || 'Arsi Karya'}
+              {/* Project Meta Cards Row */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+                {project.category && (
+                  <div style={{ backgroundColor: '#f5f5f5', padding: '20px', borderRadius: '12px', border: '1px solid var(--color-neutral-200)' }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--color-neutral-400)', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>
+                      {t.projectDetail?.categoryLabel || 'Kategori Pekerjaan'}
+                    </div>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-neutral-800)' }}>
+                      {project.category}
+                    </div>
                   </div>
-                </div>
-
-                {(project.arsiKaryaRole || project.roleDisclosure) && (
-                  <div style={{ gridColumn: '1 / -1', borderTop: '1px solid var(--color-neutral-200)', paddingTop: '16px', marginTop: '4px' }}>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--color-primary-300)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>{t.projectDetail?.company || 'Peran Resmi Arsi Karya'}</span>
-                    <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-neutral-700)', marginTop: '4px' }}>
-                      {project.arsiKaryaRole || project.roleDisclosure}
+                )}
+                {project.client && (
+                  <div style={{ backgroundColor: '#f5f5f5', padding: '20px', borderRadius: '12px', border: '1px solid var(--color-neutral-200)' }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--color-neutral-400)', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>
+                      {t.projectDetail?.clientLabel || 'Klien Proyek'}
+                    </div>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-neutral-800)' }}>
+                      {project.client}
+                    </div>
+                  </div>
+                )}
+                {project.location && (
+                  <div style={{ backgroundColor: '#f5f5f5', padding: '20px', borderRadius: '12px', border: '1px solid var(--color-neutral-200)' }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--color-neutral-400)', textTransform: 'uppercase', fontWeight: 700, marginBottom: '4px' }}>
+                      {t.projectDetail?.locationLabel || 'Lokasi Pekerjaan'}
+                    </div>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--color-neutral-800)' }}>
+                      {project.location}
                     </div>
                   </div>
                 )}
@@ -279,15 +264,16 @@ export default function ProjectsPage() {
   }
 
   // Filter Categories Overview (/proyek)
-  const categories = lang === 'en' 
+  const staticCategories = lang === 'en' 
     ? ['All', 'Design & Build', 'Facade & Exterior', 'Finishing & Interior', 'Construction & Maintenance', 'Infrastructure']
     : ['Semua', 'Design & Build', 'Fasad & Eksterior', 'Finishing & Interior', 'Konstruksi & Maintenance', 'Infrastruktur'];
 
-  const allProjects = apiProjectsList.length > 0 ? apiProjectsList : projectsData;
+  const dynamicCategories = Array.from(new Set(apiProjectsList.map((p) => p.category))).filter(Boolean);
+  const categories = Array.from(new Set([lang === 'en' ? 'All' : 'Semua', ...staticCategories.slice(1), ...dynamicCategories]));
 
   const filteredProjects = (activeCategory === 'Semua' || activeCategory === 'All')
-    ? allProjects
-    : allProjects.filter((p) => p.category === activeCategory || (lang === 'en' && p.categoryEn === activeCategory));
+    ? apiProjectsList
+    : apiProjectsList.filter((p) => p.category === activeCategory || (lang === 'en' && p.categoryEn === activeCategory));
 
   return (
     <>
@@ -305,7 +291,7 @@ export default function ProjectsPage() {
         subtitle={t.projectsPage?.heroSubtitle || "Pengalaman proyek nyata dengan keterbukaan entitas pelaksana dan penanganan mutu profesional."}
       />
 
-      <section className="section-padding" style={{ backgroundColor: 'var(--color-neutral-0)' }}>
+      <section className="section-padding" style={{ backgroundColor: 'var(--color-neutral-0)', minHeight: '400px' }}>
         <div className="container">
           {/* Category Filter Pills */}
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '52px' }}>
@@ -332,11 +318,18 @@ export default function ProjectsPage() {
           </div>
 
           {/* Albion 3-Column Projects Grid */}
-          <div className="albion-projects-grid">
-            {filteredProjects.map((proj) => (
-              <ProjectCard key={proj.id} proj={proj} />
-            ))}
-          </div>
+          {listLoading ? (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+              <div className="spinner" style={{ width: '40px', height: '40px', border: '3px solid #e2e8f0', borderTop: '3px solid var(--color-primary-300)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+              <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+            </div>
+          ) : (
+            <div className="albion-projects-grid">
+              {filteredProjects.map((proj) => (
+                <ProjectCard key={proj.id} proj={proj} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </>
