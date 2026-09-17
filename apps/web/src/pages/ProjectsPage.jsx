@@ -11,6 +11,7 @@ import { getProjectsData } from '../data/projectsData';
 import { getProjectWaUrl } from '../utils/whatsapp';
 import { publicApi } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
+import { formatRichText } from '../lib/formatRichText';
 
 export default function ProjectsPage() {
   const { projectSlug } = useParams();
@@ -100,25 +101,20 @@ export default function ProjectsPage() {
 
       const renderRichTextContent = () => {
         const raw = project.description || '';
-        const isHtml = /<[a-z][\s\S]*>/i.test(raw);
-
-        if (isHtml) {
-          return <div className="rich-text-block w-richtext" dangerouslySetInnerHTML={{ __html: raw }} />;
-        }
 
         return (
           <div className="rich-text-block w-richtext">
-            <p>{raw}</p>
+            <div dangerouslySetInnerHTML={{ __html: formatRichText(raw) }} />
             {project.scope && (
               <>
                 <h3>{lang === 'en' ? 'Technical Scope & Specifications' : 'Ruang Lingkup Teknis & Spesifikasi'}</h3>
-                <p>{project.scope}</p>
+                <div dangerouslySetInnerHTML={{ __html: formatRichText(project.scope) }} />
               </>
             )}
             {project.process && (
               <>
                 <h3>{lang === 'en' ? 'Execution Methodology & Work Stages' : 'Metodologi Eksekusi & Tahapan Pengerjaan'}</h3>
-                <p>{project.process}</p>
+                <div dangerouslySetInnerHTML={{ __html: formatRichText(project.process) }} />
               </>
             )}
             {project.features && project.features.length > 0 && (

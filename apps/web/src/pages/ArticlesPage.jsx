@@ -8,6 +8,7 @@ import CTA from '../components/CTA';
 import { getArticlesData } from '../data/articlesData';
 import { publicApi } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
+import { formatRichText } from '../lib/formatRichText';
 
 export function ArticleCard({ article }) {
   const { t } = useLanguage();
@@ -189,7 +190,7 @@ export default function ArticlesPage() {
               {/* Medium Editorial Content Block */}
               <div
                 className="medium-article-reader"
-                dangerouslySetInnerHTML={{ __html: article.content }}
+                dangerouslySetInnerHTML={{ __html: formatRichText(article.content) }}
               />
               {/* Related Articles Suggestions (ArticleCard style) */}
               {otherArticles.length > 0 && (

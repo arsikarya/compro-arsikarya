@@ -191,18 +191,6 @@ export default function AdminProjectEditor() {
             {message && <div className="alert-box success-alert">{message}</div>}
             {errorMsg && <div className="alert-box error-alert">{errorMsg}</div>}
 
-            {/* CRITICAL ROLE WARNING BANNER (Requirement #11) */}
-            <div className="role-warning-callout">
-                <div className="warning-icon"><FiAlertTriangle size={24} /></div>
-                <div className="warning-content">
-                    <strong>PERHATIAN KELOLA PERAN ARSI KARYA (IMPORTANT):</strong>
-                    <p>
-                        Field <em>"Client / Main Contractor Context"</em> dan <em>"Arsi Karya Role"</em> adalah <strong>dua bidang yang berbeda</strong>. 
-                        Jangan secara otomatis menganggap Arsi Karya sebagai <strong>Main Contractor</strong> kecuali telah terverifikasi secara resmi. Silakan isi peran spesifik Arsi Karya (misal: Sub-Kontraktor Fabrikasi Baja, Design & Build Interior, Specialist Contractor, dll) untuk mencegah klaim yang tidak akurat.
-                    </p>
-                </div>
-            </div>
-
             <div className="editor-main-grid">
                 {/* Left Column — Core Form */}
                 <div className="editor-col-left">
@@ -289,10 +277,10 @@ export default function AdminProjectEditor() {
                         </div>
                     </div>
 
-                    {/* Project Description & WYSIWYG Rich Text Content */}
+                    {/* Project Description & Rich Text Content */}
                     <div className="form-panel">
-                        <h4 className="panel-heading">3. Konten Detail Proyek (WYSIWYG Editorial / Blog Style)</h4>
-                        <p className="field-help" style={{ marginBottom: '10px' }}>Gunakan formatting bar di bawah untuk menyusun konten proyek (seperti blog Webflow Albion) dengan heading, gambar, list, dan kutipan.</p>
+                        <h4 className="panel-heading">3. Konten Detail Proyek</h4>
+                        <p className="field-help" style={{ marginBottom: '10px' }}>Gunakan formatting bar di bawah untuk menyusun deskripsi dan konten detail proyek.</p>
 
                         {/* Rich Editorial Toolbar */}
                         <div className="editorial-toolbar" style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '10px', background: '#f3f4f6', padding: '8px 12px', borderRadius: '6px', flexWrap: 'wrap' }}>
@@ -315,7 +303,7 @@ export default function AdminProjectEditor() {
                             rows="14" 
                             value={description} 
                             onChange={(e) => setDescription(e.target.value)}
-                            placeholder="Tuliskan cerita proyek, latar belakang, tantangan, dan metode eksekusi di sini... (Mendukung HTML & WYSIWYG)"
+                            placeholder="Tuliskan cerita proyek, latar belakang, tantangan, dan metode eksekusi di sini..."
                         />
 
                         <div className="form-group" style={{ marginTop: '20px' }}>

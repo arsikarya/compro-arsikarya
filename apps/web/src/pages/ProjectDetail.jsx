@@ -8,6 +8,7 @@ import Gallery from '../components/ui/Gallery';
 import CTA from '../components/CTA';
 import { getProjectsData } from '../data/projectsData';
 import { useLanguage } from '../context/LanguageContext';
+import { formatRichText } from '../lib/formatRichText';
 import './ProjectDetail.css';
 
 export default function ProjectDetail() {
@@ -55,25 +56,22 @@ export default function ProjectDetail() {
 
     const renderRichTextContent = () => {
         const raw = (lang === 'en' ? currentProject.descriptionEn : currentProject.description) || currentProject.description || '';
-        const isHtml = /<[a-z][\s\S]*>/i.test(raw);
-
-        if (isHtml) {
-            return <div className="rich-text-block w-richtext" dangerouslySetInnerHTML={{ __html: raw }} />;
-        }
+        const scopeContent = lang === 'en' ? (currentProject.scopeEn || currentProject.scope) : currentProject.scope;
+        const processContent = lang === 'en' ? (currentProject.processEn || currentProject.process) : currentProject.process;
 
         return (
             <div className="rich-text-block w-richtext">
-                <p>{raw}</p>
-                {currentProject.scope && (
+                <div dangerouslySetInnerHTML={{ __html: formatRichText(raw) }} />
+                {scopeContent && (
                     <>
                         <h3>{lang === 'en' ? 'Technical Scope & Specifications' : 'Ruang Lingkup Teknis & Spesifikasi'}</h3>
-                        <p>{lang === 'en' ? (currentProject.scopeEn || currentProject.scope) : currentProject.scope}</p>
+                        <div dangerouslySetInnerHTML={{ __html: formatRichText(scopeContent) }} />
                     </>
                 )}
-                {currentProject.process && (
+                {processContent && (
                     <>
                         <h3>{lang === 'en' ? 'Execution Methodology & Work Stages' : 'Metodologi Eksekusi & Tahapan Pengerjaan'}</h3>
-                        <p>{lang === 'en' ? (currentProject.processEn || currentProject.process) : currentProject.process}</p>
+                        <div dangerouslySetInnerHTML={{ __html: formatRichText(processContent) }} />
                     </>
                 )}
                 {currentProject.features && currentProject.features.length > 0 && (
