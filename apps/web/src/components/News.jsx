@@ -4,19 +4,14 @@ import { FiArrowUpRight } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import { publicApi } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
-import { getArticlesData } from '../data/articlesData';
 
 export default function News() {
   const { lang, t } = useLanguage();
-  const rawArticles = getArticlesData(lang);
-
-  const [newsList, setNewsList] = useState(rawArticles);
-
-  useEffect(() => {
-    setNewsList(getArticlesData(lang));
-  }, [lang]);
+  const [newsList, setNewsList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     publicApi.getArticles()
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
@@ -29,11 +24,12 @@ export default function News() {
           setNewsList(mapped);
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, [lang]);
 
   return (
-    <section id="news" className="section-padding" style={{ backgroundColor: '#f5f5f5' }}>
+    <section id="news" className="section-padding" style={{ backgroundColor: '#f5f5f5', minHeight: '380px' }}>
       <div className="container">
         {/* Section Header */}
         <div style={{ maxWidth: '650px', marginBottom: '60px' }}>
@@ -52,86 +48,93 @@ export default function News() {
         </div>
 
         {/* 3 Column Horizontal Articles */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '40px',
-          }}
-        >
-          {newsList.map((article, idx) => (
-            <Link
-              key={article.id}
-              to={`/artikel/${article.slug}`}
-              style={{ textDecoration: 'none' }}
-            >
-              <motion.article
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                viewport={{ once: true }}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  borderTop: '2px solid #e2e8f0',
-                  paddingTop: '24px',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderTopColor = 'var(--color-primary)';
-                  const arrow = e.currentTarget.querySelector('.article-arrow');
-                  if (arrow) {
-                    arrow.style.transform = 'translate(3px, -3px)';
-                    arrow.style.color = 'var(--color-primary)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderTopColor = '#e2e8f0';
-                  const arrow = e.currentTarget.querySelector('.article-arrow');
-                  if (arrow) {
-                    arrow.style.transform = 'translate(0, 0)';
-                    arrow.style.color = '#94a3b8';
-                  }
-                }}
+        {loading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+            <div className="spinner" style={{ width: '40px', height: '40px', border: '3px solid #e2e8f0', borderTop: '3px solid var(--color-primary-300)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+            <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '40px',
+            }}
+          >
+            {newsList.map((article, idx) => (
+              <Link
+                key={article.id}
+                to={`/artikel/${article.slug}`}
+                style={{ textDecoration: 'none' }}
               >
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
-                  <h3
-                    style={{
-                      fontSize: '1.25rem',
-                      fontWeight: 800,
-                      WebkitTextStroke: '0.35px currentColor',
-                      letterSpacing: '-0.02em',
-                      color: 'var(--color-text-main)',
-                      lineHeight: 1.3,
-                    }}
-                  >
-                    {article.title}
-                  </h3>
-                  <FiArrowUpRight
-                    className="article-arrow"
-                    style={{
-                      fontSize: '1.4rem',
-                      color: '#94a3b8',
-                      transition: 'all 0.25s ease',
-                      flexShrink: 0,
-                      marginLeft: '12px',
-                    }}
-                  />
-                </div>
-
-                <p
+                <motion.article
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  viewport={{ once: true }}
                   style={{
-                    fontSize: '0.95rem',
-                    color: 'var(--color-text-muted)',
-                    lineHeight: 1.6,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    borderTop: '2px solid #e2e8f0',
+                    paddingTop: '24px',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderTopColor = 'var(--color-primary-300)';
+                    const arrow = e.currentTarget.querySelector('.article-arrow');
+                    if (arrow) {
+                      arrow.style.transform = 'translate(3px, -3px)';
+                      arrow.style.color = 'var(--color-primary-300)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderTopColor = '#e2e8f0';
+                    const arrow = e.currentTarget.querySelector('.article-arrow');
+                    if (arrow) {
+                      arrow.style.transform = 'translate(0, 0)';
+                      arrow.style.color = '#94a3b8';
+                    }
                   }}
                 >
-                  {article.excerpt}
-                </p>
-              </motion.article>
-            </Link>
-          ))}
-        </div>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
+                    <h3
+                      style={{
+                        fontSize: '1.25rem',
+                        fontWeight: 800,
+                        color: 'var(--color-neutral-800)',
+                        lineHeight: 1.4,
+                        margin: 0,
+                      }}
+                    >
+                      {article.title}
+                    </h3>
+                    <FiArrowUpRight
+                      className="article-arrow"
+                      style={{
+                        fontSize: '1.4rem',
+                        color: '#94a3b8',
+                        flexShrink: 0,
+                        transition: 'all 0.25s ease',
+                        marginLeft: '12px',
+                        marginTop: '2px',
+                      }}
+                    />
+                  </div>
+                  <p
+                    style={{
+                      fontSize: '0.925rem',
+                      color: 'var(--color-neutral-500)',
+                      lineHeight: 1.6,
+                      margin: 0,
+                    }}
+                  >
+                    {article.excerpt}
+                  </p>
+                </motion.article>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

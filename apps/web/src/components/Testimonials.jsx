@@ -3,27 +3,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { publicApi } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
-import { getTestimonialsData } from '../data/testimonialsData';
 
 export default function Testimonials() {
   const { lang, t } = useLanguage();
   const bgImg = "https://assets-global.website-files.com/6175e5f51349efa3b3120baa/617c967a42c0beed800a8b23_contact.jpg";
 
-  const rawList = getTestimonialsData(lang);
-  const defaultList = rawList.map(item => ({
-    quote: item.content,
-    author: item.name.toUpperCase(),
-    company: item.role,
-  }));
-
-  const [testimonials, setTestimonials] = useState(defaultList);
+  const [testimonials, setTestimonials] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    setTestimonials(defaultList);
-  }, [lang]);
-
-  useEffect(() => {
+    setLoading(true);
     publicApi.getTestimonials()
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
@@ -35,8 +25,21 @@ export default function Testimonials() {
           setTestimonials(mapped);
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, [lang]);
+
+  const handlePrev = () => {
+    if (testimonials.length === 0) return;
+    setCurrentIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    if (testimonials.length === 0) return;
+    setCurrentIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
+  };
+
+  const activeTestimonial = testimonials[currentIndex] || null;
 
   return (
     <section
@@ -82,7 +85,7 @@ export default function Testimonials() {
             alignItems: 'center',
           }}
         >
-          {/* Empty Left Column to push content right like reference screenshot */}
+          {/* Empty Left Column */}
           <div style={{ display: 'none' }} className="desktop-spacer" />
 
           {/* Right Column Content */}
@@ -91,7 +94,7 @@ export default function Testimonials() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
             viewport={{ once: true }}
-            style={{ maxWidth: '620px', marginLeft: 'auto' }}
+            style={{ maxWidth: '620px', marginLeft: 'auto', width: '100%' }}
           >
             <span className="section-tag section-tag-light">{t.testimonialsSection?.tag || 'TESTIMONI'}</span>
 
@@ -100,82 +103,131 @@ export default function Testimonials() {
                 fontSize: 'clamp(2.25rem, 3.8vw, 3.3rem)',
                 fontWeight: 800,
                 color: '#ffffff',
-                lineHeight: 1.28,
-                marginBottom: '32px',
+                lineHeight: 1.2,
+                marginBottom: '36px',
               }}
             >
-              {t.testimonialsSection?.title || 'What our clients say'}
+              {t.testimonialsSection?.title || 'What clients say about working with us'}
             </h2>
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentIndex}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.4 }}
-              >
-                <p
-                  style={{
-                    fontSize: 'clamp(1.1rem, 2vw, 1.25rem)',
-                    lineHeight: 1.6,
-                    color: '#e2e8f0',
-                    marginBottom: '28px',
-                    fontWeight: 400,
-                  }}
-                >
-                  "{testimonials[currentIndex]?.quote}"
-                </p>
+            {loading ? (
+              <div style={{ display: 'flex', minHeight: '180px', alignItems: 'center' }}>
+                <div className="spinner" style={{ width: '36px', height: '36px', border: '3px solid rgba(255,255,255,0.2)', borderTop: '3px solid #ffffff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+              </div>
+            ) : activeTestimonial ? (
+              <>
+                <div style={{ minHeight: '160px', position: 'relative' }}>
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentIndex}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.4 }}
+                    >
+                      <blockquote
+                        style={{
+                          fontSize: 'clamp(1.1rem, 2vw, 1.35rem)',
+                          lineHeight: 1.6,
+                          color: '#e2e8f0',
+                          fontStyle: 'italic',
+                          margin: '0 0 28px 0',
+                          fontWeight: 400,
+                        }}
+                      >
+                        "{activeTestimonial.quote}"
+                      </blockquote>
 
-                <div>
-                  <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#ffffff', letterSpacing: '0.05em' }}>
-                    {testimonials[currentIndex]?.author}
-                  </h4>
-                  <p style={{ fontSize: '0.9rem', color: '#94a3b8', fontWeight: 500 }}>
-                    {testimonials[currentIndex]?.company}
-                  </p>
+                      <div>
+                        <h4
+                          style={{
+                            fontSize: '1.1rem',
+                            fontWeight: 800,
+                            letterSpacing: '1px',
+                            color: '#ffffff',
+                            margin: '0 0 4px 0',
+                          }}
+                        >
+                          {activeTestimonial.author}
+                        </h4>
+                        <p
+                          style={{
+                            fontSize: '0.85rem',
+                            color: '#94a3b8',
+                            margin: 0,
+                            letterSpacing: '0.5px',
+                          }}
+                        >
+                          {activeTestimonial.company}
+                        </p>
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
-              </motion.div>
-            </AnimatePresence>
 
-            {/* Slide Arrows */}
-            <div style={{ display: 'flex', gap: '12px', marginTop: '32px' }}>
-              <button
-                onClick={() => setCurrentIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))}
-                style={{
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: '4px',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                  backgroundColor: 'rgba(255,255,255,0.05)',
-                  color: '#ffffff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '1.2rem',
-                }}
-              >
-                <FiChevronLeft />
-              </button>
+                {/* Navigation Arrows */}
+                {testimonials.length > 1 && (
+                  <div style={{ display: 'flex', gap: '12px', marginTop: '36px' }}>
+                    <button
+                      onClick={handlePrev}
+                      aria-label="Previous testimonial"
+                      style={{
+                        width: '44px',
+                        height: '44px',
+                        borderRadius: '50%',
+                        border: '1px solid rgba(255, 255, 255, 0.25)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        color: '#ffffff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        transition: 'all 0.25s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--color-primary-300)';
+                        e.currentTarget.style.borderColor = 'var(--color-primary-300)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+                      }}
+                    >
+                      <FiChevronLeft style={{ fontSize: '1.25rem' }} />
+                    </button>
 
-              <button
-                onClick={() => setCurrentIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1))}
-                style={{
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: '4px',
-                  border: '1px solid rgba(255,255,255,0.3)',
-                  backgroundColor: 'rgba(255,255,255,0.05)',
-                  color: '#ffffff',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '1.2rem',
-                }}
-              >
-                <FiChevronRight />
-              </button>
-            </div>
+                    <button
+                      onClick={handleNext}
+                      aria-label="Next testimonial"
+                      style={{
+                        width: '44px',
+                        height: '44px',
+                        borderRadius: '50%',
+                        border: '1px solid rgba(255, 255, 255, 0.25)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        color: '#ffffff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        transition: 'all 0.25s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--color-primary-300)';
+                        e.currentTarget.style.borderColor = 'var(--color-primary-300)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+                      }}
+                    >
+                      <FiChevronRight style={{ fontSize: '1.25rem' }} />
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : null}
           </motion.div>
         </div>
       </div>
