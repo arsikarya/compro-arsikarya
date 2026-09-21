@@ -1,158 +1,191 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FiCheckCircle } from 'react-icons/fi';
-import Button from './ui/Button';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function About() {
-  const { lang, t } = useLanguage();
+  const { lang } = useLanguage();
 
-  const aboutImg1 = "https://assets-global.website-files.com/6175e5f51349efa3b3120baa/6181b49dad041b569acca334_about_1.jpg";
-  const aboutImg2 = "https://assets-global.website-files.com/6175e5f51349efa3b3120baa/6181bc9593b65751777cb76b_about_a4.jpg";
-
-  const keyPoints = lang === 'en' ? [
-    'Precision Architecture & Structural Planning',
-    'Efficient & Structured Construction Execution',
-    'Material Quality Control & Safety Standards',
-    'Transparent Progress & Maintenance Warranty',
+  const statsData = lang === 'en' ? [
+    { value: '100+', label: 'COMPLETED PROJECTS' },
+    { value: '100%', label: 'QUALITY COMMITMENT' },
+    { value: '5', label: 'SPECIALIZED SERVICES' },
   ] : [
-    'Perencanaan Arsitektur & Struktur Presisi',
-    'Eksekusi Konstruksi Efisien & Terstruktur',
-    'Pengawasan Mutu Bahan & Standar Keselamatan',
-    'Transparansi Progres & Garansi Pemeliharaan',
+    { value: '100+', label: 'PROYEK SELESAI' },
+    { value: '100%', label: 'KOMITMEN MUTU' },
+    { value: '5', label: 'LAYANAN SPESIALIS' },
   ];
 
   return (
-    <section id="about" className="section-padding" style={{ backgroundColor: '#f5f5f5', overflow: 'hidden' }}>
-      <div className="container">
+    <section
+      id="about"
+      style={{
+        backgroundColor: '#f4f6f9',
+        color: '#0f172a',
+        padding: 'clamp(140px, 10vw, 200px) 0',
+        position: 'relative',
+        overflow: 'hidden',
+        borderTop: '1px solid #e2e8f0',
+        borderBottom: '1px solid #e2e8f0',
+      }}
+    >
+      <div className="container" style={{ width: '100%' }}>
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '60px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+            gap: 'clamp(60px, 7vw, 110px)',
             alignItems: 'center',
           }}
         >
-          {/* Left Column: Content */}
+          {/* Left Column: Full Logo & Stats */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7 }}
             viewport={{ once: true }}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+            }}
           >
-            <span className="section-tag">{t.about?.tag || 'TENTANG KAMI'}</span>
-
-            <h2
+            {/* Full Brand Logo Image (Centered & Prominent) */}
+            <div
               style={{
-                fontSize: 'clamp(2.1rem, 3.4vw, 2.9rem)',
-                fontWeight: 800,
-                color: 'var(--color-text-main)',
-                marginBottom: '20px',
-                lineHeight: 1.25,
+                marginBottom: '48px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
               }}
             >
-              {t.about?.title || 'We create things that matter'}
-            </h2>
+              <img
+                src="/images/logo-full.png"
+                alt="PT. Arsi Karya Unggul Logo"
+                style={{
+                  maxHeight: '268px',
+                  maxWidth: '415px',
+                  width: '100%',
+                  objectFit: 'contain',
+                  objectPosition: 'center',
+                  display: 'block',
+                  margin: '0 auto',
+                }}
+              />
+            </div>
 
-            <p
+            {/* Stats Grid at Bottom of Left Column */}
+            <div
               style={{
-                fontSize: '1.05rem',
-                color: 'var(--color-text-muted)',
-                lineHeight: 1.7,
-                marginBottom: '28px',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '24px',
+                borderTop: '2px solid #cbd5e1',
+                paddingTop: '36px',
               }}
             >
-              {t.about?.desc1 || 'Arsi Karya melayani jasa kontraktor umum, design & build, renovasi, dan pengadaan barang terpercaya berpusat di Bandung, Jawa — Bali.'}
-            </p>
-
-            {/* Checklist */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              {keyPoints.map((pt, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <FiCheckCircle style={{ color: 'var(--color-primary-300)', fontSize: '1.2rem', flexShrink: 0 }} />
-                  <span style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-main)' }}>
-                    {pt}
+              {statsData.map((stat, idx) => (
+                <div key={idx} style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span
+                    style={{
+                      fontSize: 'clamp(2.3rem, 3.4vw, 3.2rem)',
+                      fontWeight: 800,
+                      color: '#005697',
+                      lineHeight: 1,
+                      letterSpacing: '-0.02em',
+                      marginBottom: '10px',
+                    }}
+                  >
+                    {stat.value}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: '0.775rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.1em',
+                      color: '#64748b',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {stat.label}
                   </span>
                 </div>
               ))}
             </div>
           </motion.div>
 
-          {/* Right Column: Visual Composite Grid */}
+          {/* Right Column: Paragraph Blocks */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7 }}
             viewport={{ once: true }}
-            style={{ position: 'relative' }}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '52px',
+            }}
           >
-            <div
-              style={{
-                position: 'relative',
-                borderRadius: '8px',
-                overflow: 'hidden',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.12)',
-              }}
-            >
-              <img
-                src={aboutImg1}
-                alt="Construction site"
+            {/* Block 1 */}
+            <div>
+              <h3
                 style={{
-                  width: '100%',
-                  height: '460px',
-                  objectFit: 'cover',
+                  fontSize: '1.2rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  color: '#0f172a',
+                  marginBottom: '16px',
                 }}
-              />
+              >
+                {lang === 'en' ? 'BUILT AROUND YOUR NEEDS' : 'BUILT AROUND YOUR NEEDS'}
+              </h3>
+              <p
+                style={{
+                  fontSize: '1.075rem',
+                  color: '#475569',
+                  lineHeight: 1.85,
+                  margin: 0,
+                  fontWeight: 400,
+                }}
+              >
+                {lang === 'en'
+                  ? 'With the trust you give us, we will create spaces that truly represent your needs and desires. Every decision is carefully considered, from function and aesthetics to every detail that makes the space feel personal.'
+                  : 'Dengan kepercayaan yang Anda berikan, kami akan mewujudkan ruang yang benar-benar merepresentasikan kebutuhan dan keinginan Anda. Setiap keputusan kami pertimbangkan dengan cermat, dari fungsi dan estetika hingga setiap detail yang menjadikan ruang tersebut terasa personal.'}
+              </p>
             </div>
 
-            {/* Floating Badge / Second Image */}
-            <div
-              style={{
-                position: 'absolute',
-                bottom: '-30px',
-                left: '-30px',
-                width: '240px',
-                height: '200px',
-                borderRadius: '8px',
-                overflow: 'hidden',
-                border: '6px solid #f5f5f5',
-                boxShadow: '0 15px 30px rgba(0,86,151,0.2)',
-                display: 'none',
-              }}
-              className="about-secondary-img"
-            >
-              <img
-                src={aboutImg2}
-                alt="Architect planning"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </div>
-
-            {/* Floating Experience Box */}
-            <div
-              style={{
-                position: 'absolute',
-                top: '30px',
-                right: '-20px',
-                backgroundColor: 'var(--color-primary-300)',
-                color: '#ffffff',
-                padding: '20px 24px',
-                borderRadius: '6px',
-                boxShadow: '0 10px 25px rgba(0,86,151,0.3)',
-              }}
-            >
-              <span style={{ fontSize: '2.2rem', fontWeight: 800, display: 'block', lineHeight: 1 }}>100%</span>
-              <span style={{ fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Quality Guaranteed</span>
+            {/* Block 2 */}
+            <div>
+              <h3
+                style={{
+                  fontSize: '1.2rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  color: '#0f172a',
+                  marginBottom: '16px',
+                }}
+              >
+                {lang === 'en' ? 'WHAT REMAINS, A LEGACY' : 'WHAT REMAINS, A LEGACY'}
+              </h3>
+              <p
+                style={{
+                  fontSize: '1.075rem',
+                  color: '#475569',
+                  lineHeight: 1.85,
+                  margin: 0,
+                  fontWeight: 400,
+                }}
+              >
+                {lang === 'en'
+                  ? 'We develop every space with thorough consideration, bringing function, form, material, and detail into a unified whole with purpose behind every decision. Not just something finished to be left behind, but a masterpiece to be used, inhabited, and become part of the story and life within it.'
+                  : 'Setiap ruang kami kembangkan dengan penuh pertimbangan, serta menyatukan fungsi, bentuk, material, dan detail menjadi satu kesatuan yang memiliki alasan di balik setiap keputusannya. Bukan hanya sesuatu yang selesai untuk kemudian ditinggalkan, tetapi sebuah masterpiece yang kelak digunakan, dihuni, dan menjadi bagian dari cerita serta kehidupan yang mengisinya.'}
+              </p>
             </div>
           </motion.div>
         </div>
       </div>
-
-      <style>{`
-        @media (min-width: 768px) {
-          .about-secondary-img { display: block !important; }
-        }
-      `}</style>
     </section>
   );
 }

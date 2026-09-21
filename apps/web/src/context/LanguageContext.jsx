@@ -38,7 +38,7 @@ export const translations = {
       viewDetail: 'Lihat Detail',
     },
     servicesSection: {
-      visionTag: 'VISI PERUSAHAAN',
+      visionTag: 'KOMITMEN KAMI',
       visionTitle: 'We know how to deliver your vision',
       visionDesc: 'Arsi Karya menghadirkan layanan konstruksi terpadu dengan eksekusi amanah dan profesional di Bandung, Jawa — Bali.',
       btnServices: 'Layanan Kami',

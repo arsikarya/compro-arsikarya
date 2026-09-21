@@ -247,3 +247,14 @@
         height: 220px;
     }
 }
+
+.about-40-60-grid {
+    display: grid;
+    grid-template-columns: 4fr 6fr;
+}
+
+@media (max-width: 991px) {
+    .about-40-60-grid {
+        grid-template-columns: 1fr;
+    }
+}

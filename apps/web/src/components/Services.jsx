@@ -35,15 +35,35 @@ export default function Services() {
     },
   ];
 
-  const servicesList = rawServices.map((s, idx) => ({
-    num: `0${idx + 1}`,
-    title: s.title,
-    desc: s.shortDesc,
-    fullDesc: s.fullDesc,
-    icon: iconMap[s.slug] || <FiLayers style={{ fontSize: '1.4rem', color: '#1e293b' }} />,
-    features: s.scopeList ? s.scopeList.slice(0, 3) : [],
-    slug: s.slug,
-  }));
+  const serviceImageMap = {
+    'perencanaan': '/projects/service_perencanaan.jpg',
+    'konstruksi': '/projects/service_konstruksi.jpg',
+    'design-build': '/projects/service_design_build.jpg',
+    'renovasi': '/projects/service_renovasi.jpg',
+  };
+
+  const displayTitleMap = {
+    'perencanaan': lang === 'en' ? 'Architecture & Planning' : 'Perencanaan',
+    'konstruksi': lang === 'en' ? 'Construction' : 'Konstruksi',
+    'design-build': 'Design & Build',
+    'renovasi': lang === 'en' ? 'Renovation' : 'Renovasi',
+  };
+
+  const allowedSlugs = ['perencanaan', 'konstruksi', 'design-build', 'renovasi'];
+
+  const servicesList = rawServices
+    .filter((s) => allowedSlugs.includes(s.slug))
+    .map((s, idx) => ({
+      num: `0${idx + 1}`,
+      title: s.title,
+      cardTitle: displayTitleMap[s.slug] || s.title,
+      desc: s.shortDesc,
+      fullDesc: s.fullDesc,
+      image: serviceImageMap[s.slug] || '/projects/project_1.jpg',
+      icon: iconMap[s.slug] || <FiLayers style={{ fontSize: '1.4rem', color: '#1e293b' }} />,
+      features: s.scopeList ? s.scopeList.slice(0, 3) : [],
+      slug: s.slug,
+    }));
 
   const [selectedService, setSelectedService] = useState(null);
 
@@ -74,7 +94,7 @@ export default function Services() {
               position: 'relative',
               width: '100%',
               height: '100%',
-              minHeight: '360px',
+              minHeight: '380px',
               overflow: 'hidden',
             }}
           >
@@ -95,39 +115,51 @@ export default function Services() {
               style={{
                 position: 'absolute',
                 inset: 0,
-                background: 'linear-gradient(to left, #222222 0%, rgba(34, 34, 34, 0.85) 30%, rgba(34, 34, 34, 0) 65%)',
+                background: 'linear-gradient(to right, rgba(34, 34, 34, 0.1) 0%, rgba(34, 34, 34, 0.85) 60%, #222222 100%)',
                 pointerEvents: 'none',
               }}
             />
           </div>
 
-          {/* Right Column: Dark Text Content & CTA Button */}
+          {/* Right Column: Left-aligned Dark Text Content & CTA Button */}
           <motion.div
             initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
             style={{
-              padding: 'clamp(48px, 6vw, 80px)',
+              padding: 'clamp(48px, 5vw, 80px)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'flex-start',
+              textAlign: 'left',
             }}
           >
-            <span className="section-tag section-tag-light">{t.servicesSection?.visionTag || 'VISI PERUSAHAAN'}</span>
+            <span className="section-tag section-tag-light">{lang === 'en' ? 'OUR COMMITMENT' : 'KOMITMEN KAMI'}</span>
 
             <h2
               style={{
                 fontSize: 'clamp(2.25rem, 3.8vw, 3.3rem)',
                 fontWeight: 800,
                 color: '#ffffff',
-                lineHeight: 1.25,
+                lineHeight: 1.2,
                 marginBottom: '20px',
                 letterSpacing: '-0.5px',
+                textAlign: 'left',
               }}
             >
-              {t.servicesSection?.visionTitle || 'We know how to deliver your vision'}
+              {lang === 'en' ? (
+                <>
+                  We know how to<br />
+                  deliver your vision
+                </>
+              ) : (
+                <>
+                  Kami Tahu Cara<br />
+                  Mewujudkan Visi Anda
+                </>
+              )}
             </h2>
 
             <p
@@ -136,10 +168,20 @@ export default function Services() {
                 color: '#cbd5e1',
                 lineHeight: 1.7,
                 marginBottom: '32px',
-                maxWidth: '520px',
+                textAlign: 'left',
               }}
             >
-              {t.servicesSection?.visionDesc || 'Arsi Karya menghadirkan layanan konstruksi terpadu dengan eksekusi amanah dan profesional di Bandung, Jawa — Bali.'}
+              {lang === 'en' ? (
+                <>
+                  Arsi Karya delivers integrated construction services with<br />
+                  trustworthy and professional execution in Bandung, Java — Bali.
+                </>
+              ) : (
+                <>
+                  Arsi Karya menghadirkan layanan konstruksi terpadu dengan<br />
+                  eksekusi amanah dan profesional di Bandung, Jawa — Bali.
+                </>
+              )}
             </p>
 
             <Button
@@ -207,18 +249,28 @@ export default function Services() {
       {/* 3. 4-Column Services Grid */}
       <div id="services-list" style={{ backgroundColor: '#f5f5f5', color: 'var(--color-text-main)', padding: '96px 0' }}>
         <div className="container">
-          <div style={{ maxWidth: '720px', marginBottom: '60px' }}>
-            <span className="section-tag">{t.servicesSection?.expertiseTag || 'LAYANAN SPESIALIS'}</span>
+          <div style={{ maxWidth: '1050px', marginBottom: '60px' }}>
+            <span className="section-tag">OUR SERVICES</span>
 
             <h2
               style={{
                 fontSize: 'clamp(2.1rem, 3.6vw, 2.9rem)',
                 fontWeight: 800,
                 color: 'var(--color-text-main)',
-                lineHeight: 1.28,
+                lineHeight: 1.25,
               }}
             >
-              {t.servicesSection?.expertiseTitle || 'We construct spaces where amazing things happen'}
+              {lang === 'en' ? (
+                <>
+                  We Construct Spaces Where<br />
+                  Great Things Happen
+                </>
+              ) : (
+                <>
+                  Membangun Ruang Tempat<br />
+                  Karya Terbaik Terwujud
+                </>
+              )}
             </h2>
           </div>
 
@@ -226,90 +278,102 @@ export default function Services() {
             {servicesList.map((service, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 25 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
                 viewport={{ once: true }}
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  padding: '32px 28px',
+                  position: 'relative',
+                  height: 'clamp(380px, 26vw, 420px)',
                   borderRadius: '14px',
-                  border: '1px solid var(--color-neutral-200)',
-                  backgroundColor: '#f5f5f5',
+                  overflow: 'hidden',
                   cursor: 'pointer',
-                  transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+                  transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), boxShadow 0.4s ease',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--color-primary-300)';
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.06)';
+                  e.currentTarget.style.transform = 'translateY(-6px)';
+                  e.currentTarget.style.boxShadow = '0 18px 36px rgba(0,0,0,0.16)';
+                  const img = e.currentTarget.querySelector('.service-card-img');
+                  if (img) img.style.transform = 'scale(1.08)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--color-neutral-200)';
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.08)';
+                  const img = e.currentTarget.querySelector('.service-card-img');
+                  if (img) img.style.transform = 'scale(1)';
                 }}
                 onClick={() => setSelectedService(service)}
               >
-                <div>
-                  {/* Square Icon Badge */}
+                {/* Background Photo */}
+                <img
+                  className="service-card-img"
+                  src={service.image}
+                  alt={service.cardTitle}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+                  }}
+                />
+
+                {/* Rich Logo Blue Gradient Overlay (Up to 50% height) */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'linear-gradient(to top, rgba(0, 50, 95, 0.98) 0%, rgba(0, 86, 151, 0.82) 22%, rgba(0, 86, 151, 0.35) 38%, rgba(0, 86, 151, 0) 50%)',
+                    pointerEvents: 'none',
+                  }}
+                />
+
+                {/* Card Text Content (Bottom Left) */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    padding: '24px 20px 20px 20px',
+                    color: '#ffffff',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-end',
+                    zIndex: 2,
+                  }}
+                >
                   <div
                     style={{
-                      width: '52px',
-                      height: '52px',
-                      backgroundColor: 'var(--color-primary-100)',
-                      color: 'var(--color-primary-300)',
-                      borderRadius: '12px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '1.4rem',
-                      marginBottom: '24px',
-                    }}
-                  >
-                    {service.icon}
-                  </div>
-
-                  <h3
-                    style={{
-                      fontSize: '1.25rem',
-                      fontWeight: 800,
+                      fontSize: 'clamp(1.25rem, 1.8vw, 1.55rem)',
+                      fontWeight: 700,
+                      color: '#ffffff',
                       fontFamily: 'var(--font-body)',
-                      marginBottom: '12px',
-                      color: 'var(--color-neutral-800)',
+                      marginBottom: '8px',
                       lineHeight: 1.3,
+                      letterSpacing: '-0.01em',
+                      WebkitTextStroke: '0',
                     }}
                   >
-                    {service.title}
-                  </h3>
+                    {service.cardTitle}
+                  </div>
 
                   <p
                     style={{
-                      fontSize: '0.95rem',
-                      color: 'var(--color-neutral-500)',
-                      lineHeight: 1.6,
+                      fontSize: '0.9rem',
+                      color: 'rgba(255, 255, 255, 0.88)',
+                      fontFamily: 'var(--font-body)',
+                      lineHeight: 1.55,
                       margin: 0,
+                      fontWeight: 400,
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
                     }}
                   >
                     {service.desc}
                   </p>
-                </div>
-
-                <div
-                  style={{
-                    marginTop: '24px',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    fontSize: '0.875rem',
-                    fontWeight: 700,
-                    color: 'var(--color-primary-300)',
-                  }}
-                >
-                  <span>{lang === 'en' ? 'View Service Details' : 'Lihat Detail Layanan'}</span>
-                  <FiArrowRight />
                 </div>
               </motion.div>
             ))}
@@ -319,12 +383,12 @@ export default function Services() {
         <style>{`
           .home-services-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 28px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
             width: 100%;
           }
 
-          @media (max-width: 1024px) {
+          @media (max-width: 1100px) {
             .home-services-grid {
               grid-template-columns: repeat(2, 1fr);
             }

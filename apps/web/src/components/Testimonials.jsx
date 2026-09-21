@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { publicApi } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
+import { getTestimonialsData } from '../data/testimonialsData';
 
 export default function Testimonials() {
   const { lang, t } = useLanguage();
@@ -23,9 +24,23 @@ export default function Testimonials() {
             company: item.clientRole || item.projectName || 'Arsi Karya Project',
           }));
           setTestimonials(mapped);
+        } else {
+          const staticData = getTestimonialsData(lang).map(item => ({
+            quote: item.content,
+            author: item.name.toUpperCase(),
+            company: `${item.role} — ${item.project}`,
+          }));
+          setTestimonials(staticData);
         }
       })
-      .catch(() => {})
+      .catch(() => {
+        const staticData = getTestimonialsData(lang).map(item => ({
+          quote: item.content,
+          author: item.name.toUpperCase(),
+          company: `${item.role} — ${item.project}`,
+        }));
+        setTestimonials(staticData);
+      })
       .finally(() => setLoading(false));
   }, [lang]);
 

@@ -3,6 +3,7 @@ import Button from './ui/Button';
 import ProjectCard, { ProjectGridStyles } from './ui/ProjectCard';
 import { publicApi } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
+import { getProjectsData } from '../data/projectsData';
 
 export default function Projects() {
   const { lang, t } = useLanguage();
@@ -14,7 +15,7 @@ export default function Projects() {
     publicApi.getProjects()
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
-          const transformed = data.slice(0, 3).map(p => {
+          const transformed = data.slice(0, 4).map(p => {
             if (lang === 'en') {
               return {
                 ...p,
@@ -26,9 +27,13 @@ export default function Projects() {
             return p;
           });
           setFeaturedProjects(transformed);
+        } else {
+          setFeaturedProjects(getProjectsData(lang).slice(0, 4));
         }
       })
-      .catch(() => {})
+      .catch(() => {
+        setFeaturedProjects(getProjectsData(lang).slice(0, 4));
+      })
       .finally(() => setLoading(false));
   }, [lang]);
 
@@ -47,17 +52,27 @@ export default function Projects() {
             marginBottom: '50px',
           }}
         >
-          <div style={{ maxWidth: '640px' }}>
+          <div style={{ maxWidth: '850px' }}>
             <span className="section-tag">{t.projects.tag}</span>
             <h2
               style={{
                 fontSize: 'clamp(2.1rem, 3.6vw, 2.9rem)',
                 fontWeight: 800,
                 color: 'var(--color-neutral-800)',
-                lineHeight: 1.28,
+                lineHeight: 1.25,
               }}
             >
-              {t.projects.title}
+              {lang === 'en' ? (
+                <>
+                  Track Record of Construction<br />
+                  & Design Projects
+                </>
+              ) : (
+                <>
+                  Rekam Jejak Pekerjaan<br />
+                  Konstruksi & Design
+                </>
+              )}
             </h2>
           </div>
 
@@ -68,7 +83,7 @@ export default function Projects() {
           </div>
         </div>
 
-        {/* 3 Column Albion Image Cards Grid */}
+        {/* 4 Featured Projects (2x2 Grid) */}
         {loading ? (
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '260px' }}>
             <div className="spinner" style={{ width: '40px', height: '40px', border: '3px solid #e2e8f0', borderTop: '3px solid var(--color-primary-300)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />

@@ -221,39 +221,8 @@ export default function Navbar() {
           ))}
         </nav>
 
-        {/* Right CTA, Social Icons & Language Switcher */}
+        {/* Right CTA & Social Icons */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          {/* Simple & Minimal Language Switcher (Left of Instagram logo) */}
-          <button
-            onClick={toggleLang}
-            title={lang === 'id' ? 'Switch to English' : 'Ganti ke Bahasa Indonesia'}
-            aria-label="Toggle Language"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              padding: '4px 10px',
-              borderRadius: '20px',
-              border: `1px solid ${effectiveProgress < 1 ? 'rgba(255, 255, 255, 0.35)' : 'var(--color-neutral-300)'}`,
-              backgroundColor: 'transparent',
-              color: navTextColor,
-              fontSize: '0.775rem',
-              fontWeight: 800,
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              letterSpacing: '0.04em',
-              boxShadow: 'none',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = effectiveProgress < 1 ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.04)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
-          >
-            <span>{lang === 'id' ? '🇮🇩 ID' : '🇬🇧 EN'}</span>
-          </button>
-
           {/* Social Links */}
           <div
             className="header-socials"
@@ -366,24 +335,6 @@ export default function Navbar() {
             animation: 'mobileDrawerSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-neutral-400)' }}>BAHASA / LANGUAGE</span>
-            <button
-              onClick={toggleLang}
-              style={{
-                padding: '4px 12px',
-                borderRadius: '16px',
-                border: '1px solid var(--color-neutral-200)',
-                backgroundColor: 'var(--color-neutral-100)',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                color: 'var(--color-neutral-800)',
-              }}
-            >
-              {lang === 'id' ? '🇮🇩 ID (Ubah ke EN)' : '🇬🇧 EN (Switch to ID)'}
-            </button>
-          </div>
-
           {navLinks.map((link, idx) => (
             <div key={idx}>
               <Link

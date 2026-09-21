@@ -11,23 +11,6 @@ export default function Hero() {
   const videoMp4 = "https://cdn.prod.website-files.com/6175e5f51349efa3b3120baa/6179fd5c38ec05cd8ff9df2b_background_video-transcode.mp4";
   const videoWebm = "https://cdn.prod.website-files.com/6175e5f51349efa3b3120baa/6179fd5c38ec05cd8ff9df2b_background_video-transcode.webm";
 
-  const generalWaUrl = getGeneralWaUrl();
-
-  const bottomNavItems = [
-    {
-      title: t.hero.item1,
-      link: '/layanan/konstruksi',
-    },
-    {
-      title: t.hero.item2,
-      link: '/layanan/design-build',
-    },
-    {
-      title: t.hero.item3,
-      link: '/layanan/renovasi',
-    },
-  ];
-
   return (
     <section
       id="home"
@@ -37,7 +20,7 @@ export default function Hero() {
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         paddingTop: 'var(--header-height)',
         backgroundColor: 'var(--color-dark-bg, #222222)',
         color: '#ffffff',
@@ -86,36 +69,69 @@ export default function Hero() {
         />
       </div>
 
-      {/* Main Left-Aligned Content */}
+      {/* Main Left-Aligned Content (Centered Vertically) */}
       <div
         className="container"
         style={{
           position: 'relative',
           zIndex: 10,
-          flexGrow: 1,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'flex-start',
           width: '100%',
-          paddingTop: '20px',
-          paddingBottom: '20px',
+          paddingTop: '35px',
+          paddingBottom: '70px',
+          marginTop: '-15px',
         }}
       >
-        <div style={{ maxWidth: '900px' }}>
+        <div style={{ maxWidth: 'clamp(920px, 68vw, 1360px)' }}>
+          {/* Horizontal Line Tag "— ARSI KARYA" */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '14px',
+              marginBottom: '38px',
+            }}
+          >
+            <div
+              style={{
+                width: '36px',
+                height: '2px',
+                backgroundColor: '#ffffff',
+                borderRadius: '1px',
+              }}
+            />
+            <span
+              style={{
+                fontSize: '0.9rem',
+                fontWeight: 800,
+                letterSpacing: '0.22em',
+                textTransform: 'uppercase',
+                color: '#ffffff',
+              }}
+            >
+              ARSI KARYA
+            </span>
+          </motion.div>
+
           {/* Main Title Heading */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
             style={{
-              fontSize: 'clamp(2.4rem, 4.9vw, 4.3rem)',
+              fontSize: 'clamp(2.8rem, 4.8vw, 5rem)',
               fontWeight: 800,
               lineHeight: 1.25,
               color: '#ffffff',
-              letterSpacing: '-0.02em',
-              marginBottom: '24px',
-              textShadow: '0 4px 20px rgba(0,0,0,0.5)',
+              letterSpacing: '-0.025em',
+              marginBottom: '46px',
+              textShadow: '0 4px 24px rgba(0,0,0,0.6)',
               textAlign: 'left',
             }}
           >
@@ -123,34 +139,17 @@ export default function Hero() {
             {t.hero.titleLine2}
           </motion.h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            style={{
-              fontSize: 'clamp(1rem, 1.35vw, 1.15rem)',
-              color: 'rgba(255, 255, 255, 0.85)',
-              maxWidth: '780px',
-              lineHeight: 1.6,
-              margin: 0,
-              fontWeight: 400,
-              textAlign: 'left',
-            }}
-          >
-            {t.hero.subtitle}
-          </motion.p>
-
           {/* Action CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: '16px',
-              marginTop: '32px',
               flexWrap: 'wrap',
+              marginTop: '8px',
             }}
           >
             <Button
@@ -179,76 +178,11 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div
-        style={{
-          position: 'relative',
-          zIndex: 10,
-          width: '100%',
-          paddingBottom: '40px',
-        }}
-      >
-        <div className="container">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-              gap: '24px',
-            }}
-          >
-            {bottomNavItems.map((item, idx) => (
-              <Link
-                key={idx}
-                to={item.link}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  borderTop: '1px solid rgba(255, 255, 255, 0.4)',
-                  paddingTop: '16px',
-                  color: '#ffffff',
-                  transition: 'all 0.3s ease',
-                  textDecoration: 'none',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderTopColor = 'var(--color-primary-300)';
-                  e.currentTarget.style.color = 'var(--color-primary-200)';
-                  const arrow = e.currentTarget.querySelector('.item-arrow');
-                  if (arrow) arrow.style.transform = 'translate(3px, -3px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderTopColor = 'rgba(255, 255, 255, 0.4)';
-                  e.currentTarget.style.color = '#ffffff';
-                  const arrow = e.currentTarget.querySelector('.item-arrow');
-                  if (arrow) arrow.style.transform = 'translate(0, 0)';
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                  <span
-                    style={{
-                      fontSize: '0.95rem',
-                      fontWeight: 800,
-                      letterSpacing: '0.12em',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    {item.title}
-                  </span>
-                  <FiArrowUpRight
-                    className="item-arrow"
-                    style={{
-                      fontSize: '1.4rem',
-                      transition: 'transform 0.25s ease',
-                    }}
-                  />
-                </div>
-              </Link>
-            ))}
-          </motion.div>
-        </div>
-      </div>
+      <style>{`
+        @media (max-width: 991px) {
+          .desktop-hero-brand { display: none !important; }
+        }
+      `}</style>
     </section>
   );
 }

@@ -5,72 +5,11 @@ import SEOHead from '../components/ui/SEOHead';
 import Button from '../components/ui/Button';
 import HeroBanner from '../components/ui/HeroBanner';
 import CTA from '../components/CTA';
+import ArticleCard, { ArticleGridStyles } from '../components/ui/ArticleCard';
 import { getArticlesData } from '../data/articlesData';
 import { publicApi } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
 import { formatRichText } from '../lib/formatRichText';
-
-export function ArticleCard({ article }) {
-  const { t } = useLanguage();
-  if (!article) return null;
-
-  return (
-    <Link
-      to={`/artikel/${article.slug}`}
-      style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', height: '100%' }}
-    >
-      <div
-        style={{
-          borderRadius: 'var(--radius-card)',
-          overflow: 'hidden',
-          border: '1px solid var(--color-neutral-200)',
-          backgroundColor: '#f5f5f5',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          transition: 'transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease',
-          height: '100%',
-          cursor: 'pointer',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = 'var(--color-primary-300)';
-          e.currentTarget.style.transform = 'translateY(-4px)';
-          e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.06)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = 'var(--color-neutral-200)';
-          e.currentTarget.style.transform = 'translateY(0)';
-          e.currentTarget.style.boxShadow = 'none';
-        }}
-      >
-        <div>
-          <div style={{ height: '220px', backgroundColor: 'var(--color-neutral-200)', overflow: 'hidden' }}>
-            <img 
-              src={article.thumbnail || article.coverImageUrl || '/projects/project_2.jpg'} 
-              alt={article.title} 
-              onError={(e) => { e.currentTarget.src = '/projects/project_2.jpg'; }}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-            />
-          </div>
-          <div style={{ padding: '24px' }}>
-            <div style={{ fontSize: '0.8rem', color: 'var(--color-primary-300)', fontWeight: 700, textTransform: 'uppercase', marginBottom: '8px' }}>
-              {article.category} • {article.date}
-            </div>
-            <h3 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-body)', fontWeight: 800, WebkitTextStroke: '0.35px currentColor', letterSpacing: '-0.02em', marginBottom: '10px', lineHeight: 1.35, color: 'var(--color-neutral-800)' }}>
-              {article.title}
-            </h3>
-            <p style={{ fontSize: '0.9rem', color: 'var(--color-neutral-500)', lineHeight: 1.6 }}>{article.excerpt}</p>
-          </div>
-        </div>
-        <div style={{ padding: '0 24px 24px 24px' }}>
-          <Button variant="primary" style={{ pointerEvents: 'none', width: '100%' }}>
-            {t.articlesPage?.readMore || 'Baca Selengkapnya →'}
-          </Button>
-        </div>
-      </div>
-    </Link>
-  );
-}
 
 export default function ArticlesPage() {
   const { articleSlug } = useParams();
@@ -196,10 +135,11 @@ export default function ArticlesPage() {
               {otherArticles.length > 0 && (
                 <div style={{ marginTop: '64px', paddingTop: '48px', borderTop: '1px solid var(--color-neutral-200)' }}>
                   <SectionTag>{lang === 'en' ? 'RECOMMENDED READING' : 'REKOMENDASI BACAAN'}</SectionTag>
-                  <h3 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '32px', marginTop: '8px' }}>{t.articlesPage?.otherArticles || 'Artikel Terkait Lainnya'}</h3>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '32px' }}>
-                    {otherArticles.slice(0, 2).map((oa) => (
-                      <ArticleCard key={oa.id} article={oa} />
+                  <h3 style={{ fontSize: '1.6rem', fontWeight: 800, marginBottom: '32px', marginTop: '8px' }}>{t.articlesPage?.otherArticles || 'Artikel Lainnya'}</h3>
+                  <ArticleGridStyles />
+                  <div className="article-grid cols-2">
+                    {otherArticles.slice(0, 2).map((oa, idx) => (
+                      <ArticleCard key={oa.id} article={oa} idx={idx} />
                     ))}
                   </div>
                 </div>
@@ -342,40 +282,20 @@ export default function ArticlesPage() {
             ))}
           </div>
 
+          <ArticleGridStyles />
           {loading ? (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
               <div className="spinner" style={{ width: '40px', height: '40px', border: '3px solid #e2e8f0', borderTop: '3px solid var(--color-primary-300)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
               <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
             </div>
           ) : (
-            <div className="albion-articles-grid">
-              {filtered.map((art) => (
-                <ArticleCard key={art.id} article={art} />
+            <div className="article-grid">
+              {filtered.map((art, idx) => (
+                <ArticleCard key={art.id} article={art} idx={idx} />
               ))}
             </div>
           )}
         </div>
-
-        <style>{`
-          .albion-articles-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 32px;
-            width: 100%;
-          }
-
-          @media (max-width: 1024px) {
-            .albion-articles-grid {
-              grid-template-columns: repeat(2, 1fr);
-            }
-          }
-
-          @media (max-width: 640px) {
-            .albion-articles-grid {
-              grid-template-columns: 1fr;
-            }
-          }
-        `}</style>
       </section>
     </>
   );
