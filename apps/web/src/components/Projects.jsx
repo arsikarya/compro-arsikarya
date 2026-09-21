@@ -62,22 +62,12 @@ export default function Projects() {
                 lineHeight: 1.25,
               }}
             >
-              {lang === 'en' ? (
-                <>
-                  Track Record of Construction<br />
-                  & Design Projects
-                </>
-              ) : (
-                <>
-                  Rekam Jejak Pekerjaan<br />
-                  Konstruksi & Design
-                </>
-              )}
+              {lang === 'en' ? 'Track Record of Projects' : 'Rekam Jejak Pekerjaan'}
             </h2>
           </div>
 
           <div>
-            <Button to="/proyek" variant="primary">
+            <Button to="/proyek" variant="primary" showArrow={true}>
               {t.projects.btnAll}
             </Button>
           </div>

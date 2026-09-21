@@ -185,7 +185,7 @@ export default function Services() {
             </p>
 
             <Button
-              to="/layanan"
+              to="/tentang-kami"
               variant="primary"
               showArrow={true}
               style={{
@@ -195,7 +195,7 @@ export default function Services() {
                 fontWeight: 700,
               }}
             >
-              {t.servicesSection?.btnServices || 'Layanan Kami'}
+              {lang === 'en' ? 'About Us' : 'Tentang Kami'}
             </Button>
           </motion.div>
         </div>
@@ -249,29 +249,46 @@ export default function Services() {
       {/* 3. 4-Column Services Grid */}
       <div id="services-list" style={{ backgroundColor: '#f5f5f5', color: 'var(--color-text-main)', padding: '96px 0' }}>
         <div className="container">
-          <div style={{ maxWidth: '1050px', marginBottom: '60px' }}>
-            <span className="section-tag">OUR SERVICES</span>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'flex-end',
+              justifyContent: 'space-between',
+              gap: '24px',
+              marginBottom: '50px',
+            }}
+          >
+            <div style={{ maxWidth: '850px' }}>
+              <span className="section-tag">OUR SERVICES</span>
 
-            <h2
-              style={{
-                fontSize: 'clamp(2.1rem, 3.6vw, 2.9rem)',
-                fontWeight: 800,
-                color: 'var(--color-text-main)',
-                lineHeight: 1.25,
-              }}
-            >
-              {lang === 'en' ? (
-                <>
-                  We Construct Spaces Where<br />
-                  Great Things Happen
-                </>
-              ) : (
-                <>
-                  Membangun Ruang Tempat<br />
-                  Karya Terbaik Terwujud
-                </>
-              )}
-            </h2>
+              <h2
+                style={{
+                  fontSize: 'clamp(2.1rem, 3.6vw, 2.9rem)',
+                  fontWeight: 800,
+                  color: 'var(--color-text-main)',
+                  lineHeight: 1.25,
+                }}
+              >
+                {lang === 'en' ? (
+                  <>
+                    Building More Directional,<br />
+                    Higher Quality Results
+                  </>
+                ) : (
+                  <>
+                    Membangun Lebih Terarah,<br />
+                    Hasil Lebih Berkualitas
+                  </>
+                )}
+              </h2>
+            </div>
+
+            <div>
+              <Button to="/layanan" variant="primary" showArrow={true}>
+                {lang === 'en' ? 'Our Services' : 'Layanan Kami'}
+              </Button>
+            </div>
           </div>
 
           <div className="home-services-grid">

@@ -33,7 +33,7 @@ export const translations = {
     },
     projects: {
       tag: 'PORTOFOLIO UNGGULAN',
-      title: 'Rekam Jejak Pekerjaan Konstruksi & Design',
+      title: 'Rekam Jejak Pekerjaan',
       btnAll: 'Lihat Semua Proyek',
       viewDetail: 'Lihat Detail',
     },
