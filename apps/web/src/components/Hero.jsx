@@ -8,8 +8,6 @@ import { useLanguage } from '../context/LanguageContext';
 
 export default function Hero() {
   const { t } = useLanguage();
-  const videoMp4 = "https://cdn.prod.website-files.com/6175e5f51349efa3b3120baa/6179fd5c38ec05cd8ff9df2b_background_video-transcode.mp4";
-  const videoWebm = "https://cdn.prod.website-files.com/6175e5f51349efa3b3120baa/6179fd5c38ec05cd8ff9df2b_background_video-transcode.webm";
 
   return (
     <section
@@ -27,7 +25,7 @@ export default function Hero() {
         overflow: 'hidden',
       }}
     >
-      {/* Background HTML5 Video */}
+      {/* Background Image Banner */}
       <div
         style={{
           position: 'absolute',
@@ -39,22 +37,16 @@ export default function Hero() {
           overflow: 'hidden',
         }}
       >
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
+        <img
+          src="/hero_banner.jpg"
+          alt="Arsi Karya Hero Banner"
           style={{
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            filter: 'brightness(0.65) contrast(1.05)',
+            filter: 'brightness(0.7) contrast(1.05)',
           }}
-        >
-          <source src={videoMp4} type="video/mp4" />
-          <source src={videoWebm} type="video/webm" />
-        </video>
+        />
 
         {/* Gradient Dark Overlay */}
         <div
