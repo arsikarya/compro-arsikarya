@@ -1,54 +1,93 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { 
   FaBuilding, 
   FaDraftingCompass, 
   FaTools, 
   FaShieldAlt, 
-  FaTree,
-  FaWhatsapp 
+  FaTree
 } from 'react-icons/fa';
-import { FiArrowRight, FiCheckCircle, FiChevronRight } from 'react-icons/fi';
-import SectionTag from '../components/ui/SectionTag';
+import { FiArrowRight } from 'react-icons/fi';
 import SEOHead from '../components/ui/SEOHead';
-import Button from '../components/ui/Button';
 import FAQ from '../components/ui/FAQ';
 import HeroBanner from '../components/ui/HeroBanner';
 import ProjectCard, { ProjectGridStyles } from '../components/ui/ProjectCard';
+import ProjectLightboxModal from '../components/ui/ProjectLightboxModal';
 import CTA from '../components/CTA';
 import { getServicesData, getSeoLandingServices } from '../data/servicesData';
 import { getProjectsData } from '../data/projectsData';
-import { getServiceWaUrl } from '../utils/whatsapp';
+import { publicApi } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
+import { formatRichText } from '../lib/formatRichText';
 
 const serviceImagesMap = {
-  'perencanaan': '/projects/project_3.jpg',
-  'konstruksi': '/projects/project_1.jpg',
-  'design-build': '/projects/project_2.jpg',
-  'renovasi': '/projects/project_4.jpg',
-  'landscape': '/projects/project_5.jpg',
-};
-
-const iconMap = {
-  'perencanaan': <FaDraftingCompass />,
-  'konstruksi': <FaBuilding />,
-  'design-build': <FaShieldAlt />,
-  'renovasi': <FaTools />,
-  'landscape': <FaTree />,
+  'perencanaan': '/projects/service_perencanaan.jpg',
+  'konstruksi': '/projects/service_konstruksi.jpg',
+  'design-build': '/projects/service_design_build.jpg',
+  'renovasi': '/projects/service_renovasi.jpg',
+  'landscape': '/projects/service_landscape.jpg',
 };
 
 export default function ServicesPage() {
   const { serviceSlug } = useParams();
   const { lang, t } = useLanguage();
 
-  const servicesData = getServicesData(lang);
+  const [apiServices, setApiServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedProject, setSelectedProject] = useState(null);
+
+  useEffect(() => {
+    publicApi.getServices()
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setApiServices(data);
+        }
+      })
+      .catch((err) => console.error('Failed to load services from API:', err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const defaultServices = getServicesData(lang);
   const seoLandingServices = getSeoLandingServices(lang);
+  const allDefaultServices = [...defaultServices, ...seoLandingServices];
   const projectsData = getProjectsData(lang);
-  const allServices = [...servicesData, ...seoLandingServices];
+
+  // Ensure all default services (including Landscape) are always present, merged with API data
+  const allServices = allDefaultServices.map((defSvc) => {
+    const matchApi = apiServices.find((a) => a.slug === defSvc.slug);
+    if (matchApi) {
+      return {
+        ...defSvc,
+        ...matchApi,
+        title: matchApi.title || defSvc.title,
+        shortDescription: matchApi.shortDescription || defSvc.shortDesc,
+        description: matchApi.description || defSvc.fullDesc || defSvc.description,
+        heroImageUrl: matchApi.heroImageUrl || defSvc.heroImageUrl || serviceImagesMap[defSvc.slug],
+        faq: (Array.isArray(matchApi.faq) && matchApi.faq.length > 0) ? matchApi.faq : defSvc.faqs,
+      };
+    }
+    return {
+      ...defSvc,
+      heroImageUrl: defSvc.heroImageUrl || serviceImagesMap[defSvc.slug],
+    };
+  });
+
+  // Append any extra services added via CMS API that are not in default list
+  apiServices.forEach((apiSvc) => {
+    if (!allServices.some((s) => s.slug === apiSvc.slug)) {
+      allServices.push({
+        ...apiSvc,
+        title: apiSvc.title,
+        shortDescription: apiSvc.shortDescription,
+        description: apiSvc.description,
+        heroImageUrl: apiSvc.heroImageUrl || serviceImagesMap[apiSvc.slug] || '/projects/service_landscape.jpg',
+      });
+    }
+  });
 
   // Single Service Detail Page (/layanan/:serviceSlug)
   if (serviceSlug) {
-    const service = allServices.find((s) => s.slug === serviceSlug);
+    const service = allServices.find((s) => s.slug === serviceSlug) || allDefaultServices.find((s) => s.slug === serviceSlug);
 
     if (service) {
       const matchProjects = projectsData.filter((p) =>
@@ -86,303 +125,86 @@ export default function ServicesPage() {
         }
       ];
 
-      const faqsList = service.faqs && service.faqs.length > 0 ? service.faqs : defaultFaqs;
-      const serviceWaUrl = getServiceWaUrl(service.title);
+      const faqsList = (service.faq && service.faq.length > 0) 
+        ? service.faq 
+        : (service.faqs && service.faqs.length > 0) 
+          ? service.faqs 
+          : defaultFaqs;
+
+      const heroBg = service.heroImageUrl || serviceImagesMap[service.slug] || '/projects/project_1.jpg';
+      const shortDescText = service.shortDescription || service.shortDesc;
 
       return (
         <>
           <SEOHead
             title={`${service.title} — Arsi Karya`}
-            description={service.shortDesc || service.fullDesc}
+            description={shortDescText || service.description}
           />
 
           {/* Dark Architectural Hero Banner */}
           <HeroBanner
-            bgImage={serviceImagesMap[service.slug] || '/projects/project_1.jpg'}
+            bgImage={heroBg}
             overlayOpacity={0.65}
             imageAlt={service.title}
             tag={lang === 'en' ? "SERVICE DETAILS" : "DETAIL LAYANAN"}
             title={service.title}
-            subtitle={service.shortDesc}
+            subtitle={shortDescText}
           />
 
-          <section className="section-padding" style={{ backgroundColor: 'var(--color-neutral-0)', paddingTop: '48px' }}>
+          <section className="section-padding" style={{ backgroundColor: '#ffffff', paddingTop: '48px' }}>
             <div className="container">
               
-              {/* Template-Block Two-Column Layout */}
-              <div className="service-detail-grid">
+              {/* Clean Centered Document Container */}
+              <div style={{ maxWidth: '840px', margin: '0 auto' }}>
                 
-                {/* Left Column: Sticky Navigation & Action Sidebar */}
-                <div>
-                  <div className="service-sidebar-sticky">
-                    
-                    {/* Card 1: Direct WhatsApp Consultation CTA */}
-                    <div 
-                      style={{ 
-                        backgroundColor: '#f5f5f5', 
-                        padding: '32px 28px', 
-                        borderRadius: '14px', 
-                        border: '1px solid var(--color-neutral-200)', 
-                        boxShadow: '0 8px 30px rgba(0,0,0,0.04)',
-                        marginBottom: '28px'
-                      }}
-                    >
-                      <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--color-neutral-800)', marginBottom: '8px' }}>
-                        {lang === 'en' ? 'Service Consultation' : 'Konsultasi Layanan'}
-                      </h3>
-                      <p style={{ fontSize: '0.9rem', color: 'var(--color-neutral-500)', lineHeight: 1.6, marginBottom: '24px' }}>
-                        {lang === 'en' ? 'Discuss your project needs directly with Arsi Karya technical team.' : 'Diskusikan kebutuhan proyek Anda langsung dengan tim teknis Arsi Karya.'}
-                      </p>
-                      
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <Button
-                          href={serviceWaUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          variant="whatsapp"
-                          style={{ width: '100%', justifyContent: 'center', padding: '13px 20px', borderRadius: '8px' }}
-                        >
-                          {lang === 'en' ? 'Chat Via WhatsApp' : 'Chat Via WhatsApp'}
-                        </Button>
-                      </div>
-                    </div>
+                {/* Top Back Navigation */}
+                <Link 
+                  to="/layanan" 
+                  style={{ 
+                    display: 'inline-flex', 
+                    alignItems: 'center', 
+                    gap: '8px', 
+                    marginBottom: '36px', 
+                    color: '#005697', 
+                    fontWeight: 700, 
+                    fontSize: '0.9rem',
+                    textDecoration: 'none'
+                  }}
+                >
+                  {lang === 'en' ? '← Back to Services' : '← Kembali ke Layanan'}
+                </Link>
 
-                    {/* Card 2: Quick Service Directory Navigation */}
-                    <div 
-                      style={{ 
-                        backgroundColor: '#f5f5f5', 
-                        padding: '28px', 
-                        borderRadius: '14px', 
-                        border: '1px solid var(--color-neutral-200)' 
-                      }}
-                    >
-                      <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--color-neutral-800)', marginBottom: '20px' }}>
-                        {lang === 'en' ? 'Services List' : 'Daftar Layanan'}
-                      </h4>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        {servicesData.map((s) => {
-                          const isActive = s.slug === service.slug;
-                          return (
-                            <Link
-                              key={s.slug}
-                              to={`/layanan/${s.slug}`}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                padding: '12px 16px',
-                                borderRadius: '8px',
-                                fontSize: '0.9rem',
-                                fontWeight: isActive ? 700 : 600,
-                                textDecoration: 'none',
-                                backgroundColor: isActive ? 'var(--color-primary-300)' : 'transparent',
-                                color: isActive ? '#ffffff' : 'var(--color-neutral-700)',
-                                border: isActive ? '1px solid var(--color-primary-300)' : '1px solid var(--color-neutral-200)',
-                                transition: 'all 0.2s ease',
-                              }}
-                            >
-                              <span>{s.title.split('(')[0]}</span>
-                              <FiChevronRight style={{ opacity: isActive ? 1 : 0.4 }} />
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                  </div>
+                {/* Clean Document Body Container */}
+                <div className="wysiwyg-service-container rich-text-block">
+                  <div 
+                    className="wysiwyg-service-body" 
+                    dangerouslySetInnerHTML={{ 
+                      __html: formatRichText(
+                        (lang === 'en' && service.fullDescEn) 
+                          ? service.fullDescEn 
+                          : (service.description || service.fullDesc || service.fullDescEn || shortDescText || '')
+                      ) 
+                    }} 
+                  />
                 </div>
 
-                {/* Right Column: Main Detailed Content */}
-                <div style={{ minWidth: 0 }}>
-                  
-                  {/* Top Back Navigation */}
-                  <Link 
-                    to="/layanan" 
-                    style={{ 
-                      display: 'inline-flex', 
-                      alignItems: 'center', 
-                      gap: '8px', 
-                      marginBottom: '28px', 
-                      color: 'var(--color-primary-300)', 
-                      fontWeight: 700, 
-                      fontSize: '0.9rem',
-                      textDecoration: 'none'
-                    }}
-                  >
-                    {lang === 'en' ? '← Back to Services' : '← Kembali ke Layanan'}
-                  </Link>
 
-                  {/* Service Overview & Detailed Description */}
-                  <div style={{ marginBottom: '44px' }}>
-                    <h2 style={{ fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 800, color: 'var(--color-neutral-800)', marginTop: '8px' }}>
-                      {lang === 'en' ? 'Service Characteristics & Approach' : 'Karakteristik & Penanganan Pekerjaan'}
-                    </h2>
-                  </div>
 
-                  {/* Customer Need / Problem Callout Box */}
-                  {service.problemStatement && (
-                    <div 
-                      style={{ 
-                        backgroundColor: '#f5f5f5', 
-                        padding: '32px', 
-                        borderRadius: '12px', 
-                        marginBottom: '44px', 
-                        border: '1px solid var(--color-neutral-200)',
-                        borderLeft: '4px solid var(--color-primary-300)' 
-                      }}
-                    >
-                      <h3 style={{ fontSize: '1.2rem', color: 'var(--color-primary-400)', marginBottom: '8px', fontWeight: 800 }}>
-                        {lang === 'en' ? 'Field Problem Solution' : 'Solusi Atas Masalah Lapangan'}
-                      </h3>
-                      <p style={{ fontSize: '0.975rem', color: 'var(--color-neutral-700)', lineHeight: 1.65, margin: 0 }}>
-                        {service.problemStatement}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Scope of Service Deliverables */}
-                  {service.scopeList && service.scopeList.length > 0 && (
-                    <div style={{ marginBottom: '48px' }}>
-                      <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '24px' }}>
-                        {t.servicesPage?.scopeTitle || 'Lingkup Deliverables Layanan'}
-                      </h2>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
-                        {service.scopeList.map((sc, idx) => (
-                          <div
-                            key={idx}
-                            style={{
-                              backgroundColor: '#f5f5f5',
-                              padding: '18px 20px',
-                              borderRadius: '10px',
-                              border: '1px solid var(--color-neutral-200)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '12px',
-                            }}
-                          >
-                            <FiCheckCircle style={{ color: 'var(--color-primary-300)', fontSize: '1.25rem', flexShrink: 0 }} />
-                            <span style={{ fontSize: '0.925rem', fontWeight: 600, color: 'var(--color-neutral-800)' }}>
-                              {sc}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Target Audience / Suitability */}
-                  {service.targetAudience && (
-                    <div 
-                      style={{ 
-                        marginBottom: '48px', 
-                        backgroundColor: '#f5f5f5', 
-                        padding: '32px', 
-                        borderRadius: '12px', 
-                        border: '1px solid var(--color-neutral-200)' 
-                      }}
-                    >
-                      <h3 style={{ fontSize: '1.25rem', marginBottom: '10px', fontWeight: 800 }}>{lang === 'en' ? 'Target Client' : 'Peruntukan Klien'}</h3>
-                      <p style={{ fontSize: '0.95rem', color: 'var(--color-neutral-600)', lineHeight: 1.65, margin: 0 }}>
-                        {service.targetAudience}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Process Timeline (4 Numbered Steps) */}
-                  {service.processSteps && (
-                    <div style={{ marginBottom: '48px' }}>
-                      <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '24px' }}>
-                        {t.servicesPage?.processTitle || 'Metodologi & Tahapan Pelaksanaan'}
-                      </h2>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
-                        {service.processSteps.map((st, idx) => (
-                          <div
-                            key={idx}
-                            style={{
-                              backgroundColor: '#f5f5f5',
-                              padding: '24px',
-                              borderRadius: '12px',
-                              border: '1px solid var(--color-neutral-200)',
-                              boxShadow: '0 4px 16px rgba(0,0,0,0.02)',
-                              position: 'relative',
-                            }}
-                          >
-                            <div 
-                              style={{ 
-                                fontSize: '1.6rem', 
-                                fontWeight: 800, 
-                                color: 'var(--color-primary-300)', 
-                                marginBottom: '12px',
-                                fontFamily: 'var(--font-heading)',
-                              }}
-                            >
-                              0{idx + 1}
-                            </div>
-                            <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--color-neutral-800)', marginBottom: '8px' }}>
-                              {st.title.replace(/^\d+\.\s*/, '')}
-                            </h4>
-                            <p style={{ fontSize: '0.875rem', color: 'var(--color-neutral-500)', lineHeight: 1.55, margin: 0 }}>
-                              {st.desc}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Methods & Verified Materials */}
-                  {service.methodsMaterials && (
-                    <div style={{ marginBottom: '48px' }}>
-                      <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '20px' }}>
-                        {t.servicesPage?.materialsTitle || 'Metode Kerja & Material Verified'}
-                      </h2>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        {service.methodsMaterials.map((mm, idx) => (
-                          <div 
-                            key={idx} 
-                            style={{ 
-                              display: 'flex', 
-                              alignItems: 'center', 
-                              gap: '12px', 
-                              padding: '14px 20px', 
-                              backgroundColor: '#f5f5f5', 
-                              borderRadius: '8px', 
-                              border: '1px solid var(--color-neutral-200)',
-                              fontSize: '0.925rem',
-                              fontWeight: 600,
-                              color: 'var(--color-neutral-700)',
-                            }}
-                          >
-                            <FiCheckCircle style={{ color: 'var(--color-primary-300)', flexShrink: 0 }} />
-                            <span>{mm}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Pricing Notice */}
-                  <div 
-                    style={{ 
-                      backgroundColor: 'var(--color-primary-100)', 
-                      padding: '24px 28px', 
-                      borderRadius: '12px', 
-                      marginBottom: '48px', 
-                      border: 'none' 
-                    }}
-                  >
-                    <strong style={{ fontSize: '0.9rem', color: 'var(--color-primary-400)' }}>{t.servicesPage?.noticeTitle || 'Catatan Anggaran Biaya:'}</strong>
-                    <p style={{ fontSize: '0.9rem', color: 'var(--color-neutral-700)', margin: '4px 0 0 0' }}>
-                      {service.pricingNotice || "Biaya bergantung pada lingkup pekerjaan, spesifikasi material, lokasi, dan kondisi proyek."}
-                    </p>
-                  </div>
-
-                  {/* FAQ Accordion */}
-                  <div style={{ marginBottom: '48px' }}>
-                    <h2 style={{ marginBottom: '24px', fontSize: '1.8rem', fontWeight: 800 }}>{t.servicesPage?.faqTitle || 'Pertanyaan Sering Diajukan (FAQ)'}</h2>
-                    <FAQ items={faqsList} />
-                  </div>
-
+                {/* FAQ Accordion */}
+                <div style={{ marginBottom: '48px' }}>
+                  <h3 style={{ 
+                    fontFamily: 'var(--font-body)', 
+                    fontSize: '1.25rem', 
+                    fontWeight: 700, 
+                    color: '#0f172a', 
+                    marginTop: '36px',
+                    marginBottom: '16px',
+                    lineHeight: 1.4,
+                    letterSpacing: '-0.01em'
+                  }}>
+                    {t.servicesPage?.faqTitle || 'Pertanyaan Sering Diajukan (FAQ)'}
+                  </h3>
+                  <FAQ items={faqsList} />
                 </div>
 
               </div>
@@ -392,11 +214,11 @@ export default function ServicesPage() {
 
           {/* Related Projects */}
           {relatedProjects.length > 0 && (
-            <section className="section-padding" style={{ backgroundColor: '#f5f5f5', borderTop: '1px solid var(--color-neutral-200)' }}>
+            <section className="section-padding" style={{ backgroundColor: '#ffffff', borderTop: '1px solid #e2e8f0' }}>
               <div className="container">
                 <ProjectGridStyles />
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
-                  <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--color-neutral-800)', margin: 0 }}>{lang === 'en' ? 'Related Projects' : 'Proyek Terkait'}</h2>
+                  <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>{lang === 'en' ? 'Related Projects' : 'Proyek Terkait'}</h2>
                   <Link
                     to="/proyek"
                     style={{
@@ -420,7 +242,7 @@ export default function ServicesPage() {
                 </div>
                 <div className="albion-projects-grid">
                   {relatedProjects.slice(0, 3).map((rp) => (
-                    <ProjectCard key={rp.id} proj={rp} />
+                    <ProjectCard key={rp.id} proj={rp} onClick={(p) => setSelectedProject(p)} />
                   ))}
                 </div>
               </div>
@@ -431,21 +253,52 @@ export default function ServicesPage() {
           <CTA />
 
           <style>{`
-            .service-detail-grid {
-              display: grid;
-              grid-template-columns: 340px minmax(0, 1fr);
-              gap: 48px;
+            .wysiwyg-service-body {
+              color: #334155;
+              font-size: 1.05rem;
+              line-height: 1.85;
+              font-family: var(--font-body);
             }
 
-            @media (max-width: 991px) {
-              .service-detail-grid {
-                grid-template-columns: 1fr;
-                gap: 40px;
-              }
+            .wysiwyg-service-body h2 {
+              font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+              font-weight: 800;
+              color: #0f172a;
+              margin-top: 32px;
+              margin-bottom: 14px;
+              letter-spacing: -0.01em;
+              line-height: 1.3;
             }
 
-            .service-sidebar-sticky {
-              position: static;
+            .wysiwyg-service-body h2:first-of-type {
+              margin-top: 0;
+            }
+
+            .wysiwyg-service-body h3 {
+              font-size: clamp(1.15rem, 2vw, 1.35rem);
+              font-weight: 700;
+              color: #0f172a;
+              margin-top: 24px;
+              margin-bottom: 12px;
+            }
+
+            .wysiwyg-service-body p {
+              margin-bottom: 24px;
+              color: #334155;
+            }
+
+            .wysiwyg-service-body ol,
+            .wysiwyg-service-body ul {
+              margin-bottom: 28px;
+              padding-left: 24px;
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+            }
+
+            .wysiwyg-service-body li {
+              color: #334155;
+              line-height: 1.7;
             }
           `}</style>
         </>
@@ -464,213 +317,91 @@ export default function ServicesPage() {
       <HeroBanner
         bgImage="/projects/project_2.jpg"
         overlayOpacity={0.65}
-        tag={t.servicesPage?.heroTag || "LAYANAN KAMI"}
-        title={t.servicesPage?.heroTitle || "Layanan Konstruksi & Perancangan"}
-        subtitle={t.servicesPage?.heroSubtitle || "Solusi Terpadu dari Konsep Arsitektur Hingga Realisasi Pembangunan Fisik"}
+        tag={lang === 'en' ? "OUR SERVICES" : "LAYANAN KAMI"}
+        title={lang === 'en' ? "Construction & Architectural Solutions" : "Solusi Konstruksi & Perancangan"}
+        subtitle={lang === 'en'
+          ? "We combine technical engineering design expertise with structured physical execution to bring your projects to life in Bandung, Java — Bali."
+          : "Kami memadukan keahlian perancangan teknis dengan eksekusi fisik terstruktur untuk mewujudkan proyek Anda di Bandung, Jawa — Bali."}
       />
 
-      {/* 5 Core Primary Services */}
-      <section className="section-padding" style={{ backgroundColor: 'var(--color-neutral-0)' }}>
+      {/* Primary Services Grid */}
+      <section className="section-padding" style={{ backgroundColor: '#ffffff' }}>
         <div className="container">
-          
-          <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 60px auto' }}>
-            <SectionTag>{lang === 'en' ? 'MAIN SERVICES' : 'LAYANAN UTAMA'}</SectionTag>
-            <h2 style={{ fontSize: 'clamp(2rem, 3.5vw, 2.8rem)', fontWeight: 800, color: 'var(--color-neutral-800)' }}>
-              {lang === 'en' ? 'Integrated Construction & Architectural Solutions' : 'Solusi Konstruksi & Perancangan Terintegrasi'}
-            </h2>
-            <p style={{ color: 'var(--color-neutral-500)', marginTop: '12px', fontSize: '1rem', lineHeight: 1.65 }}>
-              {lang === 'en' ? 'We combine technical engineering design expertise with structured physical execution to bring your projects to life in Bandung, Java — Bali.' : 'Kami memadukan keahlian perancangan teknis dengan eksekusi fisik terstruktur untuk mewujudkan proyek Anda di Bandung, Jawa — Bali.'}
-            </p>
-          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '28px' }}>
+            {allServices.map((svc) => {
+              const cardImage = svc.heroImageUrl || serviceImagesMap[svc.slug] || '/projects/project_1.jpg';
+              const cardDesc = svc.shortDescription || svc.shortDesc;
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '32px' }}>
-            {servicesData.map((svc) => (
-              <Link
-                key={svc.id}
-                to={`/layanan/${svc.slug}`}
-                className="buildscape-service-card"
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <div>
-                  {/* Icon Badge Container */}
-                  <div className="buildscape-icon-badge">
-                    {iconMap[svc.slug] || <FaBuilding />}
+              return (
+                <Link
+                  key={svc.id || svc.slug}
+                  to={`/layanan/${svc.slug}`}
+                  className="clean-service-card"
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                  {/* Top Service Image */}
+                  <div style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#e2e8f0' }}>
+                    <img
+                      src={cardImage}
+                      alt={svc.title}
+                      style={{
+                        width: '100%',
+                        height: '210px',
+                        objectFit: 'cover',
+                        display: 'block',
+                      }}
+                    />
                   </div>
 
-                  <h3 style={{ fontSize: '1.35rem', fontWeight: 800, fontFamily: 'var(--font-body)', color: 'var(--color-neutral-800)', marginBottom: '12px', marginTop: '20px' }}>
-                    {svc.title}
-                  </h3>
-                  
-                  <p style={{ fontSize: '0.95rem', color: 'var(--color-neutral-500)', lineHeight: 1.65, marginBottom: '24px' }}>
-                    {svc.shortDesc || svc.fullDesc.substring(0, 110) + '...'}
-                  </p>
+                  {/* Card Text Area */}
+                  <div style={{ padding: '20px 6px 6px 6px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginBottom: '10px', lineHeight: 1.3 }}>
+                      {svc.title}
+                    </h3>
+                    
+                    <p style={{ fontSize: '0.925rem', color: '#475569', lineHeight: 1.65, marginBottom: '20px', flexGrow: 1 }}>
+                      {cardDesc}
+                    </p>
 
-                  {/* Key Scope Highlights */}
-                  {svc.scopeList && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '28px' }}>
-                      {svc.scopeList.slice(0, 3).map((sc, sIdx) => (
-                        <div key={sIdx} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.875rem', color: 'var(--color-neutral-700)', fontWeight: 600 }}>
-                          <FiCheckCircle style={{ color: 'var(--color-primary-300)', flexShrink: 0 }} />
-                          <span>{sc}</span>
-                        </div>
-                      ))}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#005697', fontWeight: 700, fontSize: '0.9rem', marginTop: 'auto' }}>
+                      <span>{lang === 'en' ? 'Learn More' : 'Selengkapnya'}</span>
+                      <FiArrowRight />
                     </div>
-                  )}
-                </div>
-
-                <div className="buildscape-card-action">
-                  <span>{lang === 'en' ? 'View Service Details' : 'Lihat Detail Layanan'}</span>
-                  <FiArrowRight className="buildscape-action-arrow" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Specialized SEO Sub-Landing Services */}
-      <section className="section-padding" style={{ backgroundColor: 'var(--color-neutral-50)', borderTop: '1px solid var(--color-neutral-200)' }}>
-        <div className="container">
-          
-          <div style={{ marginBottom: '44px' }}>
-            <SectionTag>{lang === 'en' ? 'OTHER SPECIALTIES' : 'SPESIALISASI LAINNYA'}</SectionTag>
-            <h2 style={{ fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 800, color: 'var(--color-neutral-800)' }}>
-              {lang === 'en' ? 'Specific Work & Sub-Specializations' : 'Pekerjaan Spesifik & Sub-Spesialisasi'}
-            </h2>
-            <p style={{ color: 'var(--color-neutral-500)', marginTop: '8px', fontSize: '0.975rem' }}>
-              {lang === 'en' ? 'Handling specialized tasks with technical expertise and maintenance warranty.' : 'Penanganan pekerjaan khusus dengan keahlian teknis dan jaminan garansi.'}
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
-            {seoLandingServices.map((s, idx) => (
-              <Link
-                key={idx}
-                to={`/layanan/${s.slug}`}
-                className="subservice-card-link"
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '14px' }}>
-                  <div className="subservice-icon-badge">
-                    {iconMap[s.slug] || <FaTools />}
                   </div>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, fontFamily: 'var(--font-body)', color: 'var(--color-neutral-800)', margin: 0, lineHeight: 1.3 }}>
-                    {lang === 'en' ? (s.titleEn || s.title) : s.title}
-                  </h3>
-                </div>
-
-                <p style={{ fontSize: '0.875rem', color: 'var(--color-neutral-500)', lineHeight: 1.6, margin: '0 0 16px 0' }}>
-                  {lang === 'en' ? (s.shortDescEn || s.shortDesc) : s.shortDesc}
-                </p>
-
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '12px', borderTop: '1px solid var(--color-neutral-200)', marginTop: 'auto' }}>
-                  <span style={{ fontSize: '0.825rem', color: 'var(--color-primary-300)', fontWeight: 700 }}>
-                    {lang === 'en' ? 'Specification Details' : 'Detail Spesifikasi'}
-                  </span>
-                  <FiArrowRight style={{ color: 'var(--color-neutral-700)', fontSize: '1.1rem' }} />
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </div>
-
-        <style>{`
-          .buildscape-service-card {
-            background-color: #f5f5f5;
-            padding: 36px 30px;
-            border-radius: 14px;
-            border: 1px solid var(--color-neutral-200);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
-          }
-
-          .buildscape-service-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--color-primary-300);
-            box-shadow: 0 12px 36px rgba(0,0,0,0.06);
-          }
-
-          .buildscape-icon-badge {
-            width: 58px;
-            height: 58px;
-            border-radius: 12px;
-            background-color: var(--color-primary-100);
-            color: var(--color-primary-300);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.6rem;
-            transition: background-color 0.3s ease, color 0.3s ease;
-          }
-
-          .buildscape-service-card:hover .buildscape-icon-badge {
-            background-color: var(--color-primary-300);
-            color: #ffffff;
-          }
-
-          .buildscape-card-action {
-            display: inline-flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            padding: 14px 20px;
-            background-color: transparent;
-            border: 1px solid var(--color-neutral-200);
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--color-neutral-700);
-            transition: all 0.25s ease;
-          }
-
-          .buildscape-service-card:hover .buildscape-card-action {
-            background-color: var(--color-primary-300);
-            border-color: var(--color-primary-300);
-            color: #ffffff;
-          }
-
-          .buildscape-action-arrow {
-            font-size: 1.1rem;
-            transition: transform 0.25s ease;
-          }
-
-          .buildscape-service-card:hover .buildscape-action-arrow {
-            transform: translateX(4px);
-          }
-
-          .subservice-card-link {
-            background-color: #f5f5f5;
-            padding: 24px;
-            border-radius: 12px;
-            border: 1px solid var(--color-neutral-200);
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-          }
-
-          .subservice-card-link:hover {
-            transform: translateY(-3px);
-            border-color: var(--color-primary-300);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
-          }
-
-          .subservice-icon-badge {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            background-color: var(--color-primary-100);
-            color: var(--color-primary-300);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            flex-shrink: 0;
-          }
-        `}</style>
       </section>
+
+      <style>{`
+        .clean-service-card {
+          background-color: #f8fafc;
+          padding: 16px;
+          border-radius: 16px;
+          border: 1px solid #e2e8f0;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+          transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .clean-service-card:hover {
+          transform: translateY(-5px);
+          border-color: #005697;
+          box-shadow: 0 12px 32px rgba(0, 86, 151, 0.12);
+        }
+      `}</style>
+
+      <CTA />
+      {selectedProject && (
+        <ProjectLightboxModal
+          project={selectedProject}
+          onClose={() => setSelectedProject(null)}
+        />
+      )}
     </>
   );
 }

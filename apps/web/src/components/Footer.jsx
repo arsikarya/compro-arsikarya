@@ -35,7 +35,16 @@ export default function Footer() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.9rem', color: '#D9D9D5', marginTop: '4px' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
                 <FaMapMarkerAlt style={{ color: 'var(--color-primary-200)', marginTop: '4px', flexShrink: 0 }} />
-                <span>{t.footer?.address || 'Bumi Adipura, Jl. Tulip VII No. 21, Rancabolang, Gedebage, Kota Bandung.'}</span>
+                <a
+                  href="https://maps.app.goo.gl/p3R2LS88sWNrNqGx7"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#D9D9D5', textDecoration: 'none', transition: 'color 0.2s ease' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = '#FFFFFF')}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = '#D9D9D5')}
+                >
+                  {t.footer?.address || 'Bumi Adipura, Jl. Tulip VII No. 21, Rancabolang, Gedebage, Kota Bandung.'}
+                </a>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <FaWhatsapp style={{ color: 'var(--color-whatsapp)', flexShrink: 0 }} />

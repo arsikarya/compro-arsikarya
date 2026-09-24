@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import SEOHead from '../components/ui/SEOHead';
 import HeroBanner from '../components/ui/HeroBanner';
+import CTA from '../components/CTA';
 import { publicApi } from '../lib/api';
 import { getTestimonialsData } from '../data/testimonialsData';
 import { useLanguage } from '../context/LanguageContext';
@@ -31,7 +32,14 @@ export default function TestimonialsPage() {
             clientRole: lang === 'en' ? (item.roleEn || item.clientRole || item.projectName) : (item.clientRole || item.projectName || 'Klien Arsi Karya'),
             imageUrl: item.imageUrl || item.avatar || '/projects/project_2.jpg',
           }));
-          setTestimonials(mapped);
+
+          const combined = [...mapped];
+          defaultItems.forEach((d) => {
+            if (combined.length < 4 && !combined.some((c) => c.clientName === d.clientName)) {
+              combined.push(d);
+            }
+          });
+          setTestimonials(combined);
         } else {
           setTestimonials(defaultItems);
         }
@@ -41,6 +49,9 @@ export default function TestimonialsPage() {
       })
       .finally(() => setLoading(false));
   }, [lang]);
+
+  // Limit testimonials to maximum 4 items
+  const displayedTestimonials = testimonials.slice(0, 4);
 
   return (
     <>
@@ -53,15 +64,16 @@ export default function TestimonialsPage() {
       <HeroBanner
         bgImage="/projects/project_6.jpg"
         overlayOpacity={0.65}
-        tag={t.testimonialsPage?.heroTag || "TESTIMONI KLIEN"}
-        title={t.testimonialsPage?.heroTitle || "Pengalaman Bekerjasama"}
-        subtitle={t.testimonialsPage?.heroSubtitle || "Kepuasan dan kepercayaan klien adalah tolok ukur utama keberhasilan pengerjaan proyek kami."}
+        tag={t.testimonialsPage?.heroTag || "KEPERCAYAAN KLIEN"}
+        title={t.testimonialsPage?.heroTitle || "Testimoni Klien"}
+        subtitle={t.testimonialsPage?.heroSubtitle || "Kepercayaan dan Kepuasan Pemilik Proyek atas Hasil Kerja Arsi Karya"}
       />
 
-      <section className="section-padding" style={{ backgroundColor: 'var(--color-neutral-50)', minHeight: '400px' }}>
+      {/* Testimonial Cards Section (Max 4 items) */}
+      <section className="section-padding" style={{ backgroundColor: 'var(--color-neutral-50)', minHeight: '350px' }}>
         <div className="container">
           {loading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '260px' }}>
               <div className="spinner" style={{ width: '40px', height: '40px', border: '3px solid #e2e8f0', borderTop: '3px solid var(--color-primary-300)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
               <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
             </div>
@@ -74,11 +86,11 @@ export default function TestimonialsPage() {
                 gap: '32px',
               }}
             >
-              {testimonials.map((item) => (
+              {displayedTestimonials.map((item) => (
                 <div
                   key={item.id}
                   style={{
-                    backgroundColor: '#f5f5f5',
+                    backgroundColor: '#ffffff',
                     borderRadius: '16px',
                     border: '1px solid var(--color-neutral-200)',
                     padding: '32px',
@@ -163,6 +175,79 @@ export default function TestimonialsPage() {
           )}
         </div>
       </section>
+
+      {/* Video Testimonials YouTube Section */}
+      <section className="section-padding" style={{ backgroundColor: '#ffffff', borderTop: '1px solid var(--color-neutral-200)' }}>
+        <div className="container" style={{ maxWidth: '960px', textAlign: 'center' }}>
+          {/* Centered Line Accent & Tag */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+            <div style={{ width: '32px', height: '2px', backgroundColor: 'var(--color-primary-300)' }} />
+            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--color-primary-300)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              {lang === 'en' ? 'VIDEO TESTIMONIAL' : 'VIDEO TESTIMONI'}
+            </span>
+          </div>
+
+          {/* Section Title (Solid Black Text) */}
+          <h2
+            style={{
+              fontSize: 'clamp(2.1rem, 3.6vw, 2.8rem)',
+              fontWeight: 800,
+              color: '#0f172a',
+              margin: '0 0 16px 0',
+              lineHeight: 1.25,
+            }}
+          >
+            {lang === 'en' ? 'Real Stories from Our Clients' : 'Cerita Nyata dari Klien Kami'}
+          </h2>
+
+          {/* Subtitle */}
+          <p
+            style={{
+              fontSize: '1.05rem',
+              color: 'var(--color-neutral-600)',
+              maxWidth: '680px',
+              margin: '0 auto 44px auto',
+              lineHeight: 1.65,
+            }}
+          >
+            {lang === 'en' 
+              ? 'Hear directly about their experience working with Arsi Karya, from planning to final results.' 
+              : 'Dengarkan langsung pengalaman mereka bekerja sama dengan Arsi Karya, mulai dari proses perencanaan hingga hasil akhir.'}
+          </p>
+
+          {/* YouTube Video Player */}
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              paddingBottom: '56.25%', /* 16:9 Aspect Ratio */
+              height: 0,
+              borderRadius: '20px',
+              overflow: 'hidden',
+              boxShadow: '0 20px 50px rgba(15, 23, 42, 0.12)',
+              border: '1px solid #e2e8f0',
+              backgroundColor: '#0f172a',
+            }}
+          >
+            <iframe
+              src="https://www.youtube.com/embed/sDBl71I37UM"
+              title="Video Testimoni Arsi Karya"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                border: 'none',
+              }}
+            />
+          </div>
+        </div>
+      </section>
+
+      <CTA />
     </>
   );
 }

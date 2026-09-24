@@ -5,6 +5,7 @@ import { FaInstagram, FaTiktok } from 'react-icons/fa';
 import Button from './ui/Button';
 import { getGeneralWaUrl } from '../utils/whatsapp';
 import { useLanguage } from '../context/LanguageContext';
+import { publicApi } from '../lib/api';
 
 export default function Navbar() {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -52,6 +53,49 @@ export default function Navbar() {
   const borderOpacity = (effectiveProgress * 0.08).toFixed(3);
   const shadowOpacity = (effectiveProgress * 0.06).toFixed(3);
 
+  const [servicesSubItems, setServicesSubItems] = useState([
+    { name: lang === 'en' ? 'Architecture & Planning' : 'Perencanaan', to: '/layanan/perencanaan' },
+    { name: lang === 'en' ? 'General Construction' : 'Konstruksi', to: '/layanan/konstruksi' },
+    { name: 'Design & Build', to: '/layanan/design-build' },
+    { name: lang === 'en' ? 'Renovation' : 'Renovasi', to: '/layanan/renovasi' },
+    { name: lang === 'en' ? 'Landscape & Garden' : 'Landscape', to: '/layanan/landscape' },
+  ]);
+
+  useEffect(() => {
+    publicApi.getServices()
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const defaultNavs = [
+            { name: lang === 'en' ? 'Architecture & Planning' : 'Perencanaan', slug: 'perencanaan' },
+            { name: lang === 'en' ? 'General Construction' : 'Konstruksi', slug: 'konstruksi' },
+            { name: 'Design & Build', slug: 'design-build' },
+            { name: lang === 'en' ? 'Renovation' : 'Renovasi', slug: 'renovasi' },
+            { name: lang === 'en' ? 'Landscape & Garden' : 'Landscape', slug: 'landscape' },
+          ];
+
+          const combinedNavs = defaultNavs.map(def => {
+            const apiMatch = data.find(d => d.slug === def.slug);
+            return {
+              name: apiMatch ? (lang === 'en' ? (apiMatch.titleEn || apiMatch.title) : (apiMatch.title?.split('(')[0]?.trim() || apiMatch.title)) : def.name,
+              to: `/layanan/${def.slug}`,
+            };
+          });
+
+          data.forEach(apiSvc => {
+            if (!combinedNavs.some(nav => nav.to === `/layanan/${apiSvc.slug}`)) {
+              combinedNavs.push({
+                name: lang === 'en' ? (apiSvc.titleEn || apiSvc.title) : (apiSvc.title?.split('(')[0]?.trim() || apiSvc.title),
+                to: `/layanan/${apiSvc.slug}`,
+              });
+            }
+          });
+
+          setServicesSubItems(combinedNavs);
+        }
+      })
+      .catch(() => {});
+  }, [lang]);
+
   // Exact 5 Primary Services in Navbar
   const navLinks = [
     { name: t.nav.home, to: '/' },
@@ -60,13 +104,7 @@ export default function Navbar() {
       name: t.nav.services,
       to: '/layanan',
       hasDropdown: true,
-      subItems: [
-        { name: lang === 'en' ? 'Architecture & Planning' : 'Perencanaan', to: '/layanan/perencanaan' },
-        { name: lang === 'en' ? 'General Construction' : 'Konstruksi', to: '/layanan/konstruksi' },
-        { name: 'Design & Build', to: '/layanan/design-build' },
-        { name: lang === 'en' ? 'Renovation' : 'Renovasi', to: '/layanan/renovasi' },
-        { name: lang === 'en' ? 'Landscape & Garden' : 'Landscape', to: '/layanan/landscape' },
-      ],
+      subItems: servicesSubItems,
     },
     { name: t.nav.projects, to: '/proyek' },
     { name: t.nav.testimonials, to: '/testimoni' },

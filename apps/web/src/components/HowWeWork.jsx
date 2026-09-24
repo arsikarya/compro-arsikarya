@@ -18,55 +18,61 @@ export default function HowWeWork() {
     {
       number: '01',
       title: lang === 'en' ? 'Consultation' : 'Konsultasi',
-      desc:
-        lang === 'en'
-          ? 'Understand project needs, desires, and goals to determine the right direction from the start.'
-          : 'Memahami kebutuhan, keinginan, dan tujuan proyek untuk menentukan arah yang tepat sejak awal.',
+      points: [
+        'Brief & kebutuhan proyek',
+        'Roadmap & skema kerja',
+      ],
       icon: <FiMessageSquare />,
     },
     {
       number: '02',
       title: lang === 'en' ? 'Site Survey' : 'Site Survey',
-      desc:
-        lang === 'en'
-          ? 'Review location conditions and characteristics directly as a basis for determining planning steps.'
-          : 'Meninjau kondisi dan karakteristik lokasi secara langsung sebagai dasar dalam menentukan langkah perencanaan.',
+      points: [
+        'Hasil ukur & pemetaan lahan',
+        'Analisis kondisi lokasi',
+        'Acuan awal perencanaan',
+      ],
       icon: <FiMapPin />,
     },
     {
       number: '03',
       title: lang === 'en' ? 'Design' : 'Desain',
-      desc:
-        lang === 'en'
-          ? 'Develop concept and project needs into focused, functional design with consideration to every detail.'
-          : 'Mengembangkan konsep dan kebutuhan proyek menjadi desain yang terarah, fungsional, dan memiliki pertimbangan pada setiap detail.',
+      points: [
+        'Konsep 2D & visual 3D',
+        'Gambar kerja teknis',
+        'Rencana Anggaran Biaya (RAB)',
+        'Schedule Pelaksanaan',
+      ],
       icon: <FiEdit3 />,
     },
     {
       number: '04',
       title: lang === 'en' ? 'Construction' : 'Pembangunan',
-      desc:
-        lang === 'en'
-          ? 'Realize design into construction work with focused management, paying attention to quality, cost, and time.'
-          : 'Mewujudkan desain ke dalam pekerjaan konstruksi dengan pengelolaan yang terarah, memperhatikan mutu, biaya, dan waktu.',
+      points: [
+        'Konstruksi fisik bangunan',
+        'Laporan progres berkala',
+        'Kontrol mutu & jadwal',
+      ],
       icon: <FiTool />,
     },
     {
       number: '05',
       title: lang === 'en' ? 'Warranty Period' : 'Masa Garansi',
-      desc:
-        lang === 'en'
-          ? 'Ensure work results remain maintained after project completion through maintenance period & warranty.'
-          : 'Memastikan hasil pekerjaan tetap terjaga setelah proyek selesai melalui masa pemeliharaan dan garansi sesuai ketentuan.',
+      points: [
+        'Perbaikan pasca konstruksi',
+        '& perawatan rutin*',
+        'Layanan aftersales',
+      ],
       icon: <FiShield />,
     },
     {
       number: '06',
       title: lang === 'en' ? 'Completed' : 'Selesai',
-      desc:
-        lang === 'en'
-          ? 'Hand over final project results after all work and inspections are completed according to agreed scope.'
-          : 'Menyerahkan hasil akhir proyek setelah seluruh pekerjaan dan pemeriksaan diselesaikan sesuai lingkup yang telah disepakati.',
+      points: [
+        'Inspeksi akhir bersama',
+        'Berita Acara Serah Terima (BAST)',
+        'Penyerahan kunci & berkas final',
+      ],
       icon: <FiCheckCircle />,
     },
   ];
@@ -76,6 +82,7 @@ export default function HowWeWork() {
       id="how-we-work"
       style={{
         backgroundColor: '#ffffff',
+        color: '#1e293b',
         padding: '96px 0',
         width: '100%',
         position: 'relative',
@@ -83,9 +90,9 @@ export default function HowWeWork() {
       }}
     >
       {/* Standard Site Container matching Navbar max-width */}
-      <div className="container">
+      <div className="container" style={{ position: 'relative', zIndex: 2 }}>
         {/* Section Header */}
-        <div style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto 112px auto' }}>
+        <div style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto 48px auto' }}>
           <span className="section-tag" style={{ justifyContent: 'center' }}>
             HOW WE WORK
           </span>
@@ -94,7 +101,7 @@ export default function HowWeWork() {
             style={{
               fontSize: 'clamp(2rem, 3.5vw, 2.75rem)',
               fontWeight: 800,
-              color: 'var(--color-text-main)',
+              color: '#0f172a',
               lineHeight: 1.25,
               marginBottom: '16px',
             }}
@@ -105,7 +112,7 @@ export default function HowWeWork() {
           <p
             style={{
               fontSize: '1.05rem',
-              color: 'var(--color-text-muted)',
+              color: '#475569',
               lineHeight: 1.65,
               margin: 0,
             }}
@@ -147,9 +154,18 @@ export default function HowWeWork() {
                   <div className="step-area top-area">
                     {isTop && (
                       <div className={`step-card ${cardAlignClass} ${isActive ? 'active-card' : ''}`}>
-                        <div className="card-step-num">{step.number}</div>
-                        <h3 className="card-title">{step.title}</h3>
-                        <p className="card-desc">{step.desc}</p>
+                        <div className="card-header">
+                          <span className="card-step-num">{step.number}</span>
+                          <h3 className="card-title">{step.title}</h3>
+                        </div>
+                        <ul className="card-points-list">
+                          {step.points.map((pt, pIdx) => (
+                            <li key={pIdx} className="card-point-item">
+                              <span className="bullet-dot">•</span>
+                              <span>{pt}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     )}
                   </div>
@@ -163,9 +179,18 @@ export default function HowWeWork() {
                   <div className="step-area bottom-area">
                     {!isTop && (
                       <div className={`step-card ${cardAlignClass} ${isActive ? 'active-card' : ''}`}>
-                        <div className="card-step-num">{step.number}</div>
-                        <h3 className="card-title">{step.title}</h3>
-                        <p className="card-desc">{step.desc}</p>
+                        <div className="card-header">
+                          <span className="card-step-num">{step.number}</span>
+                          <h3 className="card-title">{step.title}</h3>
+                        </div>
+                        <ul className="card-points-list">
+                          {step.points.map((pt, pIdx) => (
+                            <li key={pIdx} className="card-point-item">
+                              <span className="bullet-dot">•</span>
+                              <span>{pt}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     )}
                   </div>
@@ -193,10 +218,17 @@ export default function HowWeWork() {
                 </div>
                 <div className="mobile-card">
                   <div className="mobile-card-header">
-                    <span className="mobile-step-num">{step.number} —</span>
+                    <span className="mobile-step-num">{step.number}</span>
                     <h3 className="mobile-step-title">{step.title}</h3>
                   </div>
-                  <p className="mobile-step-desc">{step.desc}</p>
+                  <ul className="card-points-list">
+                    {step.points.map((pt, pIdx) => (
+                      <li key={pIdx} className="card-point-item">
+                        <span className="bullet-dot">•</span>
+                        <span>{pt}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </motion.div>
             ))}
@@ -205,23 +237,71 @@ export default function HowWeWork() {
       </div>
 
       <style>{`
+        /* Side Dot Matrix Grid Accents */
+        #how-we-work::before {
+          content: '';
+          position: absolute;
+          top: 60px;
+          right: 4%;
+          width: 90px;
+          height: 90px;
+          background-image: radial-gradient(rgba(0, 86, 151, 0.18) 1.5px, transparent 1.5px);
+          background-size: 14px 14px;
+          opacity: 0.75;
+          pointer-events: none;
+        }
+
+        #how-we-work::after {
+          content: '';
+          position: absolute;
+          bottom: 60px;
+          left: 4%;
+          width: 90px;
+          height: 90px;
+          background-image: radial-gradient(rgba(0, 86, 151, 0.18) 1.5px, transparent 1.5px);
+          background-size: 14px 14px;
+          opacity: 0.75;
+          pointer-events: none;
+        }
+
         /* Desktop Horizontal Alternating Layout */
         .desktop-timeline-wrapper {
           position: relative;
           width: 100%;
-          height: 380px;
+          min-height: 460px;
         }
 
         /* Continuous Horizontal Line at 50% vertical center */
         .desktop-center-line {
           position: absolute;
           top: 50%;
-          left: 2%;
-          right: 2%;
+          left: 1.5%;
+          right: 1.5%;
           height: 2px;
-          background: #cbd5e1;
+          background: rgba(0, 86, 151, 0.25);
           transform: translateY(-50%);
           z-index: 1;
+        }
+
+        .desktop-center-line::before,
+        .desktop-center-line::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: var(--color-primary-300, #005697);
+          box-shadow: 0 0 8px rgba(0, 86, 151, 0.4);
+          transform: translateY(-50%);
+        }
+
+        .desktop-center-line::before {
+          left: -4px;
+        }
+
+        .desktop-center-line::after {
+          right: -4px;
         }
 
         .desktop-steps-grid {
@@ -241,9 +321,8 @@ export default function HowWeWork() {
           position: relative;
         }
 
-        /* Top & Bottom Areas are each 161px tall. Center Node is 58px tall (161 + 29 = 190px center midpoint of 380px!) */
         .step-area {
-          height: 161px;
+          height: 200px;
           width: 100%;
           position: relative;
           display: flex;
@@ -257,15 +336,15 @@ export default function HowWeWork() {
           align-items: flex-start;
         }
 
-        /* Wide Cards overlapping adjacent empty column spaces (245px wide) */
+        /* Crisp Elevated Cards on White Background */
         .step-card {
-          background: #ffffff;
+          background: #f8fafc;
           border: 1px solid #e2e8f0;
-          border-radius: 14px;
-          padding: 16px 16px;
-          width: 245px;
-          text-align: center;
-          box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+          border-radius: 16px;
+          padding: 20px 20px;
+          width: 255px;
+          text-align: left;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
           transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
           position: absolute;
           z-index: 10;
@@ -273,11 +352,11 @@ export default function HowWeWork() {
         }
 
         .top-area .step-card {
-          bottom: 12px;
+          bottom: 14px;
         }
 
         .bottom-area .step-card {
-          top: 12px;
+          top: 14px;
         }
 
         /* Alignment positions for wide cards */
@@ -288,8 +367,9 @@ export default function HowWeWork() {
 
         .card-align-center:hover, .card-align-center.active-card {
           border-color: var(--color-primary-300, #005697);
-          transform: translateX(-50%) translateY(-3px);
-          box-shadow: 0 12px 28px rgba(0, 86, 151, 0.14);
+          transform: translateX(-50%) translateY(-4px);
+          box-shadow: 0 18px 36px rgba(0, 86, 151, 0.16);
+          background: #ffffff;
         }
 
         .card-align-first {
@@ -299,8 +379,9 @@ export default function HowWeWork() {
 
         .card-align-first:hover, .card-align-first.active-card {
           border-color: var(--color-primary-300, #005697);
-          transform: translateY(-3px);
-          box-shadow: 0 12px 28px rgba(0, 86, 151, 0.14);
+          transform: translateY(-4px);
+          box-shadow: 0 18px 36px rgba(0, 86, 151, 0.16);
+          background: #ffffff;
         }
 
         .card-align-last {
@@ -311,67 +392,87 @@ export default function HowWeWork() {
 
         .card-align-last:hover, .card-align-last.active-card {
           border-color: var(--color-primary-300, #005697);
-          transform: translateY(-3px);
-          box-shadow: 0 12px 28px rgba(0, 86, 151, 0.14);
+          transform: translateY(-4px);
+          box-shadow: 0 18px 36px rgba(0, 86, 151, 0.16);
+          background: #ffffff;
+        }
+
+        .card-header {
+          display: flex;
+          align-items: baseline;
+          gap: 8px;
+          margin-bottom: 10px;
         }
 
         .card-step-num {
           font-size: 1.05rem;
           font-weight: 800;
           color: var(--color-primary-300, #005697);
-          margin-bottom: 2px;
           letter-spacing: -0.01em;
+          flex-shrink: 0;
+          line-height: 1.25;
         }
 
         .card-title {
           font-size: 1.05rem;
-          font-weight: 700;
-          color: var(--color-text-main, #1e293b);
-          margin-bottom: 4px;
+          font-weight: 800;
+          color: #0f172a;
+          margin: 0;
           line-height: 1.25;
         }
 
-        .card-desc {
-          font-size: 0.81rem;
-          color: var(--color-text-muted, #64748b);
-          line-height: 1.48;
+        .card-points-list {
+          list-style: none;
+          padding: 0;
           margin: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
         }
 
-        /* Centered Circle Node containing ONLY the Icon */
+        .card-point-item {
+          font-size: 0.85rem;
+          color: #475569;
+          line-height: 1.48;
+          display: flex;
+          align-items: flex-start;
+          gap: 6px;
+        }
+
+        .bullet-dot {
+          color: var(--color-primary-300, #005697);
+          font-weight: 700;
+          line-height: 1;
+        }
+
+        /* Solid Primary Blue Center Circle Nodes */
         .center-node {
-          width: 58px;
-          height: 58px;
+          width: 54px;
+          height: 54px;
           border-radius: 50%;
-          background: #ffffff;
-          border: 2px solid #cbd5e1;
+          background: var(--color-primary-300, #005697);
+          border: none;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+          box-shadow: 0 6px 18px rgba(0, 86, 151, 0.28);
           transition: all 0.35s ease;
           z-index: 3;
           flex-shrink: 0;
         }
 
         .active-node, .desktop-step-item:hover .center-node {
-          background: #ffffff;
-          border-color: var(--color-primary-300, #005697);
-          transform: scale(1.08);
-          box-shadow: 0 8px 24px rgba(0, 86, 151, 0.22);
+          background: var(--color-primary-400, #003e6d);
+          transform: scale(1.12);
+          box-shadow: 0 8px 24px rgba(0, 86, 151, 0.42);
         }
 
         .node-icon {
           font-size: 1.35rem;
-          color: #475569;
+          color: #ffffff;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: color 0.3s ease;
-        }
-
-        .active-node .node-icon, .desktop-step-item:hover .node-icon {
-          color: var(--color-primary-300, #005697);
         }
 
         /* Mobile & Tablet Styles */
@@ -387,7 +488,7 @@ export default function HowWeWork() {
           top: 0;
           bottom: 0;
           width: 2px;
-          background: linear-gradient(180deg, var(--color-primary-300, #005697) 0%, #cbd5e1 100%);
+          background: rgba(0, 86, 151, 0.25);
         }
 
         .mobile-steps-list {
@@ -409,52 +510,47 @@ export default function HowWeWork() {
           width: 44px;
           height: 44px;
           border-radius: 50%;
-          background: #ffffff;
-          border: 2px solid var(--color-primary-300, #005697);
+          background: var(--color-primary-300, #005697);
+          border: none;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: var(--color-primary-300, #005697);
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+          color: #ffffff;
+          box-shadow: 0 4px 14px rgba(0, 86, 151, 0.25);
           font-size: 1.25rem;
           z-index: 2;
         }
 
         .mobile-card {
-          background: #ffffff;
+          background: #f8fafc;
           border: 1px solid #e2e8f0;
-          border-radius: 12px;
+          border-radius: 14px;
           padding: 18px 20px;
           width: 100%;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
           margin-left: 20px;
         }
 
         .mobile-card-header {
           display: flex;
-          align-items: center;
+          align-items: baseline;
           gap: 8px;
-          margin-bottom: 6px;
+          margin-bottom: 10px;
         }
 
         .mobile-step-num {
           font-weight: 800;
           color: var(--color-primary-300, #005697);
-          font-size: 0.95rem;
+          font-size: 1.1rem;
+          line-height: 1.25;
         }
 
         .mobile-step-title {
           font-size: 1.1rem;
-          font-weight: 700;
-          color: var(--color-text-main, #1e293b);
+          font-weight: 800;
+          color: #0f172a;
           margin: 0;
-        }
-
-        .mobile-step-desc {
-          font-size: 0.875rem;
-          color: var(--color-text-muted, #64748b);
-          line-height: 1.55;
-          margin: 0;
+          line-height: 1.25;
         }
 
         @media (max-width: 1100px) {

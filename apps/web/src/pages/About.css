@@ -248,13 +248,13 @@
     }
 }
 
-.about-40-60-grid {
+.about-50-50-grid {
     display: grid;
-    grid-template-columns: 4fr 6fr;
+    grid-template-columns: 1fr 1fr;
 }
 
 @media (max-width: 991px) {
-    .about-40-60-grid {
+    .about-50-50-grid {
         grid-template-columns: 1fr;
     }
 }

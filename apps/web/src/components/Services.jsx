@@ -40,6 +40,7 @@ export default function Services() {
     'konstruksi': '/projects/service_konstruksi.jpg',
     'design-build': '/projects/service_design_build.jpg',
     'renovasi': '/projects/service_renovasi.jpg',
+    'landscape': '/projects/service_landscape.jpg',
   };
 
   const displayTitleMap = {
@@ -47,6 +48,7 @@ export default function Services() {
     'konstruksi': lang === 'en' ? 'Construction' : 'Konstruksi',
     'design-build': 'Design & Build',
     'renovasi': lang === 'en' ? 'Renovation' : 'Renovasi',
+    'landscape': 'Landscape',
   };
 
   const allowedSlugs = ['perencanaan', 'konstruksi', 'design-build', 'renovasi'];
@@ -69,184 +71,7 @@ export default function Services() {
 
   return (
     <section id="services" style={{ backgroundColor: '#f5f5f5', width: '100%', overflow: 'hidden' }}>
-      {/* 1. 100% Full Viewport Width Dark Split Banner */}
-      <div
-        style={{
-          position: 'relative',
-          backgroundColor: 'var(--color-dark-bg, #222222)',
-          color: '#ffffff',
-          width: '100%',
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-            gap: '0',
-            width: '100%',
-            alignItems: 'stretch',
-          }}
-        >
-          {/* Left Column: Full-bleed Architect Blueprint Photo with Smooth Dark Fade */}
-          <div
-            style={{
-              position: 'relative',
-              width: '100%',
-              height: '100%',
-              minHeight: '380px',
-              overflow: 'hidden',
-            }}
-          >
-            <img
-              src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1200&auto=format&fit=crop"
-              alt="Architect drafting blueprints"
-              onError={(e) => {
-                e.currentTarget.src = '/projects/project_1.jpg';
-              }}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                display: 'block',
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'linear-gradient(to right, rgba(34, 34, 34, 0.1) 0%, rgba(34, 34, 34, 0.85) 60%, #222222 100%)',
-                pointerEvents: 'none',
-              }}
-            />
-          </div>
-
-          {/* Right Column: Left-aligned Dark Text Content & CTA Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 25 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            style={{
-              padding: 'clamp(48px, 5vw, 80px)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-              textAlign: 'left',
-            }}
-          >
-            <span className="section-tag section-tag-light">{lang === 'en' ? 'OUR COMMITMENT' : 'KOMITMEN KAMI'}</span>
-
-            <h2
-              style={{
-                fontSize: 'clamp(2.25rem, 3.8vw, 3.3rem)',
-                fontWeight: 800,
-                color: '#ffffff',
-                lineHeight: 1.2,
-                marginBottom: '20px',
-                letterSpacing: '-0.5px',
-                textAlign: 'left',
-              }}
-            >
-              {lang === 'en' ? (
-                <>
-                  We know how to<br />
-                  deliver your vision
-                </>
-              ) : (
-                <>
-                  Kami Tahu Cara<br />
-                  Mewujudkan Visi Anda
-                </>
-              )}
-            </h2>
-
-            <p
-              style={{
-                fontSize: '1rem',
-                color: '#cbd5e1',
-                lineHeight: 1.7,
-                marginBottom: '32px',
-                textAlign: 'left',
-              }}
-            >
-              {lang === 'en' ? (
-                <>
-                  Arsi Karya delivers integrated construction services with<br />
-                  trustworthy and professional execution in Bandung, Java — Bali.
-                </>
-              ) : (
-                <>
-                  Arsi Karya menghadirkan layanan konstruksi terpadu dengan<br />
-                  eksekusi amanah dan profesional di Bandung, Jawa — Bali.
-                </>
-              )}
-            </p>
-
-            <Button
-              to="/tentang-kami"
-              variant="primary"
-              showArrow={true}
-              style={{
-                backgroundColor: 'var(--color-primary-300)',
-                color: '#ffffff',
-                borderColor: 'var(--color-primary-300)',
-                fontWeight: 700,
-              }}
-            >
-              {lang === 'en' ? 'About Us' : 'Tentang Kami'}
-            </Button>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* 2. 100% Full Viewport Width 3-Photo Showcase Bar */}
-      <div
-        style={{
-          width: '100%',
-          padding: '16px',
-          backgroundColor: '#f5f5f5',
-        }}
-      >
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '16px',
-            width: '100%',
-          }}
-        >
-          {galleryImages.map((img, idx) => (
-            <div
-              key={idx}
-              style={{
-                height: '360px',
-                overflow: 'hidden',
-                borderRadius: '4px',
-              }}
-            >
-              <img
-                src={img.url}
-                alt={img.alt}
-                onError={(e) => {
-                  e.currentTarget.src = img.fallback;
-                }}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  transition: 'transform 0.5s ease',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
-                onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 3. 4-Column Services Grid */}
+      {/* 4-Column Services Grid */}
       <div id="services-list" style={{ backgroundColor: '#f5f5f5', color: 'var(--color-text-main)', padding: '96px 0' }}>
         <div className="container">
           <div
@@ -405,7 +230,7 @@ export default function Services() {
             width: 100%;
           }
 
-          @media (max-width: 1100px) {
+          @media (max-width: 1024px) {
             .home-services-grid {
               grid-template-columns: repeat(2, 1fr);
             }

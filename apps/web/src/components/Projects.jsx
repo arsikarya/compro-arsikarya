@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Button from './ui/Button';
 import ProjectCard, { ProjectGridStyles } from './ui/ProjectCard';
+import ProjectLightboxModal from './ui/ProjectLightboxModal';
 import { publicApi } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
 import { getProjectsData } from '../data/projectsData';
@@ -9,6 +10,7 @@ export default function Projects() {
   const { lang, t } = useLanguage();
   const [featuredProjects, setFeaturedProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
     setLoading(true);
@@ -82,11 +84,18 @@ export default function Projects() {
         ) : (
           <div className="albion-projects-grid">
             {featuredProjects.map((project) => (
-              <ProjectCard key={project.id || project.slug} proj={project} />
+              <ProjectCard key={project.id || project.slug} proj={project} onClick={(p) => setSelectedProject(p)} />
             ))}
           </div>
         )}
       </div>
+
+      {selectedProject && (
+        <ProjectLightboxModal
+          project={selectedProject}
+          onClose={() => setSelectedProject(null)}
+        />
+      )}
     </section>
   );
 }

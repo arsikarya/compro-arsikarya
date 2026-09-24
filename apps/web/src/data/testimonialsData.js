@@ -34,6 +34,18 @@ export const testimonialsData = [
     rating: 5,
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop',
     project: 'Finishing Rumah, Bandung'
+  },
+  {
+    id: 4,
+    name: 'Bpk. Hendra',
+    nameEn: 'Mr. Hendra',
+    role: 'Pemilik Proyek Perencanaan & Konstruksi',
+    roleEn: 'Owner of Planning & Construction Project',
+    content: 'Proses pengerjaan berjalan sangat terstruktur. Komunikasi tim lapangan dan laporan progres mingguan membuat kami sangat puas dengan hasil akhirnya.',
+    contentEn: 'The construction process was exceptionally structured. Field team communication and weekly progress reports made us completely satisfied with the final result.',
+    rating: 5,
+    avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=200&auto=format&fit=crop',
+    project: 'Konstruksi & Perencanaan, Bandung'
   }
 ];
 

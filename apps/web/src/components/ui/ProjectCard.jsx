@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FiChevronRight } from 'react-icons/fi';
 
-export function ProjectCard({ project, proj }) {
+export function ProjectCard({ project, proj, onClick }) {
   const item = project || proj;
   if (!item) return null;
 
@@ -11,11 +11,18 @@ export function ProjectCard({ project, proj }) {
   const location = item.location || item.city || 'Bandung, Jawa Barat';
   const category = item.category || item.categoryName || item.serviceName || item.scope || (item.features && item.features.length > 0 ? item.features[0] : 'Konstruksi & Design');
 
+  const handleClick = (e) => {
+    e.preventDefault();
+    if (onClick) {
+      onClick(item);
+    }
+  };
+
   return (
-    <Link
-      to={`/proyek/${item.slug || item.id}`}
+    <div
+      onClick={handleClick}
       className="albion-card-link"
-      style={{ textDecoration: 'none', color: 'inherit', display: 'block', height: '100%' }}
+      style={{ textDecoration: 'none', color: 'inherit', display: 'block', height: '100%', cursor: 'pointer' }}
     >
       <div className="albion-card-wrapper horizontal-project-card">
         {/* Left Side: Photo (40% width) */}
@@ -51,12 +58,12 @@ export function ProjectCard({ project, proj }) {
 
           {/* Bottom CTA Link with Chevron Right */}
           <div className="horizontal-cta-link">
-            <span>Detail Proyek</span>
+            <span>Lihat Proyek</span>
             <FiChevronRight className="horizontal-card-arrow" />
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
 

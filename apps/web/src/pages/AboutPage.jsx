@@ -29,7 +29,7 @@ export default function AboutPage() {
 
       {/* Top Banner (Kept intact) */}
       <HeroBanner
-        bgImage="/projects/project_2.jpg"
+        bgImage="/images/about-hero.jpg"
         overlayOpacity={0.65}
         tag={t.aboutPage?.heroTag || "TENTANG PERUSAHAAN"}
         title={t.aboutPage?.heroTitle || "Tentang Arsi Karya"}
@@ -47,13 +47,13 @@ export default function AboutPage() {
       >
         <div className="container" style={{ width: '100%', maxWidth: '1240px', margin: '0 auto', padding: '0 24px' }}>
           <div
-            className="about-40-60-grid"
+            className="about-50-50-grid"
             style={{
-              gap: 'clamp(32px, 5vw, 64px)',
+              gap: 'clamp(32px, 4vw, 56px)',
               alignItems: 'start',
             }}
           >
-            {/* Left Column: 40% Width (Static, non-sticky image) */}
+            {/* Left Column: 50% Width (3-Image Collage Grid) */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -65,28 +65,92 @@ export default function AboutPage() {
             >
               <div
                 style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '16px',
                   width: '100%',
-                  borderRadius: '16px',
-                  overflow: 'hidden',
-                  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.08)',
-                  border: '1px solid #e2e8f0',
-                  backgroundColor: '#f8fafc',
                 }}
               >
-                <img
-                  src="/images/about-showcase.jpg"
-                  alt="PT. Arsi Karya Unggul Showcase"
+                {/* 1 Tall Vertical Image on Left (Construction Site) */}
+                <div
                   style={{
                     width: '100%',
-                    height: 'auto',
-                    display: 'block',
-                    objectFit: 'cover',
+                    height: '100%',
+                    minHeight: '480px',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)',
                   }}
-                />
+                >
+                  <img
+                    src="/images/about_collage_1.jpg"
+                    alt="PT. Arsi Karya Unggul Construction Process"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      display: 'block',
+                    }}
+                  />
+                </div>
+
+                {/* 2 Stacked Horizontal Images on Right */}
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '16px',
+                    width: '100%',
+                    height: '100%',
+                  }}
+                >
+                  {/* Top Right: Bathroom Interior */}
+                  <div
+                    style={{
+                      flex: 1,
+                      minHeight: '230px',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)',
+                    }}
+                  >
+                    <img
+                      src="/images/about_collage_2.jpg"
+                      alt="PT. Arsi Karya Unggul Bathroom Finishing"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block',
+                      }}
+                    />
+                  </div>
+                  {/* Bottom Right: Swimming Pool & Pergola */}
+                  <div
+                    style={{
+                      flex: 1,
+                      minHeight: '230px',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)',
+                    }}
+                  >
+                    <img
+                      src="/images/about_collage_3.jpg"
+                      alt="PT. Arsi Karya Unggul Pool & Landscape"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block',
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
             </motion.div>
 
-            {/* Right Column: 70% Width (Deskripsi, Visi, Misi & Stats) */}
+            {/* Right Column: 50% Width (Deskripsi, Visi, Misi & Stats) */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}

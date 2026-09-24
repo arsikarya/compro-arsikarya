@@ -81,7 +81,7 @@ export default function ContactPage() {
 
       {/* Dark Architectural Hero Banner */}
       <HeroBanner
-        bgImage="/projects/project_5.jpg"
+        bgImage="/images/contact-hero.jpg"
         overlayOpacity={0.65}
         tag={t.contactPage?.heroTag || "KONTAK"}
         title={t.contactPage?.heroTitle || "Ajukan Kerja Sama"}
@@ -93,123 +93,159 @@ export default function ContactPage() {
         <div className="container">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '48px' }}>
             
-            {/* Left Column: Direct Contact Info & WhatsApp */}
+            {/* Left Column: Direct Contact Info, Google Maps & WhatsApp */}
             <div>
               <h2>{t.contactPage?.officialTitle || 'Kontak Resmi'}</h2>
-              <p style={{ marginTop: '16px', color: 'var(--color-neutral-500)', lineHeight: 1.6 }}>
-                {lang === 'en' 
-                  ? 'Arsi Karya is open to discussing your project needs, construction, design & build, renovation, landscape, or corporate partnerships across Bandung, Java — Bali.'
-                  : 'Arsi Karya terbuka untuk mendiskusikan kebutuhan proyek, pekerjaan konstruksi, design & build, renovasi, landscape, maupun bentuk kerja sama lainnya di Bandung, Jawa — Bali.'}
-              </p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '36px' }}>
-                <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+              {/* Google Maps Location Embed */}
+              <div
+                style={{
+                  marginTop: '24px',
+                  marginBottom: '28px',
+                  borderRadius: 0,
+                  border: '1px solid var(--color-neutral-200)',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+                  height: '250px',
+                  backgroundColor: '#f1f5f9',
+                }}
+              >
+                <iframe
+                  src="https://maps.google.com/maps?q=PT+Arsi+Karya+Unggul%2C+Jl.+Tulip+VII+No.21%2C+Rancabolang%2C+Kec.+Gedebage%2C+Kota+Bandung&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                  title="Lokasi PT Arsi Karya Unggul di Google Maps"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+
+              {/* 2-Column Contact Info Grid */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gap: '24px 20px',
+                  marginTop: '24px',
+                }}
+              >
+                {/* 1. Alamat Kantor */}
+                <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                   <div
                     style={{
-                      width: '48px',
-                      height: '48px',
+                      width: '42px',
+                      height: '42px',
                       borderRadius: '50%',
                       backgroundColor: 'var(--color-primary-100)',
                       color: 'var(--color-primary-300)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '1.25rem',
+                      fontSize: '1.15rem',
                       flexShrink: 0,
                     }}
                   >
                     <FaMapMarkerAlt />
                   </div>
                   <div>
-                    <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>{lang === 'en' ? 'Office Address' : 'Alamat Kantor'}</h4>
-                    <p style={{ fontSize: '0.925rem', color: 'var(--color-neutral-500)', lineHeight: 1.5 }}>
+                    <h4 style={{ fontSize: '0.95rem', marginBottom: '4px' }}>{lang === 'en' ? 'Office Address' : 'Alamat Kantor'}</h4>
+                    <a
+                      href="https://maps.app.goo.gl/p3R2LS88sWNrNqGx7"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ fontSize: '0.85rem', color: 'var(--color-neutral-600)', lineHeight: 1.5, textDecoration: 'none', display: 'block' }}
+                    >
                       {t.footer?.address || 'Bumi Adipura, Jl. Tulip VII No. 21, Rancabolang, Gedebage, Kota Bandung.'}
-                    </p>
+                    </a>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                {/* 2. WhatsApp / Telepon */}
+                <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                   <div
                     style={{
-                      width: '48px',
-                      height: '48px',
+                      width: '42px',
+                      height: '42px',
                       borderRadius: '50%',
                       backgroundColor: 'rgba(37, 211, 102, 0.1)',
                       color: 'var(--color-whatsapp)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '1.25rem',
+                      fontSize: '1.15rem',
                       flexShrink: 0,
                     }}
                   >
                     <FaWhatsapp />
                   </div>
                   <div>
-                    <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>{lang === 'en' ? 'WhatsApp / Phone' : 'WhatsApp / Telepon'}</h4>
+                    <h4 style={{ fontSize: '0.95rem', marginBottom: '4px' }}>{lang === 'en' ? 'WhatsApp / Phone' : 'WhatsApp / Telepon'}</h4>
                     <a
                       href={generalWaUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-neutral-700)' }}
+                      style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-neutral-700)', textDecoration: 'none' }}
                     >
                       +62 899-7932-802
                     </a>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                {/* 3. Email Resmi */}
+                <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                   <div
                     style={{
-                      width: '48px',
-                      height: '48px',
+                      width: '42px',
+                      height: '42px',
                       borderRadius: '50%',
                       backgroundColor: 'var(--color-primary-100)',
                       color: 'var(--color-primary-300)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '1.25rem',
+                      fontSize: '1.15rem',
                       flexShrink: 0,
                     }}
                   >
                     <FaEnvelope />
                   </div>
                   <div>
-                    <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>{lang === 'en' ? 'Official Email' : 'Email Resmi'}</h4>
+                    <h4 style={{ fontSize: '0.95rem', marginBottom: '4px' }}>{lang === 'en' ? 'Official Email' : 'Email Resmi'}</h4>
                     <a
                       href="mailto:arsikaryaunggul@gmail.com"
-                      style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-neutral-700)' }}
+                      style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-neutral-700)', textDecoration: 'none', wordBreak: 'break-all' }}
                     >
                       arsikaryaunggul@gmail.com
                     </a>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+                {/* 4. Instagram */}
+                <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                   <div
                     style={{
-                      width: '48px',
-                      height: '48px',
+                      width: '42px',
+                      height: '42px',
                       borderRadius: '50%',
                       backgroundColor: 'var(--color-primary-100)',
                       color: 'var(--color-primary-300)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '1.25rem',
+                      fontSize: '1.15rem',
                       flexShrink: 0,
                     }}
                   >
                     <FaInstagram />
                   </div>
                   <div>
-                    <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>Instagram</h4>
+                    <h4 style={{ fontSize: '0.95rem', marginBottom: '4px' }}>Instagram</h4>
                     <a
                       href="https://instagram.com/arsikarya.build"
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-neutral-700)' }}
+                      style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-neutral-700)', textDecoration: 'none' }}
                     >
                       @arsikarya.build
                     </a>
@@ -217,7 +253,7 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              <div style={{ marginTop: '36px' }}>
+              <div style={{ marginTop: '32px' }}>
                 <Button
                   href={generalWaUrl}
                   target="_blank"

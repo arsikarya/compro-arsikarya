@@ -6,7 +6,7 @@ import { useLanguage } from '../context/LanguageContext';
 
 export default function CTA() {
   const { t } = useLanguage();
-  const ctaPhoto = "/projects/project_8.jpg";
+  const ctaPhoto = "/projects/cta_blueprint.jpg";
   const generalWaUrl = getGeneralWaUrl();
 
   return (
@@ -15,22 +15,21 @@ export default function CTA() {
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+          alignItems: 'stretch',
           gap: '0',
           width: '100%',
         }}
       >
-        {/* Left Column: Full-height Industrial Construction Photo (100% Full-Bleed) */}
-        <div style={{ height: '380px', position: 'relative', overflow: 'hidden' }}>
+        {/* Left Column: Full-height Industrial Blueprint Photo (100% Full-Bleed No Gaps) */}
+        <div style={{ minHeight: '340px', height: '100%', width: '100%', position: 'relative', overflow: 'hidden' }}>
           <img
             src={ctaPhoto}
-            alt="Industrial construction structure"
-            onError={(e) => {
-              e.currentTarget.src = 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=1200&auto=format&fit=crop';
-            }}
+            alt="Engineering blueprint & hardhat workspace"
             style={{
               width: '100%',
               height: '100%',
               objectFit: 'cover',
+              objectPosition: 'center',
               display: 'block',
             }}
           />
@@ -64,7 +63,7 @@ export default function CTA() {
               letterSpacing: '-0.5px',
             }}
           >
-            {t.cta?.title || 'Ready to work together?'}
+            {t.cta?.title || 'Got Something in Mind? Hit Us Up'}
           </h2>
 
           <Button

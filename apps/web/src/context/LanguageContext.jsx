@@ -78,7 +78,7 @@ export const translations = {
     },
     cta: {
       tag: 'CONTACT US',
-      title: 'Ready to work together?',
+      title: 'Got Something in Mind? Hit Us Up',
       button: 'HUBUNGI KAMI',
     },
     faq: {
@@ -250,7 +250,7 @@ export const translations = {
     },
     cta: {
       tag: 'CONTACT US',
-      title: 'Ready to work together?',
+      title: 'Got Something in Mind? Hit Us Up',
       button: 'CONTACT US',
     },
     faq: {

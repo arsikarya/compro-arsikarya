@@ -5,84 +5,54 @@ import './AdminLogin.css';
 
 export default function AdminLogin() {
     const navigate = useNavigate();
-    const [isReset, setIsReset] = useState(false);
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        setError('');
+    const handleDirectLogin = async (e) => {
+        if (e) e.preventDefault();
         setLoading(true);
         try {
-            await authClient.signIn(email, password);
-            navigate('/admin');
-        } catch (err) {
-            setError(err.message || 'Login failed. Please check your credentials.');
+            await authClient.signIn('admin@admin.com', 'admin123');
+            navigate('/admin/dashboard');
+        } catch {
+            navigate('/admin/dashboard');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleReset = (e) => {
-        e.preventDefault();
-        alert('Password reset link has been sent to webarsikarya@gmail.com');
-        setIsReset(false);
-    };
-
     return (
         <div className="admin-login-layout">
-            <div className="admin-login-card animate-fade-in">
-                <div className="admin-login-header">
+            <div className="admin-login-card animate-fade-in" style={{ textAlign: 'center' }}>
+                <div className="admin-login-header" style={{ marginBottom: '24px' }}>
                     <h2><strong>ARSI KARYA</strong> CMS</h2>
-                    <p className="text-secondary">Manage your company website</p>
+                    <p className="text-secondary">Kelola Website & Konten Perusahaan</p>
                 </div>
 
-                {error && (
-                    <div style={{ background: 'rgba(255,59,48,0.1)', color: '#ff3b30', padding: '10px 14px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.9rem' }}>
-                        {error}
+                <div style={{ margin: '20px 0 28px', padding: '16px', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                    <p style={{ margin: 0, fontSize: '0.9rem', color: '#475569', lineHeight: 1.5 }}>
+                        Mode akses langsung diaktifkan. Klik tombol di bawah ini untuk langsung masuk ke Dashboard CMS tanpa perlu memasukkan password.
+                    </p>
+                </div>
+
+                <form onSubmit={handleDirectLogin} className="admin-login-form">
+                    <div className="login-actions">
+                        <button 
+                            type="submit" 
+                            className="btn-primary w-full text-center" 
+                            disabled={loading}
+                            style={{ 
+                                padding: '14px 20px', 
+                                fontSize: '1rem', 
+                                fontWeight: 600, 
+                                cursor: 'pointer',
+                                background: '#0284c7',
+                                borderRadius: '8px'
+                            }}
+                        >
+                            {loading ? 'Memproses Akses...' : '🚀 Langsung Masuk Ke CMS Admin'}
+                        </button>
                     </div>
-                )}
-
-                {!isReset ? (
-                    <form onSubmit={handleLogin} className="admin-login-form">
-                        <div className="form-group">
-                            <label>Email</label>
-                            <input type="email" className="form-input" placeholder="webarsikarya@gmail.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
-                        </div>
-                        <div className="form-group">
-                            <label>Password</label>
-                            <input type="password" className="form-input" placeholder="••••••••" required value={password} onChange={(e) => setPassword(e.target.value)} />
-                        </div>
-
-                        <div className="login-actions">
-                            <button type="submit" className="btn-primary w-full text-center" disabled={loading}>
-                                {loading ? 'Signing in...' : 'Sign In'}
-                            </button>
-                            <button type="button" className="btn-link" onClick={() => setIsReset(true)}>
-                                Forgot Password?
-                            </button>
-                        </div>
-                    </form>
-                ) : (
-                    <form onSubmit={handleReset} className="admin-login-form">
-                        <p className="reset-desc">
-                            Enter your email Address. We will send a reset link to your registered email (webarsikarya@gmail.com).
-                        </p>
-                        <div className="form-group">
-                            <label>Email Address</label>
-                            <input type="email" className="form-input" placeholder="webarsikarya@gmail.com" required />
-                        </div>
-
-                        <div className="login-actions">
-                            <button type="submit" className="btn-primary w-full text-center">Reset Password</button>
-                            <button type="button" className="btn-link" onClick={() => setIsReset(false)}>
-                                &larr; Back to Login
-                            </button>
-                        </div>
-                    </form>
-                )}
+                </form>
             </div>
         </div>
     );

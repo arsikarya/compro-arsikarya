@@ -6,8 +6,14 @@
 export function formatRichText(content) {
   if (!content || typeof content !== 'string') return '';
 
-  const trimmed = content.trim();
+  let trimmed = content.trim();
   if (!trimmed) return '';
+
+  // Fix typos and normalize all h2 tags to h3 for clean consistent document body rendering
+  trimmed = trimmed
+    .replace(/2>([^<]+)<\/(h2|h3)>/gi, '<h3>$1</h3>')
+    .replace(/<h2(\s+[^>]*)?>/gi, '<h3>')
+    .replace(/<\/h2>/gi, '</h3>');
 
   const hasHtml = /<[a-z][\s\S]*>/i.test(trimmed);
 
