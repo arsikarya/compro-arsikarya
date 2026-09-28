@@ -5,6 +5,8 @@ import CloudinaryUploadWidget from '../../components/admin/CloudinaryUploadWidge
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { FiArrowLeft, FiAlertCircle, FiPlus, FiTrash2 } from 'react-icons/fi';
 
+import RichTextEditor from '../../components/admin/RichTextEditor';
+
 export default function AdminServiceEditor() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -170,44 +172,13 @@ export default function AdminServiceEditor() {
                         </div>
 
                         <div className="form-group">
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
-                                <label className="form-label" style={{ margin: 0 }}>Penjelasan Lengkap Layanan (Halaman Detail)</label>
-                                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                                    <button 
-                                        type="button" 
-                                        onClick={() => setDescription((prev) => prev + '\n<h2>Sub-Judul Layanan</h2>\n')} 
-                                        className="btn-cms btn-cms-outline" 
-                                        style={{ padding: '3px 8px', fontSize: '0.75rem' }}
-                                    >
-                                        + Sub-Judul (H2)
-                                    </button>
-                                    <button 
-                                        type="button" 
-                                        onClick={() => setDescription((prev) => prev + '\n<p>Tuliskan paragraf penjelasan di sini...</p>\n')} 
-                                        className="btn-cms btn-cms-outline" 
-                                        style={{ padding: '3px 8px', fontSize: '0.75rem' }}
-                                    >
-                                        + Paragraf
-                                    </button>
-                                    <button 
-                                        type="button" 
-                                        onClick={() => setDescription((prev) => prev + '\n<ol>\n  <li>Poin penjelasan 1</li>\n  <li>Poin penjelasan 2</li>\n</ol>\n')} 
-                                        className="btn-cms btn-cms-outline" 
-                                        style={{ padding: '3px 8px', fontSize: '0.75rem' }}
-                                    >
-                                        + List Angka
-                                    </button>
-                                </div>
-                            </div>
-                            <textarea 
-                                className="form-input" 
-                                rows="14" 
+                            <label className="form-label">Penjelasan Lengkap Layanan (Halaman Detail)</label>
+                            <RichTextEditor 
                                 value={description} 
-                                onChange={(e) => setDescription(e.target.value)}
-                                placeholder="<h2>Pengenalan Layanan</h2>&#10;<p>Tuliskan penjelasan detail mengenai layanan ini...</p>"
-                                style={{ fontFamily: 'monospace', fontSize: '0.875rem', lineHeight: 1.6 }}
+                                onChange={(html) => setDescription(html)}
+                                placeholder="Tuliskan penjelasan detail mengenai layanan ini di sini..."
                             />
-                            <small className="field-help">Teks ini akan tampil bersih pada Halaman Detail Layanan. Gunakan tombol bantuan di atas untuk menambah Sub-Judul, Paragraf, atau List Angka.</small>
+                            <small className="field-help">Gunakan toolbar visual di atas untuk membuat Tebal, Sub-Judul, List Poin, atau List Angka secara langsung tanpa mengetik kode HTML.</small>
                         </div>
                     </div>
 

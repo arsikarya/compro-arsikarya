@@ -71,4 +71,24 @@ app.get('/api/debug/migrate-labs', async (_req, res) => {
     }
 });
 
+// Migration endpoint for site_settings dynamic stats & whatsapp CTA
+app.get('/api/debug/migrate-settings', async (_req, res) => {
+    try {
+        const { db } = await import('../apps/api/src/db/index.js');
+        const { sql } = await import('drizzle-orm');
+        
+        await db.execute(sql`ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS stat1_value text DEFAULT '100+';`);
+        await db.execute(sql`ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS stat1_label text DEFAULT 'PROYEK SELESAI';`);
+        await db.execute(sql`ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS stat2_value text DEFAULT '100%';`);
+        await db.execute(sql`ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS stat2_label text DEFAULT 'KOMITMEN MUTU';`);
+        await db.execute(sql`ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS stat3_value text DEFAULT '4';`);
+        await db.execute(sql`ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS stat3_label text DEFAULT 'LAYANAN SPESIALIS';`);
+        await db.execute(sql`ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS whatsapp_cta_text text DEFAULT 'Halo Arsi Karya, saya ingin berkonsultasi terkait kebutuhan proyek saya. Mohon informasi dan arahan mengenai langkah yang perlu saya siapkan.';`);
+        
+        res.json({ success: true, message: 'Site settings stats and WhatsApp columns ensured.' });
+    } catch (error) {
+        res.status(500).json({ success: false, error: (error as any)?.message });
+    }
+});
+
 export default app;

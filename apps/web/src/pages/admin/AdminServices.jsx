@@ -115,8 +115,9 @@ export default function AdminServices() {
                                                 <span>Edit</span>
                                             </Link>
 
-                                            <button onClick={() => handleDelete(service.id, service.title)} className="btn-action-sm delete">
+                                            <button onClick={() => handleDelete(service.id, service.title)} className="btn-action-sm delete" title="Hapus">
                                                 <FiTrash2 size={14} />
+                                                <span>Hapus</span>
                                             </button>
                                         </div>
                                     </td>

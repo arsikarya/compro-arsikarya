@@ -251,18 +251,7 @@ export default function ContactPage() {
                     </a>
                   </div>
                 </div>
-              </div>
-
-              <div style={{ marginTop: '32px' }}>
-                <Button
-                  href={generalWaUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  variant="whatsapp"
-                  style={{ padding: '14px 28px' }}
-                >
-                  {lang === 'en' ? 'Chat via WhatsApp' : 'Chat WhatsApp'}
-                </Button>
+              {/* Contact Info Items without bottom WhatsApp button */}
               </div>
             </div>
 
@@ -334,16 +323,12 @@ export default function ContactPage() {
                       'Architecture & Planning',
                       'General Construction',
                       'Design & Build',
-                      'Renovation',
-                      'Landscape',
-                      'Other'
+                      'Renovation'
                     ] : [
                       'Perencanaan',
                       'Konstruksi',
                       'Design & Build',
-                      'Renovasi',
-                      'Landscape',
-                      'Lainnya'
+                      'Renovasi'
                     ]}
                   />
 
@@ -359,13 +344,15 @@ export default function ContactPage() {
                       'Commercial / Shophouse',
                       'Office Building',
                       'Landscape & Garden',
-                      'Swimming Pool / Pond'
+                      'Swimming Pool / Pond',
+                      'Other'
                     ] : [
                       'Rumah Hunian',
                       'Ruko/Komersial',
                       'Gedung Perkantoran',
                       'Landscape',
-                      'Kolam Renang/Kolam Ikan'
+                      'Kolam Renang/Kolam Ikan',
+                      'Lainnya'
                     ]}
                   />
                 </div>

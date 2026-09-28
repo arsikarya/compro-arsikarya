@@ -1,9 +1,10 @@
 import React from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
-import { getGeneralWaUrl } from '../../utils/whatsapp';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 
 export default function FloatingWhatsApp() {
-  const waUrl = getGeneralWaUrl();
+  const { getWaUrl } = useSiteSettings();
+  const waUrl = getWaUrl();
 
   return (
     <a

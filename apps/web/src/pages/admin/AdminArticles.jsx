@@ -118,8 +118,9 @@ export default function AdminArticles() {
                                                 <span>Edit</span>
                                             </Link>
 
-                                            <button onClick={() => handleDelete(article.id, article.title)} className="btn-action-sm delete">
+                                            <button onClick={() => handleDelete(article.id, article.title)} className="btn-action-sm delete" title="Hapus">
                                                 <FiTrash2 size={14} />
+                                                <span>Hapus</span>
                                             </button>
                                         </div>
                                     </td>

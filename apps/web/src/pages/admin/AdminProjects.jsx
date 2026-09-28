@@ -172,6 +172,7 @@ export default function AdminProjects() {
 
                                             <button onClick={() => handleDelete(project.id, project.title)} className="btn-action-sm delete" title="Hapus">
                                                 <FiTrash2 size={14} />
+                                                <span>Hapus</span>
                                             </button>
                                         </div>
                                     </td>

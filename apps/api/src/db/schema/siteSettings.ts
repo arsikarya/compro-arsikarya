@@ -13,5 +13,12 @@ export const siteSettings = pgTable('site_settings', {
     seoTitle: text('seo_title').default('Arsi Karya — Kontraktor & Design Build'),
     seoDescription: text('seo_description').default('Kontraktor spesialis Konstruksi, Design & Build, Fabrikasi, dan Pengadaan Barang.'),
     socialImageUrl: text('social_image_url'),
+    stat1Value: text('stat1_value').default('100+'),
+    stat1Label: text('stat1_label').default('PROYEK SELESAI'),
+    stat2Value: text('stat2_value').default('100%'),
+    stat2Label: text('stat2_label').default('KOMITMEN MUTU'),
+    stat3Value: text('stat3_value').default('4'),
+    stat3Label: text('stat3_label').default('LAYANAN SPESIALIS'),
+    whatsappCtaText: text('whatsapp_cta_text').default('Halo Arsi Karya, saya ingin berkonsultasi terkait kebutuhan proyek saya. Mohon informasi dan arahan mengenai langkah yang perlu saya siapkan.'),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });

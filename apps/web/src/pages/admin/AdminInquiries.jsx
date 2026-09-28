@@ -164,8 +164,9 @@ export default function AdminInquiries() {
                                                 <span>Detail</span>
                                             </Link>
 
-                                            <button onClick={() => handleDelete(item.id, item.nama)} className="btn-action-sm delete">
+                                            <button onClick={() => handleDelete(item.id, item.nama)} className="btn-action-sm delete" title="Hapus">
                                                 <FiTrash2 size={14} />
+                                                <span>Hapus</span>
                                             </button>
                                         </div>
                                     </td>

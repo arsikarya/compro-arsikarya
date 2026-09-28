@@ -3,8 +3,8 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
 import { FaInstagram, FaTiktok } from 'react-icons/fa';
 import Button from './ui/Button';
-import { getGeneralWaUrl } from '../utils/whatsapp';
 import { useLanguage } from '../context/LanguageContext';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 import { publicApi } from '../lib/api';
 
 export default function Navbar() {
@@ -13,6 +13,7 @@ export default function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState(false);
   const location = useLocation();
   const { lang, toggleLang, t } = useLanguage();
+  const { getWaUrl } = useSiteSettings();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,7 +33,7 @@ export default function Navbar() {
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
-  const generalWaUrl = getGeneralWaUrl();
+  const generalWaUrl = getWaUrl();
 
   const isHomePage = location.pathname === '/';
   const effectiveProgress = isHomePage ? scrollProgress : 1;
@@ -58,30 +59,29 @@ export default function Navbar() {
     { name: lang === 'en' ? 'General Construction' : 'Konstruksi', to: '/layanan/konstruksi' },
     { name: 'Design & Build', to: '/layanan/design-build' },
     { name: lang === 'en' ? 'Renovation' : 'Renovasi', to: '/layanan/renovasi' },
-    { name: lang === 'en' ? 'Landscape & Garden' : 'Landscape', to: '/layanan/landscape' },
   ]);
 
   useEffect(() => {
     publicApi.getServices()
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
+          const filteredData = data.filter(d => d.slug !== 'landscape');
           const defaultNavs = [
             { name: lang === 'en' ? 'Architecture & Planning' : 'Perencanaan', slug: 'perencanaan' },
             { name: lang === 'en' ? 'General Construction' : 'Konstruksi', slug: 'konstruksi' },
             { name: 'Design & Build', slug: 'design-build' },
             { name: lang === 'en' ? 'Renovation' : 'Renovasi', slug: 'renovasi' },
-            { name: lang === 'en' ? 'Landscape & Garden' : 'Landscape', slug: 'landscape' },
           ];
 
           const combinedNavs = defaultNavs.map(def => {
-            const apiMatch = data.find(d => d.slug === def.slug);
+            const apiMatch = filteredData.find(d => d.slug === def.slug);
             return {
               name: apiMatch ? (lang === 'en' ? (apiMatch.titleEn || apiMatch.title) : (apiMatch.title?.split('(')[0]?.trim() || apiMatch.title)) : def.name,
               to: `/layanan/${def.slug}`,
             };
           });
 
-          data.forEach(apiSvc => {
+          filteredData.forEach(apiSvc => {
             if (!combinedNavs.some(nav => nav.to === `/layanan/${apiSvc.slug}`)) {
               combinedNavs.push({
                 name: lang === 'en' ? (apiSvc.titleEn || apiSvc.title) : (apiSvc.title?.split('(')[0]?.trim() || apiSvc.title),

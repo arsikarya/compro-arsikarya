@@ -324,11 +324,11 @@ export default function ServicesPage() {
           : "Kami memadukan keahlian perancangan teknis dengan eksekusi fisik terstruktur untuk mewujudkan proyek Anda di Bandung, Jawa — Bali."}
       />
 
-      {/* Primary Services Grid */}
+      {/* Primary Services Grid (2 Cards Per Row) */}
       <section className="section-padding" style={{ backgroundColor: '#ffffff' }}>
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '28px' }}>
-            {allServices.map((svc) => {
+          <div className="services-directory-grid">
+            {allServices.filter((s) => s.slug !== 'landscape').map((svc) => {
               const cardImage = svc.heroImageUrl || serviceImagesMap[svc.slug] || '/projects/project_1.jpg';
               const cardDesc = svc.shortDescription || svc.shortDesc;
 
@@ -346,7 +346,7 @@ export default function ServicesPage() {
                       alt={svc.title}
                       style={{
                         width: '100%',
-                        height: '210px',
+                        height: '240px',
                         objectFit: 'cover',
                         display: 'block',
                       }}
@@ -376,9 +376,21 @@ export default function ServicesPage() {
       </section>
 
       <style>{`
+        .services-directory-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 28px;
+        }
+
+        @media (max-width: 768px) {
+          .services-directory-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
         .clean-service-card {
           background-color: #f8fafc;
-          padding: 16px;
+          padding: 18px;
           border-radius: 16px;
           border: 1px solid #e2e8f0;
           display: flex;

@@ -109,15 +109,18 @@ function MainLayout() {
 }
 
 import { LanguageProvider } from './context/LanguageContext';
+import { SiteSettingsProvider } from './context/SiteSettingsContext';
 
 export default function App() {
   return (
     <HelmetProvider>
       <LanguageProvider>
-        <Router>
-          <ScrollToTop />
-          <MainLayout />
-        </Router>
+        <SiteSettingsProvider>
+          <Router>
+            <ScrollToTop />
+            <MainLayout />
+          </Router>
+        </SiteSettingsProvider>
       </LanguageProvider>
     </HelmetProvider>
   );

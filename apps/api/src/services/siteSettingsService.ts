@@ -14,6 +14,13 @@ export type SiteSettingsInput = {
     seoTitle?: string;
     seoDescription?: string;
     socialImageUrl?: string;
+    stat1Value?: string;
+    stat1Label?: string;
+    stat2Value?: string;
+    stat2Label?: string;
+    stat3Value?: string;
+    stat3Label?: string;
+    whatsappCtaText?: string;
 };
 
 export const siteSettingsService = {
@@ -32,6 +39,13 @@ export const siteSettingsService = {
             instagram: 'arsikarya.build',
             seoTitle: 'Arsi Karya — Kontraktor & Design Build',
             seoDescription: 'Kontraktor spesialis Konstruksi, Design & Build, Fabrikasi, dan Pengadaan Barang.',
+            stat1Value: '100+',
+            stat1Label: 'PROYEK SELESAI',
+            stat2Value: '100%',
+            stat2Label: 'KOMITMEN MUTU',
+            stat3Value: '4',
+            stat3Label: 'LAYANAN SPESIALIS',
+            whatsappCtaText: 'Halo Arsi Karya, saya ingin berkonsultasi terkait kebutuhan proyek saya. Mohon informasi dan arahan mengenai langkah yang perlu saya siapkan.',
         }).returning();
         return inserted;
     },
@@ -51,6 +65,13 @@ export const siteSettingsService = {
             seoTitle: data.seoTitle ?? existing.seoTitle,
             seoDescription: data.seoDescription ?? existing.seoDescription,
             socialImageUrl: data.socialImageUrl ?? existing.socialImageUrl,
+            stat1Value: data.stat1Value ?? existing.stat1Value,
+            stat1Label: data.stat1Label ?? existing.stat1Label,
+            stat2Value: data.stat2Value ?? existing.stat2Value,
+            stat2Label: data.stat2Label ?? existing.stat2Label,
+            stat3Value: data.stat3Value ?? existing.stat3Value,
+            stat3Label: data.stat3Label ?? existing.stat3Label,
+            whatsappCtaText: data.whatsappCtaText ?? existing.whatsappCtaText,
             updatedAt: new Date(),
         }).where(eq(siteSettings.id, existing.id)).returning();
 

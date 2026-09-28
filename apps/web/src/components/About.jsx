@@ -1,18 +1,20 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 export default function About() {
   const { lang } = useLanguage();
+  const { settings } = useSiteSettings();
 
   const statsData = lang === 'en' ? [
-    { value: '100+', label: 'COMPLETED PROJECTS' },
-    { value: '100%', label: 'QUALITY COMMITMENT' },
-    { value: '5', label: 'SPECIALIZED SERVICES' },
+    { value: settings?.stat1Value || '100+', label: 'COMPLETED PROJECTS' },
+    { value: settings?.stat2Value || '100%', label: 'QUALITY COMMITMENT' },
+    { value: settings?.stat3Value || '4', label: 'SPECIALIZED SERVICES' },
   ] : [
-    { value: '100+', label: 'PROYEK SELESAI' },
-    { value: '100%', label: 'KOMITMEN MUTU' },
-    { value: '5', label: 'LAYANAN SPESIALIS' },
+    { value: settings?.stat1Value || '100+', label: settings?.stat1Label || 'PROYEK SELESAI' },
+    { value: settings?.stat2Value || '100%', label: settings?.stat2Label || 'KOMITMEN MUTU' },
+    { value: settings?.stat3Value || '4', label: settings?.stat3Label || 'LAYANAN SPESIALIS' },
   ];
 
   return (

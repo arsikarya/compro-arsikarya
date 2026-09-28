@@ -61,7 +61,7 @@ export default function Hero() {
         />
       </div>
 
-      {/* Main Left-Aligned Content (Centered Vertically) */}
+      {/* Main Centered Content */}
       <div
         className="container"
         style={{
@@ -70,68 +70,57 @@ export default function Hero() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          alignItems: 'flex-start',
+          alignItems: 'center',
+          textAlign: 'center',
           width: '100%',
           paddingTop: '35px',
           paddingBottom: '70px',
           marginTop: '-15px',
         }}
       >
-        <div style={{ maxWidth: 'clamp(920px, 68vw, 1360px)' }}>
-          {/* Horizontal Line Tag "— ARSI KARYA" */}
-          <motion.div
+        <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
+          {/* Main Title: ARSI KARYA (Kapital, Centered, Bold Garet) */}
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '14px',
-              marginBottom: '38px',
+              fontFamily: 'var(--font-heading)',
+              fontSize: 'clamp(3rem, 5.5vw, 5.5rem)',
+              fontWeight: 800,
+              lineHeight: 1.1,
+              color: '#ffffff',
+              letterSpacing: '-0.025em',
+              textTransform: 'uppercase',
+              marginBottom: '18px',
+              textShadow: '0 4px 24px rgba(0,0,0,0.6)',
+              textAlign: 'center',
             }}
           >
-            <div
-              style={{
-                width: '36px',
-                height: '2px',
-                backgroundColor: '#ffffff',
-                borderRadius: '1px',
-              }}
-            />
-            <span
-              style={{
-                fontSize: '0.9rem',
-                fontWeight: 800,
-                letterSpacing: '0.22em',
-                textTransform: 'uppercase',
-                color: '#ffffff',
-              }}
-            >
-              ARSI KARYA
-            </span>
-          </motion.div>
+            ARSI KARYA
+          </motion.h1>
 
-          {/* Main Title Heading */}
-          <motion.h1
+          {/* Description Slogan: Membangun Tuntas, Unggul Dalam Kualitas! (Diperbesar Lebih Mantap, Manrope, Centered) */}
+          <motion.p
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
             style={{
-              fontSize: 'clamp(2.8rem, 4.8vw, 5rem)',
-              fontWeight: 800,
-              lineHeight: 1.25,
-              color: '#ffffff',
-              letterSpacing: '-0.025em',
-              marginBottom: '46px',
-              textShadow: '0 4px 24px rgba(0,0,0,0.6)',
-              textAlign: 'left',
+              fontFamily: 'var(--font-body)',
+              fontSize: 'clamp(1.7rem, 3.4vw, 2.6rem)',
+              fontWeight: 500,
+              lineHeight: 1.35,
+              color: 'rgba(255, 255, 255, 0.95)',
+              letterSpacing: '-0.01em',
+              marginBottom: '38px',
+              textShadow: '0 2px 16px rgba(0,0,0,0.5)',
+              textAlign: 'center',
             }}
           >
-            {t.hero.titleLine1}<br />
-            {t.hero.titleLine2}
-          </motion.h1>
+            Membangun Tuntas, Unggul Dalam Kualitas!
+          </motion.p>
 
-          {/* Action CTA Buttons */}
+          {/* Action CTA Buttons (Centered) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -139,6 +128,7 @@ export default function Hero() {
             style={{
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: '16px',
               flexWrap: 'wrap',
               marginTop: '8px',

@@ -1,16 +1,17 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Button from './ui/Button';
-import { getGeneralWaUrl } from '../utils/whatsapp';
 import { useLanguage } from '../context/LanguageContext';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 export default function CTA() {
   const { t } = useLanguage();
+  const { getWaUrl } = useSiteSettings();
   const ctaPhoto = "/projects/cta_blueprint.jpg";
-  const generalWaUrl = getGeneralWaUrl();
+  const generalWaUrl = getWaUrl();
 
   return (
-    <section id="contact" style={{ backgroundColor: 'var(--color-dark-bg, #222222)', padding: '0', width: '100%', overflow: 'hidden' }}>
+    <section id="contact" className="cta-section-container" style={{ backgroundColor: 'var(--color-dark-bg, #222222)', padding: '0', width: '100%', overflow: 'hidden' }}>
       <div
         style={{
           display: 'grid',
@@ -20,8 +21,8 @@ export default function CTA() {
           width: '100%',
         }}
       >
-        {/* Left Column: Full-height Industrial Blueprint Photo (100% Full-Bleed No Gaps) */}
-        <div style={{ minHeight: '340px', height: '100%', width: '100%', position: 'relative', overflow: 'hidden' }}>
+        {/* Left Column: Full-height Industrial Blueprint Photo */}
+        <div className="cta-left-image-wrap" style={{ minHeight: '340px', height: '100%', width: '100%', position: 'relative', overflow: 'hidden' }}>
           <img
             src={ctaPhoto}
             alt="Engineering blueprint & hardhat workspace"
@@ -35,35 +36,38 @@ export default function CTA() {
           />
         </div>
 
-        {/* Right Column: Brand Blue Accent Block (Full-Bleed matching Albion Reference) */}
+        {/* Right Column: Brand Blue Accent Block */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
+          className="cta-right-text-wrap"
           style={{
             backgroundColor: 'var(--color-primary-300)',
             color: '#ffffff',
-            padding: 'clamp(48px, 6vw, 80px)',
+            padding: '44px 56px',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'flex-start',
+            boxSizing: 'border-box',
           }}
         >
           <span className="section-tag section-tag-light">{t.cta?.tag || 'CONTACT US'}</span>
 
           <h2
             style={{
-              fontSize: 'clamp(2.1rem, 3.6vw, 3.0rem)',
+              fontSize: 'clamp(1.9rem, 2.8vw, 2.75rem)',
               fontWeight: 800,
               color: '#ffffff',
-              lineHeight: 1.28,
-              marginBottom: '32px',
+              lineHeight: 1.25,
+              marginBottom: '24px',
               letterSpacing: '-0.5px',
             }}
           >
-            {t.cta?.title || 'Got Something in Mind? Hit Us Up'}
+            Got Something in Mind?<br />
+            Hit Us Up
           </h2>
 
           <Button
@@ -72,12 +76,26 @@ export default function CTA() {
             rel="noopener noreferrer"
             variant="outline-light"
             showArrow={true}
-            style={{ padding: '16px 36px', fontSize: '1rem' }}
+            style={{ padding: '14px 32px', fontSize: '0.95rem' }}
           >
             {t.nav?.ctaConsultation || 'Konsultasi Gratis'}
           </Button>
         </motion.div>
       </div>
+
+      <style>{`
+        @media (min-width: 992px) {
+          .cta-section-container {
+            height: 420px !important;
+            max-height: 420px !important;
+          }
+          .cta-left-image-wrap,
+          .cta-right-text-wrap {
+            height: 420px !important;
+            max-height: 420px !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }

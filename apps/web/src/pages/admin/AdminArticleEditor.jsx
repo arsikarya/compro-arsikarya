@@ -26,6 +26,8 @@ const ARTICLE_CATEGORIES = [
     'Tips'
 ];
 
+import RichTextEditor from '../../components/admin/RichTextEditor';
+
 export default function AdminArticleEditor() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -197,30 +199,12 @@ export default function AdminArticleEditor() {
                     {/* Editorial Content Editor */}
                     <div className="form-panel">
                         <h4 className="panel-heading">2. Isi Konten Artikel</h4>
-                        <p className="field-help" style={{ marginBottom: '10px' }}>Gunakan formatting bar di bawah untuk menyusun artikel secara terstruktur.</p>
+                        <p className="field-help" style={{ marginBottom: '10px' }}>Tuliskan artikel secara langsung menggunakan editor visual WYSIWYG di bawah ini.</p>
 
-                        {/* Rich Editorial Toolbar */}
-                        <div className="editorial-toolbar">
-                            <button type="button" onClick={() => insertFormatting('<h2>', '</h2>')} className="tool-btn" title="Heading 2">H2</button>
-                            <button type="button" onClick={() => insertFormatting('<h3>', '</h3>')} className="tool-btn" title="Heading 3">H3</button>
-                            <span className="tool-divider" />
-                            <button type="button" onClick={() => insertFormatting('<strong>', '</strong>')} className="tool-btn" title="Tebal"><FiBold size={14} /></button>
-                            <button type="button" onClick={() => insertFormatting('<em>', '</em>')} className="tool-btn" title="Miring"><FiItalic size={14} /></button>
-                            <span className="tool-divider" />
-                            <button type="button" onClick={() => insertFormatting('<ul>\n  <li>', '</li>\n</ul>')} className="tool-btn" title="Daftar"><FiList size={14} /></button>
-                            <button type="button" onClick={() => insertFormatting('<blockquote>', '</blockquote>')} className="tool-btn" title="Kutipan">Kutipan</button>
-                            <button type="button" onClick={() => insertFormatting('<a href="https://">', '</a>')} className="tool-btn" title="Link"><FiLink size={14} /></button>
-                            <span className="tool-divider" />
-                            <CloudinaryUploadWidget onUploadSuccess={(url) => insertFormatting(`<img src="${url}" alt="${title || 'Gambar Artikel'}" style="width:100%; border-radius:8px; margin:20px 0;" />\n`)} />
-                        </div>
-
-                        <textarea 
-                            ref={textareaRef}
-                            className="form-input editorial-textarea" 
-                            rows="16" 
+                        <RichTextEditor 
                             value={content} 
-                            onChange={(e) => setContent(e.target.value)}
-                            placeholder="Tuliskan isi artikel Anda di sini... (Mendukung tag HTML standar)"
+                            onChange={(html) => setContent(html)}
+                            placeholder="Tuliskan isi artikel Anda di sini..."
                         />
                     </div>
                 </div>
