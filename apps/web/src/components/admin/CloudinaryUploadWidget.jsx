@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { adminApi } from '../../lib/api';
 
-const CloudinaryUploadWidget = ({ onUploadSuccess, buttonText = "Upload Image", className = "btn-outline" }) => {
+const CloudinaryUploadWidget = ({ onUploadSuccess, buttonText = "Upload Image", className = "btn-outline", style = {} }) => {
     const cloudinaryRef = useRef();
     const widgetRef = useRef();
 
@@ -67,7 +67,7 @@ const CloudinaryUploadWidget = ({ onUploadSuccess, buttonText = "Upload Image", 
         <button 
             type="button" 
             className={className} 
-            style={{ padding: '6px 12px', fontSize: '0.85rem', marginLeft: '8px' }}
+            style={{ padding: '6px 14px', fontSize: '0.85rem', ...style }}
             onClick={() => widgetRef.current?.open()}
         >
             {buttonText}

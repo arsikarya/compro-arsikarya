@@ -12,6 +12,7 @@ export default function AdminMedia() {
     const [copiedId, setCopiedId] = useState(null);
     const [deletingId, setDeletingId] = useState(null);
     const [syncing, setSyncing] = useState(false);
+    const [deletingAllUnused, setDeletingAllUnused] = useState(false);
 
     const fetchMedia = () => {
         setLoading(true);
@@ -73,6 +74,22 @@ export default function AdminMedia() {
         }
     };
 
+    const handleDeleteAllUnused = async () => {
+        if (!window.confirm(`Hapus semua ${unusedCount} gambar yang tidak digunakan dari website dan Cloudinary? Tindakan ini tidak dapat dibatalkan.`)) {
+            return;
+        }
+        try {
+            setDeletingAllUnused(true);
+            const res = await adminApi.deleteUnusedMedia();
+            alert(`✓ Berhasil membersihkan ${res.deletedCount} gambar yang tidak digunakan.`);
+            fetchMedia();
+        } catch (err) {
+            alert('⚠️ Gagal membersihkan media tidak terpakai: ' + (err.message || err));
+        } finally {
+            setDeletingAllUnused(false);
+        }
+    };
+
     // Filter by tab and search
     const filteredMedia = mediaItems.filter(item => {
         // Tab filter
@@ -111,14 +128,14 @@ export default function AdminMedia() {
 
     return (
         <div className="admin-media-page">
-            <div className="admin-page-header">
-                <div>
+            <div className="admin-page-header admin-media-header">
+                <div className="admin-media-header-left">
                     <h3 className="page-heading">Media Library (Cloudinary)</h3>
                     <p className="page-subheading">
                         Semua berkas gambar tersimpan di Cloudinary CDN. Anda dapat memilih, menyalin URL, atau menghapus gambar yang tidak terpakai secara langsung.
                     </p>
                 </div>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <div className="admin-media-header-actions">
                     <button 
                         type="button" 
                         className="btn-cms btn-cms-outline"
@@ -139,27 +156,42 @@ export default function AdminMedia() {
 
             {/* Filter and Search Bar */}
             <div className="media-filter-bar">
-                <div className="media-tabs">
-                    <button 
-                        className={`media-tab-btn ${filterTab === 'all' ? 'active' : ''}`}
-                        onClick={() => setFilterTab('all')}
-                    >
-                        Semua Media ({mediaItems.length})
-                    </button>
-                    <button 
-                        className={`media-tab-btn ${filterTab === 'used' ? 'active' : ''}`}
-                        onClick={() => setFilterTab('used')}
-                    >
-                        <FiCheckCircle size={14} style={{ marginRight: '6px', color: '#10b981' }} />
-                        Digunakan ({usedCount})
-                    </button>
-                    <button 
-                        className={`media-tab-btn ${filterTab === 'unused' ? 'active' : ''}`}
-                        onClick={() => setFilterTab('unused')}
-                    >
-                        <FiAlertCircle size={14} style={{ marginRight: '6px', color: '#f59e0b' }} />
-                        Tidak Terpakai ({unusedCount})
-                    </button>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div className="media-tabs">
+                        <button 
+                            className={`media-tab-btn ${filterTab === 'all' ? 'active' : ''}`}
+                            onClick={() => setFilterTab('all')}
+                        >
+                            Semua Media ({mediaItems.length})
+                        </button>
+                        <button 
+                            className={`media-tab-btn ${filterTab === 'used' ? 'active' : ''}`}
+                            onClick={() => setFilterTab('used')}
+                        >
+                            <FiCheckCircle size={14} style={{ marginRight: '6px', color: '#10b981' }} />
+                            Digunakan ({usedCount})
+                        </button>
+                        <button 
+                            className={`media-tab-btn ${filterTab === 'unused' ? 'active' : ''}`}
+                            onClick={() => setFilterTab('unused')}
+                        >
+                            <FiAlertCircle size={14} style={{ marginRight: '6px', color: '#f59e0b' }} />
+                            Tidak Terpakai ({unusedCount})
+                        </button>
+                    </div>
+
+                    {filterTab === 'unused' && unusedCount > 0 && (
+                        <button 
+                            type="button" 
+                            className="btn-cms btn-cms-danger"
+                            style={{ fontSize: '0.82rem', padding: '6px 14px' }}
+                            onClick={handleDeleteAllUnused}
+                            disabled={deletingAllUnused}
+                        >
+                            <FiTrash2 size={13} style={{ marginRight: '6px' }} />
+                            {deletingAllUnused ? 'Membersihkan...' : `Hapus Semua Tidak Terpakai (${unusedCount})`}
+                        </button>
+                    )}
                 </div>
 
                 <div className="search-wrap">

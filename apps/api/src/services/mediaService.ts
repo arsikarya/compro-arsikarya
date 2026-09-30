@@ -53,6 +53,17 @@ export const mediaService = {
                 usedBy.push('Pengaturan Situs');
             }
 
+            const frontendMap: Record<string, string> = {
+                'ynf1aofptsjzktatulha': 'Halaman Tentang Kami (Kolase 1)',
+                'hgvnwupc7onjcivt5hrl': 'Halaman Tentang Kami (Kolase 2)',
+                'smiuzybptllj38wffdzf': 'Halaman Tentang Kami (Kolase 3)',
+                'zckfyzpojpde2yhwzsay': 'Halaman Utama (Tentang Arsi Karya)',
+                'fldk6jvb3ovzf3xocadw': 'Halaman Utama (CTA Section)',
+            };
+            if (frontendMap[item.publicId]) {
+                usedBy.push(frontendMap[item.publicId]);
+            }
+
             return {
                 ...item,
                 inUse: usedBy.length > 0,
@@ -197,6 +208,20 @@ export const mediaService = {
             usage.push('Pengaturan Website (Logo / Social Image)');
         }
 
+        // Check hardcoded frontend components
+        const frontendMap: Record<string, string> = {
+            'ynf1aofptsjzktatulha': 'Halaman Tentang Kami (Kolase 1)',
+            'hgvnwupc7onjcivt5hrl': 'Halaman Tentang Kami (Kolase 2)',
+            'smiuzybptllj38wffdzf': 'Halaman Tentang Kami (Kolase 3)',
+            'zckfyzpojpde2yhwzsay': 'Halaman Utama (Tentang Arsi Karya)',
+            'fldk6jvb3ovzf3xocadw': 'Halaman Utama (CTA Section)',
+        };
+        for (const [pubId, label] of Object.entries(frontendMap)) {
+            if (urlOrId.includes(pubId)) {
+                usage.push(label);
+            }
+        }
+
         return usage;
     },
 
@@ -239,5 +264,22 @@ export const mediaService = {
 
         const [deleted] = await db.delete(media).where(eq(media.id, id)).returning();
         return deleted || null;
+    },
+
+    async deleteUnusedMedia() {
+        const items = await this.listMedia();
+        const unused = items.filter(item => !item.inUse);
+        let deletedCount = 0;
+
+        for (const item of unused) {
+            try {
+                await this.deleteMedia(item.id, false);
+                deletedCount++;
+            } catch (err) {
+                console.error(`Gagal menghapus aset media ${item.publicId}:`, err);
+            }
+        }
+
+        return { totalUnused: unused.length, deletedCount };
     }
 };

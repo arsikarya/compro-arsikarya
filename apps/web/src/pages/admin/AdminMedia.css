@@ -2,6 +2,42 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
+    width: 100%;
+}
+
+.admin-media-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+}
+
+.admin-media-header-left {
+    flex: 1;
+    min-width: 0;
+}
+
+.admin-media-header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+@media (max-width: 768px) {
+    .admin-media-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+    .admin-media-header-actions {
+        justify-content: flex-start;
+        width: 100%;
+        flex-wrap: wrap;
+    }
 }
 
 .spin-icon {

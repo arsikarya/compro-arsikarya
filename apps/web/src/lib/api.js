@@ -96,6 +96,7 @@ export const adminApi = {
     getMedia: () => api('/admin/media'),
     saveMedia: (data) => api('/admin/media', { method: 'POST', body: JSON.stringify(data) }),
     deleteMedia: (id, force = false) => api(`/admin/media/${id}${force ? '?force=true' : ''}`, { method: 'DELETE' }),
+    deleteUnusedMedia: () => api('/admin/media/cleanup/unused', { method: 'DELETE' }),
     checkMediaUsage: (id) => api(`/admin/media/usage-check/${id}`),
     syncCloudinary: () => api('/admin/media/sync-cloudinary', { method: 'POST' }),
 

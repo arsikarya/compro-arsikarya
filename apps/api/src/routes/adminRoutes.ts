@@ -507,6 +507,16 @@ router.post('/media', async (req, res) => {
     }
 });
 
+router.delete('/media/cleanup/unused', async (_req, res) => {
+    try {
+        const result = await mediaService.deleteUnusedMedia();
+        res.json({ message: 'Unused media cleanup completed', ...result });
+    } catch (error: any) {
+        console.error('Error cleaning unused media:', error);
+        res.status(500).json({ error: error?.message || 'Internal server error' });
+    }
+});
+
 router.delete('/media/:id', async (req, res) => {
     try {
         const force = req.query.force === 'true';
