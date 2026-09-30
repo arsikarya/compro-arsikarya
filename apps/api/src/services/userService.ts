@@ -80,6 +80,16 @@ export const userService = {
             throw new Error('User tidak ditemukan');
         }
 
+        // Protected root account check: webarsikarya@gmail.com cannot be deactivated or demoted
+        if (targetUser.email.toLowerCase().trim() === 'webarsikarya@gmail.com') {
+            if (data.status === 'inactive') {
+                throw new Error('Akun utama webarsikarya@gmail.com adalah akun sistem inti dan tidak dapat dinonaktifkan!');
+            }
+            if (data.role && data.role !== 'SUPER_ADMIN') {
+                throw new Error('Akun utama webarsikarya@gmail.com harus selalu berstatus SUPER_ADMIN!');
+            }
+        }
+
         // Check last SUPER_ADMIN protection
         if (targetUser.role === 'SUPER_ADMIN') {
             const superAdminCount = await this.countSuperAdmins();
@@ -128,6 +138,11 @@ export const userService = {
         const targetUser = await this.getUserById(id);
         if (!targetUser) {
             throw new Error('User tidak ditemukan');
+        }
+
+        // Permanent root protection for webarsikarya@gmail.com
+        if (targetUser.email.toLowerCase().trim() === 'webarsikarya@gmail.com') {
+            throw new Error('Akun utama webarsikarya@gmail.com adalah akun sistem inti dan tidak dapat dihapus!');
         }
 
         if (targetUser.role === 'SUPER_ADMIN') {

@@ -93,6 +93,10 @@ export default function AdminUsers() {
     };
 
     const handleDeleteUser = async (userItem) => {
+        if (userItem.email?.toLowerCase().trim() === 'webarsikarya@gmail.com') {
+            alert('Akun utama webarsikarya@gmail.com adalah akun sistem inti dan tidak dapat dihapus!');
+            return;
+        }
         if (!window.confirm(`Apakah Anda yakin ingin menghapus user ${userItem.name} (${userItem.email})?`)) {
             return;
         }
@@ -213,13 +217,19 @@ export default function AdminUsers() {
                                         >
                                             <FiKey size={14} /> Reset Pass
                                         </button>
-                                        <button
-                                            onClick={() => handleDeleteUser(u)}
-                                            style={{ padding: '6px 10px', background: '#fef2f2', border: 'none', borderRadius: '6px', color: '#dc2626', cursor: 'pointer', fontSize: '0.8rem' }}
-                                            title="Hapus User"
-                                        >
-                                            <FiTrash2 size={14} /> Hapus
-                                        </button>
+                                        {u.email?.toLowerCase().trim() !== 'webarsikarya@gmail.com' ? (
+                                            <button
+                                                onClick={() => handleDeleteUser(u)}
+                                                style={{ padding: '6px 10px', background: '#fef2f2', border: 'none', borderRadius: '6px', color: '#dc2626', cursor: 'pointer', fontSize: '0.8rem' }}
+                                                title="Hapus User"
+                                            >
+                                                <FiTrash2 size={14} /> Hapus
+                                            </button>
+                                        ) : (
+                                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '5px 9px', borderRadius: '6px', fontSize: '0.74rem', fontWeight: 600, background: '#f1f5f9', color: '#475569' }} title="Akun utama dilindungi dan tidak dapat dihapus">
+                                                🔒 Akun Inti
+                                            </span>
+                                        )}
                                     </div>
                                 </td>
                             </tr>

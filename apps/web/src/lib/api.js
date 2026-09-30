@@ -46,8 +46,8 @@ export const publicApi = {
         return api(`/labs/creations${qs ? `?${qs}` : ''}`);
     },
     getCategories: () => api('/labs/categories'),
-    requestPasswordReset: (email) => api('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
-    resetPassword: (token, password) => api('/auth/reset-password', { method: 'POST', body: JSON.stringify({ token, password }) }),
+    requestPasswordReset: (email) => api('/password/forgot', { method: 'POST', body: JSON.stringify({ email }) }),
+    resetPassword: (token, password) => api('/password/reset', { method: 'POST', body: JSON.stringify({ token, password }) }),
 };
 
 export const adminApi = {

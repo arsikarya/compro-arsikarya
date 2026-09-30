@@ -331,4 +331,46 @@ router.post('/auth-otp/resend', async (req, res) => {
     }
 });
 
+// ==================== PASSWORD RECOVERY / RESET ====================
+
+// Request Password Reset Link / Token
+router.post('/password/forgot', async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            res.status(400).json({ error: 'Email wajib diisi' });
+            return;
+        }
+
+        const origin = req.headers.origin || `${req.protocol}://${req.get('host')}`;
+        const result = await authService.requestPasswordReset(email, origin);
+        res.json(result);
+    } catch (error: any) {
+        console.error('Error requesting password reset:', error);
+        res.status(500).json({ error: error?.message || 'Gagal memproses pemulihan kata sandi' });
+    }
+});
+
+// Verify Token & Save New Password
+router.post('/password/reset', async (req, res) => {
+    try {
+        const { token, password } = req.body;
+        if (!token || !password) {
+            res.status(400).json({ error: 'Token dan kata sandi baru wajib diisi' });
+            return;
+        }
+
+        if (password.length < 8) {
+            res.status(400).json({ error: 'Kata sandi baru minimal harus 8 karakter' });
+            return;
+        }
+
+        const result = await authService.verifyAndResetPassword(token, password);
+        res.json(result);
+    } catch (error: any) {
+        console.error('Error resetting password:', error);
+        res.status(400).json({ error: error?.message || 'Tautan pemulihan kata sandi tidak valid atau telah kedaluwarsa' });
+    }
+});
+
 export default router;

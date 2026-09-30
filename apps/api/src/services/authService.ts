@@ -365,8 +365,11 @@ export const authService = {
         });
 
         return {
-            message: 'Jika email terdaftar, instruksi reset kata sandi telah dikirimkan.',
-            devResetUrl: process.env.NODE_ENV !== 'production' ? resetUrl : undefined,
+            success: true,
+            token,
+            resetUrl,
+            message: `Tautan reset kata sandi telah diproses untuk ${targetUser.email}.`,
+            devResetUrl: resetUrl,
         };
     },
 

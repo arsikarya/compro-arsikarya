@@ -1,76 +1,140 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { publicApi } from '../../lib/api';
+import { FiMail, FiArrowLeft, FiShield, FiCheckCircle, FiKey } from 'react-icons/fi';
 import './AdminLogin.css';
 
 export default function AdminForgotPassword() {
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
-    const [devUrl, setDevUrl] = useState('');
+    const [resetToken, setResetToken] = useState('');
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         setError('');
         setMessage('');
-        setDevUrl('');
-        if (!email) {
-            setError('Masukkan alamat email Anda');
+        setResetToken('');
+
+        if (!email.trim()) {
+            setError('Masukkan alamat email administrator');
             return;
         }
 
         setLoading(true);
         try {
-            const res = await publicApi.requestPasswordReset?.(email);
-            setMessage(res?.message || 'Instruksi reset kata sandi telah dikirimkan jika email terdaftar.');
-            if (res?.devResetUrl) {
-                setDevUrl(res.devResetUrl);
+            const res = await publicApi.requestPasswordReset?.(email.trim());
+            setMessage(res?.message || `Tautan reset kata sandi telah diproses untuk ${email.trim()}`);
+            if (res?.token) {
+                setResetToken(res.token);
             }
         } catch (err) {
-            setError(err?.message || 'Gagal mengirim instruksi reset kata sandi');
+            console.error('Password reset request error:', err);
+            setError(err?.message || 'Gagal mengirim permintaan pemulihan kata sandi');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="admin-login-container">
-            <div className="admin-login-card">
+        <div className="admin-login-layout">
+            <div className="admin-login-card animate-fade-in">
+                {/* Header */}
                 <div className="admin-login-header">
-                    <h2>Lupa Kata Sandi</h2>
-                    <p>Masukkan email terdaftar untuk menerima tautan reset kata sandi</p>
+                    <span className="admin-login-badge">
+                        <FiShield size={12} style={{ marginRight: '5px', verticalAlign: 'middle' }} />
+                        PEMULIHAN AKUN
+                    </span>
+                    <h2><strong>LUPA KATA SANDI</strong></h2>
+                    <p className="text-secondary">
+                        Masukkan email terdaftar untuk menerima tautan pembuatan kata sandi baru
+                    </p>
                 </div>
 
-                {error && <div className="admin-login-error">{error}</div>}
-                {message && <div style={{ padding: '12px', background: '#e6f4ea', color: '#137333', borderRadius: '6px', fontSize: '0.85rem', marginBottom: '16px' }}>{message}</div>}
-                {devUrl && (
-                    <div style={{ padding: '12px', background: '#fff8e1', color: '#b78103', borderRadius: '6px', fontSize: '0.8rem', wordBreak: 'break-all', marginBottom: '16px' }}>
-                        <strong>Dev Link:</strong> <a href={devUrl}>{devUrl}</a>
+                {/* Error Alert */}
+                {error && (
+                    <div className="login-alert login-alert-error">
+                        {error}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="admin-login-form">
-                    <div className="form-group">
-                        <label>Alamat Email Admin</label>
-                        <input
-                            type="email"
-                            placeholder="webarsikarya@gmail.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            disabled={loading}
-                            required
-                        />
+                {/* Success Alert */}
+                {message && (
+                    <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#166534', padding: '14px', borderRadius: '8px', fontSize: '0.85rem', marginBottom: '18px', lineHeight: 1.5 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, marginBottom: '4px' }}>
+                            <FiCheckCircle size={16} color="#16a34a" />
+                            <span>Permintaan Berhasil</span>
+                        </div>
+                        {message}
+                        
+                        {/* Direct Continue Button if token is returned */}
+                        {resetToken && (
+                            <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #dcfce7' }}>
+                                <button
+                                    type="button"
+                                    onClick={() => navigate(`/admin/reset-password?token=${resetToken}`)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '10px 14px',
+                                        background: '#15803d',
+                                        color: '#ffffff',
+                                        border: 'none',
+                                        borderRadius: '6px',
+                                        fontSize: '0.85rem',
+                                        fontWeight: 600,
+                                        cursor: 'pointer',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '6px',
+                                    }}
+                                >
+                                    <FiKey size={14} />
+                                    <span>Lanjut Buat Kata Sandi Baru Sekarang &rarr;</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
+                )}
 
-                    <button type="submit" className="admin-login-btn" disabled={loading}>
-                        {loading ? 'Mengirim...' : 'Kirim Tautan Reset'}
-                    </button>
-                </form>
+                {!resetToken && (
+                    <form onSubmit={handleSubmit} className="admin-login-form">
+                        <div className="login-form-group">
+                            <label className="login-form-label">Email Administrator</label>
+                            <div className="login-input-wrap">
+                                <FiMail className="login-input-icon" size={18} />
+                                <input
+                                    type="email"
+                                    className="login-input"
+                                    placeholder="nama@email.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    disabled={loading}
+                                    autoFocus
+                                    required
+                                />
+                            </div>
+                        </div>
 
-                <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '0.85rem' }}>
-                    <Link to="/admin/login" style={{ color: '#2563eb', textDecoration: 'none', fontWeight: '500' }}>
-                        ← Kembali ke Halaman Login
+                        <div className="login-actions">
+                            <button
+                                type="submit"
+                                className="btn-login-submit"
+                                disabled={loading || !email.trim()}
+                            >
+                                {loading ? 'Memproses Permintaan...' : 'Kirim Tautan Pemulihan'}
+                            </button>
+                        </div>
+                    </form>
+                )}
+
+                {/* Footer link */}
+                <div className="login-footer">
+                    <Link to="/admin/login" className="login-back-link">
+                        <FiArrowLeft size={14} />
+                        <span>Kembali ke Halaman Login</span>
                     </Link>
                 </div>
             </div>

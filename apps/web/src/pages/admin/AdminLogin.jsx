@@ -79,7 +79,12 @@ export default function AdminLogin() {
                     </div>
 
                     <div className="login-form-group">
-                        <label className="login-form-label">Kata Sandi</label>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <label className="login-form-label">Kata Sandi</label>
+                            <Link to="/admin/forgot-password" className="login-forgot-link">
+                                Lupa kata sandi?
+                            </Link>
+                        </div>
                         <div className="login-input-wrap">
                             <FiLock className="login-input-icon" size={18} />
                             <input 

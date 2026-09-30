@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { publicApi } from '../../lib/api';
+import { FiLock, FiEye, FiEyeOff, FiArrowLeft, FiShield, FiCheckCircle } from 'react-icons/fi';
 import './AdminLogin.css';
 
 export default function AdminResetPassword() {
@@ -10,22 +11,27 @@ export default function AdminResetPassword() {
 
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         setError('');
 
         if (!token) {
-            setError('Token reset kata sandi tidak ditemukan pada URL');
+            setError('Token reset kata sandi tidak ditemukan pada tautan ini. Silakan minta tautan baru.');
             return;
         }
-        if (password.length < 6) {
-            setError('Kata sandi minimal 6 karakter');
+
+        if (password.length < 8) {
+            setError('Kata sandi baru minimal harus 8 karakter');
             return;
         }
+
         if (password !== confirmPassword) {
             setError('Konfirmasi kata sandi tidak cocok');
             return;
@@ -37,62 +43,120 @@ export default function AdminResetPassword() {
             setSuccess(true);
             setTimeout(() => {
                 navigate('/admin/login');
-            }, 2500);
+            }, 2000);
         } catch (err) {
-            setError(err?.message || 'Gagal mereset kata sandi. Token mungkin sudah kadaluwarsa.');
+            console.error('Password reset error:', err);
+            setError(err?.message || 'Gagal mereset kata sandi. Tautan mungkin telah kedaluwarsa.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="admin-login-container">
-            <div className="admin-login-card">
+        <div className="admin-login-layout">
+            <div className="admin-login-card animate-fade-in">
+                {/* Header */}
                 <div className="admin-login-header">
-                    <h2>Buat Kata Sandi Baru</h2>
-                    <p>Masukkan kata sandi baru untuk akun Admin Arsi Karya</p>
+                    <span className="admin-login-badge">
+                        <FiShield size={12} style={{ marginRight: '5px', verticalAlign: 'middle' }} />
+                        PEMBARUAN KEAMANAN
+                    </span>
+                    <h2><strong>KATA SANDI BARU</strong></h2>
+                    <p className="text-secondary">
+                        Masukkan kata sandi baru untuk akun administrator Anda
+                    </p>
                 </div>
 
-                {error && <div className="admin-login-error">{error}</div>}
-                {success && (
-                    <div style={{ padding: '12px', background: '#e6f4ea', color: '#137333', borderRadius: '6px', fontSize: '0.85rem', marginBottom: '16px' }}>
-                        ✓ Kata sandi berhasil diperbarui! Mengalihkan ke halaman login...
+                {/* Error Alert */}
+                {error && (
+                    <div className="login-alert login-alert-error">
+                        {error}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="admin-login-form">
-                    <div className="form-group">
-                        <label>Kata Sandi Baru</label>
-                        <input
-                            type="password"
-                            placeholder="Minimal 6 karakter"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            disabled={loading || success}
-                            required
-                        />
+                {/* Success Alert */}
+                {success && (
+                    <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#166534', padding: '14px', borderRadius: '8px', fontSize: '0.88rem', marginBottom: '18px', textAlign: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontWeight: 700, marginBottom: '4px' }}>
+                            <FiCheckCircle size={18} color="#16a34a" />
+                            <span>Kata Sandi Berhasil Diperbarui!</span>
+                        </div>
+                        <p style={{ margin: 0, fontSize: '0.82rem', color: '#15803d' }}>
+                            Mengalihkan Anda ke halaman login...
+                        </p>
                     </div>
+                )}
 
-                    <div className="form-group">
-                        <label>Konfirmasi Kata Sandi Baru</label>
-                        <input
-                            type="password"
-                            placeholder="Ulangi kata sandi baru"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            disabled={loading || success}
-                            required
-                        />
-                    </div>
+                {!success && (
+                    <form onSubmit={handleSubmit} className="admin-login-form">
+                        <div className="login-form-group">
+                            <label className="login-form-label">Kata Sandi Baru</label>
+                            <div className="login-input-wrap">
+                                <FiLock className="login-input-icon" size={18} />
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    className="login-input"
+                                    placeholder="Minimal 8 karakter"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    disabled={loading}
+                                    autoFocus
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    className="login-password-toggle"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    tabIndex={-1}
+                                    title={showPassword ? 'Sembunyikan password' : 'Lihat password'}
+                                >
+                                    {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+                                </button>
+                            </div>
+                        </div>
 
-                    <button type="submit" className="admin-login-btn" disabled={loading || success}>
-                        {loading ? 'Memproses...' : 'Simpan Kata Sandi Baru'}
-                    </button>
-                </form>
+                        <div className="login-form-group">
+                            <label className="login-form-label">Konfirmasi Kata Sandi Baru</label>
+                            <div className="login-input-wrap">
+                                <FiLock className="login-input-icon" size={18} />
+                                <input
+                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    className="login-input"
+                                    placeholder="Ulangi kata sandi baru"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    disabled={loading}
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    className="login-password-toggle"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    tabIndex={-1}
+                                    title={showConfirmPassword ? 'Sembunyikan password' : 'Lihat password'}
+                                >
+                                    {showConfirmPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+                                </button>
+                            </div>
+                        </div>
 
-                <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '0.85rem' }}>
-                    <Link to="/admin/login" style={{ color: '#2563eb', textDecoration: 'none', fontWeight: '500' }}>
-                        ← Batal & Kembali ke Login
+                        <div className="login-actions">
+                            <button
+                                type="submit"
+                                className="btn-login-submit"
+                                disabled={loading || password.length < 8 || !confirmPassword}
+                            >
+                                {loading ? 'Menyimpan Kata Sandi...' : 'Simpan Kata Sandi Baru'}
+                            </button>
+                        </div>
+                    </form>
+                )}
+
+                {/* Footer link */}
+                <div className="login-footer">
+                    <Link to="/admin/login" className="login-back-link">
+                        <FiArrowLeft size={14} />
+                        <span>Batal & Kembali ke Login</span>
                     </Link>
                 </div>
             </div>
