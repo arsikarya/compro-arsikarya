@@ -337,9 +337,6 @@ export const authService = {
         const token = crypto.randomBytes(32).toString('hex');
         const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour token validity
 
-        // Invalidate any previous unused tokens for this email
-        await db.delete(passwordResetToken).where(eq(passwordResetToken.email, cleanEmail));
-
         await db.insert(passwordResetToken).values({
             id: crypto.randomUUID(),
             email: targetUser.email,
@@ -348,10 +345,10 @@ export const authService = {
             used: false,
         });
 
-        // Determine frontend URL so the email link navigates directly to the web client
-        let resolvedBase = baseUrl || '';
-        if (!resolvedBase || resolvedBase.includes(':3001')) {
-            resolvedBase = process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production' ? 'https://arsikarya.id' : 'http://localhost:5173');
+        // Determine frontend URL: Always prioritize production domain https://arsikarya.id
+        let resolvedBase = process.env.FRONTEND_URL || 'https://arsikarya.id';
+        if (baseUrl && (baseUrl.includes('arsikarya.id') || baseUrl.includes('vercel.app'))) {
+            resolvedBase = baseUrl;
         }
         resolvedBase = resolvedBase.replace(/\/+$/, '');
 
@@ -458,7 +455,7 @@ export const authService = {
 
         await db.update(passwordResetToken)
             .set({ used: true })
-            .where(eq(passwordResetToken.id, validToken.id));
+            .where(eq(passwordResetToken.email, validToken.email));
 
         return { success: true, message: 'Kata sandi berhasil diperbarui' };
     }

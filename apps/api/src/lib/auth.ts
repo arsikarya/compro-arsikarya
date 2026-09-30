@@ -24,6 +24,8 @@ export const auth = betterAuth({
         'http://localhost:5173',
         'http://localhost:3000',
         'http://localhost:3001',
+        'https://arsikarya.id',
+        'https://www.arsikarya.id',
         'https://compro-arsikarya.vercel.app',
         ...(process.env.CORS_ORIGIN ? [process.env.CORS_ORIGIN] : []),
     ],
