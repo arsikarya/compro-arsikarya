@@ -9,6 +9,28 @@ const getAuthHeaders = (extra = {}) => {
 };
 
 export const authClient = {
+    // Direct Secure Login with Brute-Force Rate Limiting
+    async signIn(email, password) {
+        const res = await fetch(`${API_BASE}/api/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.error || 'Email atau kata sandi tidak valid');
+        }
+
+        if (data.token) {
+            localStorage.setItem('auth_token', data.token);
+            localStorage.setItem('admin_user', JSON.stringify(data.user));
+            localStorage.setItem('admin_logged_in', 'true');
+        }
+
+        return data;
+    },
+
     // Step 1: Request 2FA Login OTP with Email & Password
     async requestOtp(email, password) {
         const res = await fetch(`${API_BASE}/api/auth-otp/request`, {

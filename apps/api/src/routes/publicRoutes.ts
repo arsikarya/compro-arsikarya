@@ -249,6 +249,30 @@ router.post('/auth/reset-password', async (req, res) => {
     }
 });
 
+// ==================== SECURE DIRECT LOGIN ====================
+
+router.post('/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            res.status(400).json({ error: 'Email dan kata sandi wajib diisi' });
+            return;
+        }
+
+        const clientInfo = {
+            ip: (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.ip || req.socket.remoteAddress || '',
+            userAgent: req.headers['user-agent'] || '',
+        };
+
+        const result = await authService.loginWithPassword(email, password, clientInfo);
+        res.json(result);
+    } catch (error: any) {
+        console.error('Login attempt failed:', error?.message);
+        const isLocked = error?.message?.includes('dikunci');
+        res.status(isLocked ? 429 : 401).json({ error: error?.message || 'Email atau kata sandi tidak valid' });
+    }
+});
+
 // ==================== 2FA EMAIL OTP AUTHENTICATION ====================
 
 // Step 1: Request Login OTP with Email & Password

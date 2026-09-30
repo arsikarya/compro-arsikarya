@@ -39,7 +39,130 @@ async function sendEmail({ to, subject, html, text }: { to: string; subject: str
     }
 }
 
+interface AttemptTracker {
+    attempts: number;
+    lockedUntil: number | null;
+}
+
+const loginAttempts = new Map<string, AttemptTracker>();
+const MAX_FAILED_ATTEMPTS = 5;
+const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+
 export const authService = {
+    // Direct Secure Login with Brute-Force Lockout Protection
+    async loginWithPassword(email: string, password: string, clientInfo?: { ip?: string; userAgent?: string }) {
+        const cleanEmail = email.toLowerCase().trim();
+        const clientIp = clientInfo?.ip || 'unknown';
+        const rateKey = `${cleanEmail}_${clientIp}`;
+
+        // Check if IP/Email is temporarily locked out
+        const tracker = loginAttempts.get(rateKey);
+        if (tracker && tracker.lockedUntil) {
+            if (tracker.lockedUntil > Date.now()) {
+                const remainingMinutes = Math.ceil((tracker.lockedUntil - Date.now()) / (60 * 1000));
+                throw new Error(`Terlalu banyak percobaan login gagal. Akun dikunci sementara selama ${remainingMinutes} menit demi keamanan.`);
+            } else {
+                loginAttempts.delete(rateKey);
+            }
+        }
+
+        const [targetUser] = await db.select().from(user).where(eq(user.email, cleanEmail));
+
+        const recordFailure = async () => {
+            const current = loginAttempts.get(rateKey) || { attempts: 0, lockedUntil: null };
+            current.attempts += 1;
+            if (current.attempts >= MAX_FAILED_ATTEMPTS) {
+                current.lockedUntil = Date.now() + LOCKOUT_DURATION_MS;
+                const { activityLogService } = await import('./activityLogService.js');
+                await activityLogService.log({
+                    userId: targetUser?.id,
+                    userName: targetUser?.name || 'Unknown',
+                    userRole: targetUser?.role || 'UNKNOWN',
+                    action: 'LOGIN_TERKUNCI',
+                    entity: 'Auth',
+                    details: `Akun dikunci 15 menit karena 5x salah password dari IP ${clientIp} (${cleanEmail})`,
+                });
+            }
+            loginAttempts.set(rateKey, current);
+        };
+
+        if (!targetUser || targetUser.status !== 'active') {
+            await recordFailure();
+            throw new Error('Email atau kata sandi tidak valid');
+        }
+
+        const [acc] = await db.select().from(account).where(eq(account.userId, targetUser.id));
+        if (!acc || !acc.password) {
+            await recordFailure();
+            throw new Error('Email atau kata sandi tidak valid');
+        }
+
+        // @ts-ignore
+        const { verifyPassword } = await import('better-auth/crypto');
+        const isValid = await verifyPassword({
+            password,
+            hash: acc.password,
+        });
+
+        if (!isValid) {
+            await recordFailure();
+            const current = loginAttempts.get(rateKey);
+            const remainingAttempts = MAX_FAILED_ATTEMPTS - (current?.attempts || 0);
+            if (remainingAttempts > 0) {
+                throw new Error(`Email atau kata sandi salah. Sisa kesempatan: ${remainingAttempts} kali.`);
+            } else {
+                throw new Error('Terlalu banyak percobaan login gagal. Akun dikunci sementara selama 15 menit demi keamanan.');
+            }
+        }
+
+        // Successful login: reset failed attempts counter
+        loginAttempts.delete(rateKey);
+
+        // Generate 256-bit cryptographically secure session token
+        const sessionToken = crypto.randomBytes(32).toString('hex');
+        const sessionId = crypto.randomUUID();
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+        await db.insert(session).values({
+            id: sessionId,
+            token: sessionToken,
+            userId: targetUser.id,
+            expiresAt,
+            ipAddress: clientInfo?.ip || null,
+            userAgent: clientInfo?.userAgent || null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
+        // Audit Log
+        const { activityLogService } = await import('./activityLogService.js');
+        await activityLogService.log({
+            userId: targetUser.id,
+            userName: targetUser.name,
+            userRole: targetUser.role,
+            action: 'LOGIN_SUKSES',
+            entity: 'Auth',
+            details: `Admin ${targetUser.name} (${cleanEmail}) berhasil login dari IP ${clientIp}`,
+        });
+
+        return {
+            success: true,
+            token: sessionToken,
+            user: {
+                id: targetUser.id,
+                name: targetUser.name,
+                email: targetUser.email,
+                role: targetUser.role,
+            },
+            session: {
+                id: sessionId,
+                token: sessionToken,
+                userId: targetUser.id,
+                expiresAt,
+            }
+        };
+    },
+
     async requestLoginOtp(email: string, password?: string) {
         const cleanEmail = email.toLowerCase().trim();
         const [targetUser] = await db.select().from(user).where(eq(user.email, cleanEmail));
