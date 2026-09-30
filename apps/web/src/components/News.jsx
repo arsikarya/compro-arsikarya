@@ -21,7 +21,7 @@ export default function News() {
             category: a.category || 'BERITA & ARTIKEL',
             author: a.author || 'Arsi Karya',
             date: a.date || '2025',
-            thumbnail: a.thumbnail || a.image || a.coverImageUrl,
+            thumbnail: a.coverImageUrl || a.thumbnail || a.image || '/projects/project_2.jpg',
           }));
           setNewsList(mapped);
         } else {

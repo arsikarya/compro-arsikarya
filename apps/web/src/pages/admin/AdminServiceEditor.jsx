@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { adminApi } from '../../lib/api';
 import CloudinaryUploadWidget from '../../components/admin/CloudinaryUploadWidget';
+import MediaPickerModal from '../../components/admin/MediaPickerModal';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { FiArrowLeft, FiAlertCircle, FiPlus, FiTrash2 } from 'react-icons/fi';
 
@@ -19,6 +20,7 @@ export default function AdminServiceEditor() {
     const [faqList, setFaqList] = useState([]); // [{ question, answer }]
     const [heroImageUrl, setHeroImageUrl] = useState('');
     const [heroImageId, setHeroImageId] = useState('');
+    const [showMediaPicker, setShowMediaPicker] = useState(false);
     const [published, setPublished] = useState(true);
     const [seoTitle, setSeoTitle] = useState('');
     const [seoDescription, setSeoDescription] = useState('');
@@ -226,14 +228,40 @@ export default function AdminServiceEditor() {
                         {heroImageUrl ? (
                             <div className="cover-preview-wrap">
                                 <img src={heroImageUrl} alt="Hero Preview" className="cover-img-preview" />
-                                <button type="button" className="btn-remove-cover" onClick={() => setHeroImageUrl('')}>
-                                    Ganti Gambar
-                                </button>
+                                <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                                    <button 
+                                        type="button" 
+                                        className="btn-cms btn-cms-outline" 
+                                        style={{ fontSize: '0.8rem', padding: '6px 12px' }}
+                                        onClick={() => setShowMediaPicker(true)}
+                                    >
+                                        Ganti dari Media
+                                    </button>
+                                    <CloudinaryUploadWidget onUploadSuccess={setHeroImageUrl} buttonText="Upload Baru" />
+                                    <button 
+                                        type="button" 
+                                        className="btn-remove-cover" 
+                                        onClick={() => setHeroImageUrl('')}
+                                        style={{ marginLeft: 'auto' }}
+                                    >
+                                        Hapus
+                                    </button>
+                                </div>
                             </div>
                         ) : (
-                            <div className="cover-upload-placeholder">
-                                <CloudinaryUploadWidget onUploadSuccess={setHeroImageUrl} />
-                                <span style={{ marginTop: '8px', fontSize: '0.8rem', color: '#9ca3af' }}>Unggah Gambar Layanan</span>
+                            <div className="cover-upload-placeholder" style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                    <button 
+                                        type="button" 
+                                        className="btn-cms btn-cms-outline" 
+                                        style={{ fontSize: '0.82rem', padding: '6px 12px' }}
+                                        onClick={() => setShowMediaPicker(true)}
+                                    >
+                                        Pilih dari Media Library
+                                    </button>
+                                    <CloudinaryUploadWidget onUploadSuccess={setHeroImageUrl} buttonText="Unggah Gambar" />
+                                </div>
+                                <span style={{ fontSize: '0.8rem', color: '#9ca3af' }}>Pilih dari Cloudinary atau unggah file baru</span>
                             </div>
                         )}
                         <input 
@@ -302,6 +330,13 @@ export default function AdminServiceEditor() {
                     </div>
                 </div>
             </div>
+
+            <MediaPickerModal 
+                isOpen={showMediaPicker}
+                onClose={() => setShowMediaPicker(false)}
+                onSelect={(url) => setHeroImageUrl(url)}
+                title="Pilih Gambar Banner Layanan"
+            />
         </div>
     );
 }

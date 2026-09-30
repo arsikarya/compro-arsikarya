@@ -95,8 +95,9 @@ export const adminApi = {
     // Media Library
     getMedia: () => api('/admin/media'),
     saveMedia: (data) => api('/admin/media', { method: 'POST', body: JSON.stringify(data) }),
-    deleteMedia: (id) => api(`/admin/media/${id}`, { method: 'DELETE' }),
+    deleteMedia: (id, force = false) => api(`/admin/media/${id}${force ? '?force=true' : ''}`, { method: 'DELETE' }),
     checkMediaUsage: (id) => api(`/admin/media/usage-check/${id}`),
+    syncCloudinary: () => api('/admin/media/sync-cloudinary', { method: 'POST' }),
 
     // Site Settings
     getSettings: () => api('/admin/settings'),

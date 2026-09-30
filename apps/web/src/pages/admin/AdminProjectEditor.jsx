@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { adminApi } from '../../lib/api';
 import CloudinaryUploadWidget from '../../components/admin/CloudinaryUploadWidget';
+import MediaPickerModal from '../../components/admin/MediaPickerModal';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { FiArrowLeft, FiAlertTriangle, FiPlus, FiTrash2, FiArrowUp, FiArrowDown, FiBold, FiItalic, FiList, FiLink } from 'react-icons/fi';
 import './AdminProjectEditor.css';
@@ -23,6 +24,7 @@ export default function AdminProjectEditor() {
     const [process, setProcess] = useState('');
     const [coverImageUrl, setCoverImageUrl] = useState('');
     const [coverImageId, setCoverImageId] = useState('');
+    const [mediaPickerTarget, setMediaPickerTarget] = useState(null); // 'cover' | 'gallery' | null
     const [gallery, setGallery] = useState([]); // [{ url, alt }]
     const [published, setPublished] = useState(true);
     const [seoTitle, setSeoTitle] = useState('');
@@ -320,9 +322,19 @@ export default function AdminProjectEditor() {
 
                     {/* Gallery Images Panel */}
                     <div className="form-panel">
-                        <div className="panel-heading-row">
+                        <div className="panel-heading-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
                             <h4 className="panel-heading" style={{ margin: 0 }}>4. Galeri Foto Proyek</h4>
-                            <CloudinaryUploadWidget onUploadSuccess={handleAddGalleryImage} />
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                <button 
+                                    type="button" 
+                                    className="btn-cms btn-cms-outline" 
+                                    style={{ fontSize: '0.8rem', padding: '6px 12px' }} 
+                                    onClick={() => setMediaPickerTarget('gallery')}
+                                >
+                                    Pilih dari Media Library
+                                </button>
+                                <CloudinaryUploadWidget onUploadSuccess={handleAddGalleryImage} buttonText="+ Upload Foto" />
+                            </div>
                         </div>
                         <p className="field-help" style={{ marginBottom: '16px' }}>Unggah multiple foto hasil akhir pekerjaan atau dokumentasi lapangan.</p>
 
@@ -373,14 +385,40 @@ export default function AdminProjectEditor() {
                         {coverImageUrl ? (
                             <div className="cover-preview-wrap">
                                 <img src={coverImageUrl} alt="Cover Preview" className="cover-img-preview" />
-                                <button type="button" className="btn-remove-cover" onClick={() => setCoverImageUrl('')}>
-                                    Ganti Cover
-                                </button>
+                                <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                                    <button 
+                                        type="button" 
+                                        className="btn-cms btn-cms-outline" 
+                                        style={{ fontSize: '0.8rem', padding: '6px 12px' }}
+                                        onClick={() => setMediaPickerTarget('cover')}
+                                    >
+                                        Ganti dari Media
+                                    </button>
+                                    <CloudinaryUploadWidget onUploadSuccess={setCoverImageUrl} buttonText="Upload Baru" />
+                                    <button 
+                                        type="button" 
+                                        className="btn-remove-cover" 
+                                        onClick={() => setCoverImageUrl('')}
+                                        style={{ marginLeft: 'auto' }}
+                                    >
+                                        Hapus
+                                    </button>
+                                </div>
                             </div>
                         ) : (
-                            <div className="cover-upload-placeholder">
-                                <CloudinaryUploadWidget onUploadSuccess={setCoverImageUrl} />
-                                <span style={{ marginTop: '8px', fontSize: '0.8rem', color: '#9ca3af' }}>Pilih atau Unggah Cover Image</span>
+                            <div className="cover-upload-placeholder" style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                    <button 
+                                        type="button" 
+                                        className="btn-cms btn-cms-outline" 
+                                        style={{ fontSize: '0.82rem', padding: '6px 12px' }}
+                                        onClick={() => setMediaPickerTarget('cover')}
+                                    >
+                                        Pilih dari Media Library
+                                    </button>
+                                    <CloudinaryUploadWidget onUploadSuccess={setCoverImageUrl} buttonText="Upload Gambar" />
+                                </div>
+                                <span style={{ fontSize: '0.8rem', color: '#9ca3af' }}>Pilih dari Cloudinary atau unggah file baru</span>
                             </div>
                         )}
                         <input 
@@ -449,6 +487,16 @@ export default function AdminProjectEditor() {
                     </div>
                 </div>
             </div>
+
+            <MediaPickerModal 
+                isOpen={!!mediaPickerTarget}
+                onClose={() => setMediaPickerTarget(null)}
+                onSelect={(url) => {
+                    if (mediaPickerTarget === 'cover') setCoverImageUrl(url);
+                    if (mediaPickerTarget === 'gallery') handleAddGalleryImage(url);
+                }}
+                title={mediaPickerTarget === 'cover' ? 'Pilih Gambar Sampul Proyek' : 'Pilih Foto Galeri Proyek'}
+            />
         </div>
     );
 }

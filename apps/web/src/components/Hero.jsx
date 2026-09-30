@@ -38,7 +38,7 @@ export default function Hero() {
         }}
       >
         <img
-          src="/hero_banner.jpg"
+          src="https://res.cloudinary.com/agsidj31/image/upload/v1790752137/lphcajslykzx9wejnrkx.jpg"
           alt="Arsi Karya Hero Banner"
           style={{
             width: '100%',

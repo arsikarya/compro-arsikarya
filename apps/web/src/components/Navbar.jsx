@@ -13,7 +13,7 @@ export default function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState(false);
   const location = useLocation();
   const { lang, toggleLang, t } = useLanguage();
-  const { getWaUrl } = useSiteSettings();
+  const { getWaUrl, settings } = useSiteSettings();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -144,7 +144,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
           <img
-            src="/logo.png"
+            src={settings?.logoUrl || "/logo.png"}
             alt="Arsi Karya Logo"
             style={{
               height: '36px',

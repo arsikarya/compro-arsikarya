@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { adminApi } from '../../lib/api';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 import CloudinaryUploadWidget from '../../components/admin/CloudinaryUploadWidget';
+import MediaPickerModal from '../../components/admin/MediaPickerModal';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { FiSave, FiTrendingUp, FiMessageCircle, FiInfo } from 'react-icons/fi';
 
@@ -20,6 +21,7 @@ export default function AdminSettings() {
     const [seoTitle, setSeoTitle] = useState('Arsi Karya — Kontraktor & Design Build');
     const [seoDescription, setSeoDescription] = useState('Kontraktor spesialis Konstruksi, Design & Build, Fabrikasi, dan Pengadaan Barang.');
     const [socialImageUrl, setSocialImageUrl] = useState('');
+    const [mediaPickerTarget, setMediaPickerTarget] = useState(null); // 'logo' | 'social' | null
 
     // Dynamic Statistics (Homepage & About Us)
     const [stat1Value, setStat1Value] = useState('100+');
@@ -347,13 +349,36 @@ export default function AdminSettings() {
                         <h4 className="panel-heading">Logo Perusahaan</h4>
                         {logoUrl ? (
                             <div className="cover-preview-wrap">
-                                <img src={logoUrl} alt="Logo" className="cover-img-preview" style={{ height: '100px', objectFit: 'contain', background: '#f8fafc', padding: '10px' }} />
-                                <button type="button" className="btn-remove-cover" onClick={() => setLogoUrl('')}>Ganti Logo</button>
+                                <img src={logoUrl} alt="Logo" className="cover-img-preview" style={{ height: '90px', objectFit: 'contain', background: '#f8fafc', padding: '10px' }} />
+                                <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                                    <button 
+                                        type="button" 
+                                        className="btn-cms btn-cms-outline" 
+                                        style={{ fontSize: '0.8rem', padding: '6px 12px' }}
+                                        onClick={() => setMediaPickerTarget('logo')}
+                                    >
+                                        Ganti dari Media
+                                    </button>
+                                    <CloudinaryUploadWidget onUploadSuccess={setLogoUrl} buttonText="Upload Baru" />
+                                    <button type="button" className="btn-remove-cover" onClick={() => setLogoUrl('')} style={{ marginLeft: 'auto' }}>
+                                        Hapus
+                                    </button>
+                                </div>
                             </div>
                         ) : (
-                            <div className="cover-upload-placeholder">
-                                <CloudinaryUploadWidget onUploadSuccess={setLogoUrl} />
-                                <span style={{ marginTop: '8px', fontSize: '0.8rem', color: '#9ca3af' }}>Unggah Logo</span>
+                            <div className="cover-upload-placeholder" style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                    <button 
+                                        type="button" 
+                                        className="btn-cms btn-cms-outline" 
+                                        style={{ fontSize: '0.82rem', padding: '6px 12px' }}
+                                        onClick={() => setMediaPickerTarget('logo')}
+                                    >
+                                        Pilih dari Media Library
+                                    </button>
+                                    <CloudinaryUploadWidget onUploadSuccess={setLogoUrl} buttonText="Upload Logo" />
+                                </div>
+                                <span style={{ fontSize: '0.8rem', color: '#9ca3af' }}>Pilih dari Cloudinary atau unggah logo baru</span>
                             </div>
                         )}
                         <input type="url" className="form-input" style={{ marginTop: '10px' }} value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} placeholder="URL Logo..." />
@@ -385,9 +410,17 @@ export default function AdminSettings() {
 
                         <div className="form-group">
                             <label className="form-label">Default Social Share Image (OG Image)</label>
-                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                <input type="url" className="form-input" value={socialImageUrl} onChange={(e) => setSocialImageUrl(e.target.value)} placeholder="URL Social Share..." style={{ flex: 1 }} />
-                                <CloudinaryUploadWidget onUploadSuccess={setSocialImageUrl} />
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                <input type="url" className="form-input" value={socialImageUrl} onChange={(e) => setSocialImageUrl(e.target.value)} placeholder="URL Social Share..." style={{ flex: 1, minWidth: '200px' }} />
+                                <button 
+                                    type="button" 
+                                    className="btn-cms btn-cms-outline" 
+                                    style={{ fontSize: '0.8rem', padding: '6px 10px' }}
+                                    onClick={() => setMediaPickerTarget('social')}
+                                >
+                                    Pilih Media
+                                </button>
+                                <CloudinaryUploadWidget onUploadSuccess={setSocialImageUrl} buttonText="Upload" />
                             </div>
                         </div>
                     </div>
@@ -404,6 +437,16 @@ export default function AdminSettings() {
                     </div>
                 </div>
             </form>
+
+            <MediaPickerModal 
+                isOpen={!!mediaPickerTarget}
+                onClose={() => setMediaPickerTarget(null)}
+                onSelect={(url) => {
+                    if (mediaPickerTarget === 'logo') setLogoUrl(url);
+                    if (mediaPickerTarget === 'social') setSocialImageUrl(url);
+                }}
+                title={mediaPickerTarget === 'logo' ? 'Pilih Logo Perusahaan' : 'Pilih Default Social Share Image'}
+            />
         </div>
     );
 }

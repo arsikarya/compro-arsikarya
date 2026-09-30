@@ -6,7 +6,7 @@ export function ProjectCard({ project, proj, onClick }) {
   const item = project || proj;
   if (!item) return null;
 
-  const thumbnail = item.thumbnail || item.image || item.coverImageUrl || '/projects/project_1.jpg';
+  const thumbnail = item.coverImageUrl || item.thumbnail || item.image || '/projects/project_1.jpg';
   const title = item.title || '';
   const location = item.location || item.city || 'Bandung, Jawa Barat';
   const category = item.category || item.categoryName || item.serviceName || item.scope || (item.features && item.features.length > 0 ? item.features[0] : 'Konstruksi & Design');

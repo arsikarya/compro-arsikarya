@@ -61,7 +61,7 @@ export default function Services() {
       cardTitle: displayTitleMap[s.slug] || s.title,
       desc: s.shortDesc,
       fullDesc: s.fullDesc,
-      image: serviceImageMap[s.slug] || '/projects/project_1.jpg',
+      image: s.heroImageUrl || serviceImageMap[s.slug] || '/projects/project_1.jpg',
       icon: iconMap[s.slug] || <FiLayers style={{ fontSize: '1.4rem', color: '#1e293b' }} />,
       features: s.scopeList ? s.scopeList.slice(0, 3) : [],
       slug: s.slug,

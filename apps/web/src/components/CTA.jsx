@@ -7,7 +7,7 @@ import { useSiteSettings } from '../context/SiteSettingsContext';
 export default function CTA() {
   const { t } = useLanguage();
   const { getWaUrl } = useSiteSettings();
-  const ctaPhoto = "/projects/cta_blueprint.jpg";
+  const ctaPhoto = "https://res.cloudinary.com/agsidj31/image/upload/v1790752119/fldk6jvb3ovzf3xocadw.jpg";
   const generalWaUrl = getWaUrl();
 
   return (

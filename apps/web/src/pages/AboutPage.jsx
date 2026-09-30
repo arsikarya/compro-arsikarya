@@ -85,7 +85,7 @@ export default function AboutPage() {
                   }}
                 >
                   <img
-                    src="/images/about_collage_1.jpg"
+                    src="https://res.cloudinary.com/agsidj31/image/upload/v1790752124/ynf1aofptsjzktatulha.jpg"
                     alt="PT. Arsi Karya Unggul Construction Process"
                     style={{
                       width: '100%',
@@ -117,7 +117,7 @@ export default function AboutPage() {
                     }}
                   >
                     <img
-                      src="/images/about_collage_2.jpg"
+                      src="https://res.cloudinary.com/agsidj31/image/upload/v1790752127/hgvnwupc7onjcivt5hrl.jpg"
                       alt="PT. Arsi Karya Unggul Bathroom Finishing"
                       style={{
                         width: '100%',
@@ -138,7 +138,7 @@ export default function AboutPage() {
                     }}
                   >
                     <img
-                      src="/images/about_collage_3.jpg"
+                      src="https://res.cloudinary.com/agsidj31/image/upload/v1790752129/smiuzybptllj38wffdzf.jpg"
                       alt="PT. Arsi Karya Unggul Pool & Landscape"
                       style={{
                         width: '100%',

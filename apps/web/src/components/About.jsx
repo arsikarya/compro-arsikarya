@@ -97,7 +97,7 @@ export default function About() {
               }}
             >
               <img
-                src="/images/about-showcase.jpg"
+                src="https://res.cloudinary.com/agsidj31/image/upload/v1790752121/zckfyzpojpde2yhwzsay.jpg"
                 alt="Tentang Arsi Karya"
                 style={{
                   width: '100%',

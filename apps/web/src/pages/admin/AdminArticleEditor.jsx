@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { adminApi } from '../../lib/api';
 import CloudinaryUploadWidget from '../../components/admin/CloudinaryUploadWidget';
+import MediaPickerModal from '../../components/admin/MediaPickerModal';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { 
     FiArrowLeft, 
@@ -39,6 +40,7 @@ export default function AdminArticleEditor() {
     const [content, setContent] = useState('');
     const [coverImageUrl, setCoverImageUrl] = useState('');
     const [coverImageId, setCoverImageId] = useState('');
+    const [showMediaPicker, setShowMediaPicker] = useState(false);
     const [category, setCategory] = useState('Tips');
     const [author, setAuthor] = useState('Arsi Karya Team');
     const [publishedDate, setPublishedDate] = useState(new Date().toISOString().substring(0, 10));
@@ -219,14 +221,40 @@ export default function AdminArticleEditor() {
                         {coverImageUrl ? (
                             <div className="cover-preview-wrap">
                                 <img src={coverImageUrl} alt="Cover Preview" className="cover-img-preview" />
-                                <button type="button" className="btn-remove-cover" onClick={() => setCoverImageUrl('')}>
-                                    Ganti Gambar Sampul
-                                </button>
+                                <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                                    <button 
+                                        type="button" 
+                                        className="btn-cms btn-cms-outline" 
+                                        style={{ fontSize: '0.8rem', padding: '6px 12px' }}
+                                        onClick={() => setShowMediaPicker(true)}
+                                    >
+                                        Ganti dari Media
+                                    </button>
+                                    <CloudinaryUploadWidget onUploadSuccess={setCoverImageUrl} buttonText="Upload Baru" />
+                                    <button 
+                                        type="button" 
+                                        className="btn-remove-cover" 
+                                        onClick={() => setCoverImageUrl('')}
+                                        style={{ marginLeft: 'auto' }}
+                                    >
+                                        Hapus
+                                    </button>
+                                </div>
                             </div>
                         ) : (
-                            <div className="cover-upload-placeholder">
-                                <CloudinaryUploadWidget onUploadSuccess={setCoverImageUrl} />
-                                <span style={{ marginTop: '8px', fontSize: '0.8rem', color: '#9ca3af' }}>Unggah Cover Image</span>
+                            <div className="cover-upload-placeholder" style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                    <button 
+                                        type="button" 
+                                        className="btn-cms btn-cms-outline" 
+                                        style={{ fontSize: '0.82rem', padding: '6px 12px' }}
+                                        onClick={() => setShowMediaPicker(true)}
+                                    >
+                                        Pilih dari Media Library
+                                    </button>
+                                    <CloudinaryUploadWidget onUploadSuccess={setCoverImageUrl} buttonText="Unggah Gambar" />
+                                </div>
+                                <span style={{ fontSize: '0.8rem', color: '#9ca3af' }}>Pilih dari Cloudinary atau unggah file baru</span>
                             </div>
                         )}
                         <input 
@@ -312,6 +340,13 @@ export default function AdminArticleEditor() {
                     </div>
                 </div>
             </div>
+
+            <MediaPickerModal 
+                isOpen={showMediaPicker}
+                onClose={() => setShowMediaPicker(false)}
+                onSelect={(url) => setCoverImageUrl(url)}
+                title="Pilih Gambar Sampul Artikel"
+            />
         </div>
     );
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { adminApi } from '../../lib/api';
 import CloudinaryUploadWidget from '../../components/admin/CloudinaryUploadWidget';
+import MediaPickerModal from '../../components/admin/MediaPickerModal';
 import { FiPlus, FiEdit, FiTrash2, FiCheck, FiX, FiEye, FiEyeOff } from 'react-icons/fi';
 import './AdminTestimonials.css';
 
@@ -16,6 +17,7 @@ export default function AdminTestimonials() {
     const [quote, setQuote] = useState('');
     const [projectName, setProjectName] = useState('');
     const [imageUrl, setImageUrl] = useState('');
+    const [showMediaPicker, setShowMediaPicker] = useState(false);
     const [approved, setApproved] = useState(true);
     const [published, setPublished] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -271,16 +273,31 @@ export default function AdminTestimonials() {
 
                             <div className="form-group">
                                 <label className="form-label">Foto Klien (Opsional)</label>
-                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                    {imageUrl && (
+                                        <img 
+                                            src={imageUrl} 
+                                            alt="Preview" 
+                                            style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #e5e7eb' }} 
+                                        />
+                                    )}
                                     <input 
                                         type="url" 
                                         className="form-input" 
                                         value={imageUrl} 
                                         onChange={(e) => setImageUrl(e.target.value)} 
                                         placeholder="https://..." 
-                                        style={{ flex: 1 }}
+                                        style={{ flex: 1, minWidth: '200px' }}
                                     />
-                                    <CloudinaryUploadWidget onUploadSuccess={setImageUrl} />
+                                    <button 
+                                        type="button" 
+                                        className="btn-cms btn-cms-outline" 
+                                        style={{ fontSize: '0.8rem', padding: '6px 10px' }}
+                                        onClick={() => setShowMediaPicker(true)}
+                                    >
+                                        Pilih dari Media
+                                    </button>
+                                    <CloudinaryUploadWidget onUploadSuccess={setImageUrl} buttonText="Upload Baru" />
                                 </div>
                             </div>
 
@@ -314,6 +331,13 @@ export default function AdminTestimonials() {
                     </div>
                 </div>
             )}
+
+            <MediaPickerModal 
+                isOpen={showMediaPicker}
+                onClose={() => setShowMediaPicker(false)}
+                onSelect={(url) => setImageUrl(url)}
+                title="Pilih Foto Klien Testimoni"
+            />
         </div>
     );
 }

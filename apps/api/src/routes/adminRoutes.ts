@@ -482,6 +482,16 @@ router.get('/media', async (_req, res) => {
     }
 });
 
+router.post('/media/sync-cloudinary', async (_req, res) => {
+    try {
+        const result = await mediaService.syncFromCloudinary();
+        res.json({ message: 'Sync Cloudinary berhasil', ...result });
+    } catch (error: any) {
+        console.error('Error syncing Cloudinary:', error);
+        res.status(400).json({ error: error?.message || 'Gagal sinkronisasi dengan Cloudinary' });
+    }
+});
+
 router.post('/media', async (req, res) => {
     try {
         const { publicId, url } = req.body;
@@ -499,7 +509,8 @@ router.post('/media', async (req, res) => {
 
 router.delete('/media/:id', async (req, res) => {
     try {
-        const deleted = await mediaService.deleteMedia(Number(req.params.id));
+        const force = req.query.force === 'true';
+        const deleted = await mediaService.deleteMedia(Number(req.params.id), force);
         if (!deleted) {
             res.status(404).json({ error: 'Media not found' });
             return;
