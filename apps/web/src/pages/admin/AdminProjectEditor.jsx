@@ -38,19 +38,35 @@ export default function AdminProjectEditor() {
 
     const textareaRef = useRef(null);
 
-    // Fetch active services to dynamically populate categories
+    // Helper to strictly sync category with services from Layanan
+    const getSynchronizedCategory = (cat, servicesList) => {
+        if (!servicesList || servicesList.length === 0) return cat || '';
+        // 1. Exact match with an existing service
+        const exact = servicesList.find(s => s.title.toLowerCase() === (cat || '').toLowerCase());
+        if (exact) return exact.title;
+        // 2. Prefix or substring match (e.g. "Konstruksi" -> "Konstruksi (General Contractor)")
+        if (cat) {
+            const partial = servicesList.find(s => 
+                s.title.toLowerCase().startsWith(cat.toLowerCase()) || 
+                cat.toLowerCase().startsWith(s.title.toLowerCase())
+            );
+            if (partial) return partial.title;
+        }
+        // 3. Fallback: default to the first active service from Layanan
+        return servicesList[0]?.title || '';
+    };
+
+    // Fetch active services to dynamically populate categories (strictly 1:1 with Layanan)
     useEffect(() => {
         adminApi.getServices()
             .then((data) => {
                 if (Array.isArray(data) && data.length > 0) {
                     setServices(data);
-                    if (!isEditing) {
-                        setCategory(prev => prev || data[0].title);
-                    }
+                    setCategory((prev) => getSynchronizedCategory(prev, data));
                 }
             })
             .catch((err) => console.error('Gagal memuat layanan untuk kategori proyek:', err));
-    }, [isEditing]);
+    }, []);
 
     // Rich Text insertion helpers for structured project editorial content
     const insertFormatting = (prefix, suffix = '') => {
@@ -73,7 +89,10 @@ export default function AdminProjectEditor() {
             adminApi.getProject(id)
                 .then((project) => {
                     setTitle(project.title || '');
-                    setCategory(project.category || '');
+                    setCategory((prev) => {
+                        const rawCat = project.category || prev || '';
+                        return services.length > 0 ? getSynchronizedCategory(rawCat, services) : rawCat;
+                    });
                     setSlug(project.slug || '');
                     setLocation(project.location || '');
                     setYear(project.year || '');
@@ -243,16 +262,7 @@ export default function AdminProjectEditor() {
                                             </option>
                                         ))
                                     ) : (
-                                        <>
-                                            <option value="Perencanaan">Perencanaan</option>
-                                            <option value="Konstruksi">Konstruksi</option>
-                                            <option value="Design & Build">Design & Build</option>
-                                            <option value="Renovasi">Renovasi</option>
-                                        </>
-                                    )}
-                                    {/* Fallback to preserve custom or legacy category on existing project */}
-                                    {category && services.length > 0 && !services.some(s => s.title?.toLowerCase() === category.toLowerCase()) && (
-                                        <option value={category}>{category}</option>
+                                        <option value="" disabled>Memuat daftar layanan...</option>
                                     )}
                                 </select>
                                 <span className="form-hint" style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '4px', display: 'block' }}>

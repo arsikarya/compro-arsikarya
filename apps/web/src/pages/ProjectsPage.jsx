@@ -119,8 +119,12 @@ export default function ProjectsPage() {
           (s.titleEn && s.titleEn.toLowerCase().trim() === active)
         );
         if (matchingSvc) {
-          return cat === matchingSvc.title.toLowerCase().trim() || 
-                 (matchingSvc.titleEn && cat === matchingSvc.titleEn.toLowerCase().trim());
+          const matchTitle = (matchingSvc.title || '').toLowerCase().trim();
+          const matchTitleEn = (matchingSvc.titleEn || '').toLowerCase().trim();
+          return cat === matchTitle || 
+                 (matchTitleEn && cat === matchTitleEn) ||
+                 (matchTitle && cat.startsWith(matchTitle)) ||
+                 (cat && matchTitle.startsWith(cat));
         }
         return cat === active;
       });
