@@ -42,6 +42,8 @@ export default function AdminArticleEditor() {
     const [coverImageId, setCoverImageId] = useState('');
     const [showMediaPicker, setShowMediaPicker] = useState(false);
     const [category, setCategory] = useState('Tips');
+    const [availableCategories, setAvailableCategories] = useState(ARTICLE_CATEGORIES);
+    const [isCustomCategory, setIsCustomCategory] = useState(false);
     const [author, setAuthor] = useState('Arsi Karya Team');
     const [publishedDate, setPublishedDate] = useState(new Date().toISOString().substring(0, 10));
     const [published, setPublished] = useState(false);
@@ -55,6 +57,21 @@ export default function AdminArticleEditor() {
 
     const textareaRef = useRef(null);
 
+    // Fetch all existing articles to collect all previously used categories
+    useEffect(() => {
+        adminApi.getArticles()
+            .then((articles) => {
+                if (Array.isArray(articles) && articles.length > 0) {
+                    const fromDb = articles
+                        .map(a => a.category)
+                        .filter(Boolean)
+                        .map(c => c.trim());
+                    setAvailableCategories(prev => Array.from(new Set([...prev, ...fromDb])));
+                }
+            })
+            .catch(err => console.error('Gagal memuat kategori artikel:', err));
+    }, []);
+
     useEffect(() => {
         if (isEditing) {
             adminApi.getArticle(id)
@@ -65,7 +82,9 @@ export default function AdminArticleEditor() {
                     setContent(article.content || '');
                     setCoverImageUrl(article.coverImageUrl || '');
                     setCoverImageId(article.coverImageId || '');
-                    setCategory(article.category || 'Tips');
+                    const currentCat = article.category || 'Tips';
+                    setCategory(currentCat);
+                    setAvailableCategories(prev => Array.from(new Set([...prev, currentCat])));
                     setAuthor(article.author || 'Arsi Karya Team');
                     setPublishedDate(article.publishedDate ? new Date(article.publishedDate).toISOString().substring(0, 10) : new Date().toISOString().substring(0, 10));
                     setPublished(article.published || false);
@@ -103,6 +122,12 @@ export default function AdminArticleEditor() {
             return;
         }
 
+        const finalCategory = (category || '').trim();
+        if (!finalCategory) {
+            setErrorMsg('⚠️ Kategori Artikel wajib diisi!');
+            return;
+        }
+
         if (targetPublished && !coverImageUrl.trim()) {
             setErrorMsg('❌ Aturan Wajib: Gambar Sampul (Cover Image) wajib diunggah sebelum publikasi artikel!');
             return;
@@ -119,7 +144,7 @@ export default function AdminArticleEditor() {
             content,
             coverImageUrl,
             coverImageId,
-            category,
+            category: finalCategory,
             author,
             publishedDate: new Date(publishedDate),
             published: targetPublished,
@@ -131,9 +156,11 @@ export default function AdminArticleEditor() {
             if (isEditing) {
                 await adminApi.updateArticle(id, data);
                 setMessage('✅ Artikel berhasil diperbarui!');
+                setAvailableCategories(prev => Array.from(new Set([...prev, finalCategory])));
             } else {
                 const created = await adminApi.createArticle(data);
                 setMessage('✅ Artikel baru berhasil dibuat!');
+                setAvailableCategories(prev => Array.from(new Set([...prev, finalCategory])));
                 navigate(`/admin/articles/${created.id}/edit`, { replace: true });
             }
             setTimeout(() => setMessage(''), 4000);
@@ -272,12 +299,88 @@ export default function AdminArticleEditor() {
                         <h4 className="panel-heading">Kategori & Penulis</h4>
 
                         <div className="form-group">
-                            <label className="form-label">Kategori Artikel</label>
-                            <select className="form-input" value={category} onChange={(e) => setCategory(e.target.value)}>
-                                {ARTICLE_CATEGORIES.map(cat => (
-                                    <option key={cat} value={cat}>{cat}</option>
-                                ))}
-                            </select>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                                <label className="form-label" style={{ margin: 0 }}>Kategori Artikel</label>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsCustomCategory(!isCustomCategory)}
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        color: '#005697',
+                                        fontSize: '0.8rem',
+                                        fontWeight: 600,
+                                        cursor: 'pointer',
+                                        padding: 0,
+                                        textDecoration: 'underline'
+                                    }}
+                                >
+                                    {isCustomCategory ? '📋 Pilih dari Dropdown' : '✏️ + Input Manual / Custom'}
+                                </button>
+                            </div>
+
+                            {!isCustomCategory ? (
+                                <select 
+                                    className="form-input" 
+                                    value={category} 
+                                    onChange={(e) => {
+                                        if (e.target.value === '__custom__') {
+                                            setIsCustomCategory(true);
+                                            setCategory('');
+                                        } else {
+                                            setCategory(e.target.value);
+                                        }
+                                    }}
+                                >
+                                    {availableCategories.map(cat => (
+                                        <option key={cat} value={cat}>{cat}</option>
+                                    ))}
+                                    {category && !availableCategories.includes(category) && (
+                                        <option value={category}>{category}</option>
+                                    )}
+                                    <option value="__custom__" style={{ fontWeight: 600, color: '#005697' }}>
+                                        ✏️ + Tulis Kategori Kustom / Manual...
+                                    </option>
+                                </select>
+                            ) : (
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <input 
+                                        type="text" 
+                                        className="form-input" 
+                                        list="existing-category-suggestions"
+                                        placeholder="Ketik nama kategori (contoh: Arsitektur Villa)..." 
+                                        value={category} 
+                                        onChange={(e) => setCategory(e.target.value)} 
+                                        autoFocus
+                                        required
+                                    />
+                                    <datalist id="existing-category-suggestions">
+                                        {availableCategories.map(cat => (
+                                            <option key={cat} value={cat} />
+                                        ))}
+                                    </datalist>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setIsCustomCategory(false);
+                                            if (!category.trim() && availableCategories.length > 0) {
+                                                setCategory(availableCategories[0]);
+                                            }
+                                        }}
+                                        className="btn-cms btn-cms-outline"
+                                        style={{ whiteSpace: 'nowrap', fontSize: '0.8rem', padding: '0 12px' }}
+                                        title="Kembali ke pilihan dropdown"
+                                    >
+                                        Batal
+                                    </button>
+                                </div>
+                            )}
+
+                            <span className="form-hint" style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '4px', display: 'block' }}>
+                                {isCustomCategory 
+                                    ? 'Ketik nama kategori baru secara bebas. Kategori ini akan otomatis tersimpan & muncul di pilihan dropdown artikel berikutnya.'
+                                    : 'Kategori yang sebelumnya pernah dipakai otomatis muncul di pilihan dropdown ini.'}
+                            </span>
                         </div>
 
                         <div className="form-group">
