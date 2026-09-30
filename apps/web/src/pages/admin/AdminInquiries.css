@@ -109,22 +109,15 @@
     border: 1px solid #e2e8f0;
 }
 
-/* Status Select Colored Dropdown in Table */
-.status-select-colored {
-    padding: 5px 12px 5px 24px;
-    border-radius: 9999px;
-    font-size: 0.8rem;
-    font-weight: 700;
+/* Status Pill Badge in Table (Hug-Content & Balanced Padding) */
+.status-pill-badge {
     cursor: pointer;
-    outline: none;
-    border-width: 1.5px;
-    border-style: solid;
-    transition: all 0.15s ease;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    user-select: none;
 }
 
-.status-select-colored:hover {
+.status-pill-badge:hover {
     filter: brightness(0.96);
+    transform: translateY(-0.5px);
 }
 
 /* Detail View Layout */

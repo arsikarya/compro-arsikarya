@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { adminApi } from '../../lib/api';
-import { FiEye, FiTrash2, FiSearch } from 'react-icons/fi';
+import { FiEye, FiTrash2, FiSearch, FiChevronDown } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
 import './AdminInquiries.css';
 
@@ -214,29 +214,61 @@ export default function AdminInquiries() {
                                             {item.lokasi || '-'}
                                         </td>
                                         <td>
-                                            {/* Colored Status Select Badge */}
-                                            <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+                                            {/* Hug-Content Balanced Status Pill Badge */}
+                                            <div 
+                                                className="status-pill-badge"
+                                                style={{
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '6px',
+                                                    padding: '5px 12px',
+                                                    borderRadius: '9999px',
+                                                    fontSize: '0.8rem',
+                                                    fontWeight: 700,
+                                                    backgroundColor: currentStatusMeta.bg,
+                                                    color: currentStatusMeta.color,
+                                                    border: `1.5px solid ${currentStatusMeta.border}`,
+                                                    position: 'relative',
+                                                    cursor: 'pointer',
+                                                    width: 'fit-content',
+                                                    whiteSpace: 'nowrap',
+                                                    boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+                                                    transition: 'all 0.15s ease'
+                                                }}
+                                            >
                                                 <span 
                                                     style={{ 
-                                                        position: 'absolute', 
-                                                        left: '10px', 
-                                                        width: '8px', 
-                                                        height: '8px', 
+                                                        width: '7px', 
+                                                        height: '7px', 
                                                         borderRadius: '50%', 
-                                                        backgroundColor: currentStatusMeta.dot, 
-                                                        pointerEvents: 'none',
-                                                        zIndex: 2 
+                                                        backgroundColor: currentStatusMeta.dot,
+                                                        flexShrink: 0 
                                                     }} 
                                                 />
+                                                <span>{currentStatusMeta.label}</span>
+                                                <FiChevronDown 
+                                                    size={13} 
+                                                    style={{ 
+                                                        color: currentStatusMeta.color, 
+                                                        opacity: 0.85, 
+                                                        flexShrink: 0,
+                                                        marginLeft: '1px'
+                                                    }} 
+                                                />
+
                                                 <select 
                                                     value={item.status} 
                                                     onChange={(e) => handleStatusChange(item.id, e.target.value)}
-                                                    className="status-select-colored"
                                                     style={{
-                                                        backgroundColor: currentStatusMeta.bg,
-                                                        color: currentStatusMeta.color,
-                                                        borderColor: currentStatusMeta.border,
+                                                        position: 'absolute',
+                                                        inset: 0,
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        opacity: 0,
+                                                        cursor: 'pointer',
+                                                        fontSize: '0.85rem'
                                                     }}
+                                                    title="Klik untuk mengubah status"
                                                 >
                                                     <option value="new">Baru</option>
                                                     <option value="reviewing">Ditinjau</option>
