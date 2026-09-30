@@ -172,12 +172,12 @@ export default function AdminLabsEditor() {
                         </div>
 
                         <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
-                            <button type="submit" className="btn-primary">
-                                {isEditing ? 'Update Creation' : 'Save Creation'}
+                            <button type="submit" className="btn-cms btn-cms-primary">
+                                {isEditing ? 'Update Creation' : 'Simpan Kreasi'}
                             </button>
                             {isEditing && (
-                                <button type="button" className="btn-outline" onClick={resetForm}>
-                                    Cancel
+                                <button type="button" className="btn-cms btn-cms-outline" onClick={resetForm}>
+                                    Batal
                                 </button>
                             )}
                         </div>
@@ -200,8 +200,8 @@ export default function AdminLabsEditor() {
                                 ))}
                             </div>
                             <div style={{ display: 'flex', gap: '8px', width: '100%', marginTop: 'auto' }}>
-                                <button onClick={() => handleEdit(item)} className="btn-outline" style={{ flex: 1, padding: '8px', fontSize: '0.85rem' }}>Edit</button>
-                                <button onClick={() => handleDelete(item.id)} className="btn-outline" style={{ flex: 1, padding: '8px', fontSize: '0.85rem', color: '#ff3b30', borderColor: 'rgba(255, 59, 48, 0.3)' }}>Delete</button>
+                                <button onClick={() => handleEdit(item)} className="btn-action-sm edit" style={{ flex: 1, justifyContent: 'center' }}>Edit</button>
+                                <button onClick={() => handleDelete(item.id)} className="btn-action-sm delete" style={{ flex: 1, justifyContent: 'center' }}>Hapus</button>
                             </div>
                         </div>
                     ))}

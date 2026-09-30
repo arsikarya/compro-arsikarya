@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { adminApi } from '../../lib/api';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import { FiSave } from 'react-icons/fi';
 import './AdminProjectEditor.css';
 
 export default function AdminContactEditor() {
@@ -33,10 +34,10 @@ export default function AdminContactEditor() {
         setMessage('');
         try {
             await adminApi.updateContact({ whatsappNumber, defaultMessage, email, phone, location });
-            setMessage('✅ Saved successfully!');
-            setTimeout(() => setMessage(''), 3000);
+            setMessage('✅ Perubahan berhasil disimpan!');
+            setTimeout(() => setMessage(''), 3500);
         } catch (err) {
-            setMessage('❌ Failed to save: ' + err.message);
+            setMessage('❌ Gagal menyimpan: ' + err.message);
         } finally {
             setSaving(false);
         }
@@ -46,47 +47,96 @@ export default function AdminContactEditor() {
 
     return (
         <div className="admin-project-editor">
-            <div className="editor-header-bar">
-                <div className="header-left">
-                    <h3 className="section-title">Contact Page CMS</h3>
-                    {message && <span style={{ marginLeft: '16px', fontSize: '0.9rem' }}>{message}</span>}
+            {/* Header Navigation */}
+            <div className="admin-page-header">
+                <div>
+                    <h2 className="page-heading">Kelola Halaman Kontak (Contact)</h2>
+                    <p className="page-subheading">
+                        Atur informasi kontak resmi, nomor telepon, alamat kantor, serta integrasi pesan WhatsApp.
+                    </p>
                 </div>
-                <div className="header-actions">
-                    <button className="btn-primary" onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    {message && (
+                        <span style={{ fontSize: '0.88rem', fontWeight: 600, color: message.startsWith('✅') ? '#059669' : '#dc2626' }}>
+                            {message}
+                        </span>
+                    )}
+                    <button className="btn-cms btn-cms-primary" onClick={handleSave} disabled={saving}>
+                        <FiSave size={16} />
+                        <span>{saving ? 'Menyimpan...' : 'Simpan Perubahan'}</span>
+                    </button>
                 </div>
             </div>
 
-            <div className="editor-layout" style={{ gridTemplateColumns: '1fr' }}>
-                <div className="editor-panel animate-fade-in">
-                    <h4 className="panel-title">Contact Information</h4>
-                    <p className="text-secondary" style={{ marginBottom: '24px', fontSize: '0.9rem' }}>Configure the contact details shown on your Contact page.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                {/* Contact Information Panel */}
+                <div className="form-panel animate-fade-in">
+                    <h3 className="panel-heading">Informasi Kontak Resmi</h3>
+                    <p className="field-help" style={{ marginBottom: '20px' }}>
+                        Detail kontak yang ditampilkan pada halaman kontak publik dan footer website.
+                    </p>
 
-                    <div className="form-group" style={{ marginBottom: '16px' }}>
-                        <label>Email Address</label>
-                        <input type="email" className="form-input text-lg" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="e.g. webarsikarya@gmail.com" />
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+                        <div className="form-group">
+                            <label className="form-label">Alamat Email Resmi</label>
+                            <input
+                                type="email"
+                                className="form-input"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="webarsikarya@gmail.com"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">Nomor Telepon Kantor (Tampilan)</label>
+                            <input
+                                type="text"
+                                className="form-input"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                placeholder="+62 899-7932-802"
+                            />
+                        </div>
                     </div>
 
-                    <div className="form-group" style={{ marginBottom: '16px' }}>
-                        <label>Phone Number (Display)</label>
-                        <input type="text" className="form-input text-lg" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="e.g. +62 899-7932-802" />
-                    </div>
-
-                    <div className="form-group" style={{ marginBottom: '32px' }}>
-                        <label>Location / Address</label>
-                        <input type="text" className="form-input text-lg" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. Bandung, Indonesia" />
-                    </div>
-
-                    <h4 className="panel-title" style={{ borderTop: '1px solid var(--card-border)', paddingTop: '24px', marginTop: '24px' }}>WhatsApp Integration</h4>
-                    
                     <div className="form-group">
-                        <label>WhatsApp Number</label>
-                        <input type="text" className="form-input text-lg" value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} placeholder="e.g. 628123... (include country code)" />
-                        <span className="text-secondary" style={{ fontSize: '0.8rem', marginTop: '4px' }}>Fill numerical only including country code but without '+' sign.</span>
+                        <label className="form-label">Alamat / Lokasi Kantor</label>
+                        <input
+                            type="text"
+                            className="form-input"
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                            placeholder="Bumi Adipura, Jl. Tulip VII No. 21, Rancabolang, Gedebage, Kota Bandung."
+                        />
+                    </div>
+                </div>
+
+                {/* WhatsApp Integration Panel */}
+                <div className="form-panel animate-fade-in delay-100">
+                    <h3 className="panel-heading">Integrasi Pesan WhatsApp Otomatis</h3>
+                    
+                    <div className="form-group" style={{ marginBottom: '16px' }}>
+                        <label className="form-label">Nomor WhatsApp Tujuan</label>
+                        <input
+                            type="text"
+                            className="form-input"
+                            value={whatsappNumber}
+                            onChange={(e) => setWhatsappNumber(e.target.value)}
+                            placeholder="Contoh: 628997932802 (Gunakan kode negara tanpa tanda '+')"
+                        />
+                        <span className="field-help">Masukkan angka saja termasuk kode negara (contoh 628...). Jangan gunakan tanda tambah (+) atau spasi.</span>
                     </div>
 
-                    <div className="form-group" style={{ marginTop: '24px' }}>
-                        <label>Default WhatsApp Message</label>
-                        <textarea className="form-input" rows="5" value={defaultMessage} onChange={(e) => setDefaultMessage(e.target.value)} />
+                    <div className="form-group">
+                        <label className="form-label">Pesan Standar WhatsApp (Template Pesan Awal)</label>
+                        <textarea
+                            className="form-input"
+                            rows={5}
+                            value={defaultMessage}
+                            onChange={(e) => setDefaultMessage(e.target.value)}
+                            placeholder="Halo Arsi Karya, saya ingin berkonsultasi mengenai proyek..."
+                        />
                     </div>
                 </div>
             </div>

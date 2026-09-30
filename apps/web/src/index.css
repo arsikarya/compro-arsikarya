@@ -198,7 +198,11 @@ h6 { font-size: 1rem; font-family: var(--font-body); font-weight: 800; }
 }
 
 /* Button System Styles */
-.btn-base {
+.btn-base,
+.btn-primary,
+.btn-secondary,
+.btn-outline,
+.btn-dark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -206,12 +210,14 @@ h6 { font-size: 1rem; font-family: var(--font-body); font-weight: 800; }
   font-family: var(--font-body);
   font-weight: 600;
   font-size: 0.95rem;
-  padding: 14px 28px;
+  padding: 10px 22px;
+  min-height: 40px;
   border-radius: var(--radius-control);
   transition: all var(--transition-normal);
   text-decoration: none;
   cursor: pointer;
   white-space: nowrap;
+  box-sizing: border-box;
 }
 
 .btn-primary {
@@ -219,10 +225,14 @@ h6 { font-size: 1rem; font-family: var(--font-body); font-weight: 800; }
   color: var(--color-neutral-0) !important;
   border: 1px solid var(--color-primary-300);
 }
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
   background-color: var(--color-primary-400) !important;
   border-color: var(--color-primary-400) !important;
   color: var(--color-neutral-0) !important;
+}
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-secondary {
@@ -230,9 +240,20 @@ h6 { font-size: 1rem; font-family: var(--font-body); font-weight: 800; }
   color: var(--color-primary-300) !important;
   border: 1px solid var(--color-primary-300);
 }
-.btn-secondary:hover {
+.btn-secondary:hover:not(:disabled) {
   background-color: var(--color-primary-300) !important;
   color: #ffffff !important;
+}
+
+.btn-outline {
+  background-color: #ffffff;
+  color: var(--color-neutral-700) !important;
+  border: 1px solid #d1d5db;
+}
+.btn-outline:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+  color: var(--color-neutral-900) !important;
 }
 
 .btn-dark {
@@ -240,7 +261,7 @@ h6 { font-size: 1rem; font-family: var(--font-body); font-weight: 800; }
   color: var(--color-neutral-0) !important;
   border: 1px solid var(--color-neutral-700);
 }
-.btn-dark:hover {
+.btn-dark:hover:not(:disabled) {
   background-color: var(--color-neutral-500) !important;
   border-color: var(--color-neutral-500) !important;
 }

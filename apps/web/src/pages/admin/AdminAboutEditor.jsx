@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { adminApi } from '../../lib/api';
 import CloudinaryUploadWidget from '../../components/admin/CloudinaryUploadWidget';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import { FiSave, FiPlus, FiTrash2, FiArrowUp, FiArrowDown } from 'react-icons/fi';
 import './AdminProjectEditor.css';
 
 export default function AdminAboutEditor() {
@@ -53,7 +54,15 @@ export default function AdminAboutEditor() {
     };
 
     // Experience helpers
-    const addExperience = () => setExperiences([...experiences, { id: Date.now().toString(), logoUrl: '', title: '', company: '', dateStart: '', dateEnd: '', type: '' }]);
+    const addExperience = () => setExperiences([...experiences, {
+        id: Date.now().toString(),
+        logoUrl: '',
+        title: '',
+        company: '',
+        dateStart: '',
+        dateEnd: '',
+        contractType: ''
+    }]);
     const removeExperience = (index) => setExperiences(experiences.filter((_, i) => i !== index));
     const updateExperience = (index, field, value) => {
         const updated = [...experiences];
@@ -62,7 +71,14 @@ export default function AdminAboutEditor() {
     };
 
     // License helpers
-    const addLicense = () => setLicenses([...licenses, { id: Date.now().toString(), logoUrl: '', title: '', issuer: '', dateStart: '', dateEnd: '' }]);
+    const addLicense = () => setLicenses([...licenses, {
+        id: Date.now().toString(),
+        logoUrl: '',
+        title: '',
+        issuer: '',
+        dateStart: '',
+        dateEnd: ''
+    }]);
     const removeLicense = (index) => setLicenses(licenses.filter((_, i) => i !== index));
     const updateLicense = (index, field, value) => {
         const updated = [...licenses];
@@ -71,11 +87,11 @@ export default function AdminAboutEditor() {
     };
 
     // Activity helpers
-    const addActivity = () => setActivities([...activities, { id: Date.now().toString(), imageUrl: '', url: '' }]);
+    const addActivity = () => setActivities([...activities, { id: Date.now().toString(), imageUrl: '', caption: '' }]);
     const removeActivity = (index) => setActivities(activities.filter((_, i) => i !== index));
     const updateActivity = (index, field, value) => {
         const updated = [...activities];
-        updated[index] = { ...updated[index], [field]: value, url: value }; // Keep both imageUrl and url consistent
+        updated[index] = { ...updated[index], [field]: value };
         setActivities(updated);
     };
 
@@ -84,16 +100,16 @@ export default function AdminAboutEditor() {
         setMessage('');
         try {
             await adminApi.updateAbout({
-                page: { bioDescription },
+                bioDescription,
                 tools,
                 experiences,
                 certifications: licenses,
                 galleryImages: activities
             });
-            setMessage('✅ Saved successfully!');
-            setTimeout(() => setMessage(''), 3000);
+            setMessage('✅ Perubahan berhasil disimpan!');
+            setTimeout(() => setMessage(''), 3500);
         } catch (err) {
-            setMessage('❌ Failed to save: ' + err.message);
+            setMessage('❌ Gagal menyimpan: ' + err.message);
         } finally {
             setSaving(false);
         }
@@ -105,162 +121,311 @@ export default function AdminAboutEditor() {
 
     return (
         <div className="admin-project-editor">
-            <div className="editor-header-bar">
-                <div className="header-left">
-                    <h3 className="section-title">About Page CMS</h3>
-                    {message && <span style={{ marginLeft: '16px', fontSize: '0.9rem' }}>{message}</span>}
+            {/* Header Navigation */}
+            <div className="admin-page-header">
+                <div>
+                    <h2 className="page-heading">Kelola Halaman Tentang Kami (About)</h2>
+                    <p className="page-subheading">
+                        Atur deskripsi perusahaan, ikon keahlian, riwayat pengalaman, lisensi sertifikasi, dan galeri aktivitas.
+                    </p>
                 </div>
-                <div className="header-actions">
-                    <button className="btn-primary" onClick={handleSave} disabled={saving}>
-                        {saving ? 'Saving...' : 'Save Changes'}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    {message && (
+                        <span style={{ fontSize: '0.88rem', fontWeight: 600, color: message.startsWith('✅') ? '#059669' : '#dc2626' }}>
+                            {message}
+                        </span>
+                    )}
+                    <button className="btn-cms btn-cms-primary" onClick={handleSave} disabled={saving}>
+                        <FiSave size={16} />
+                        <span>{saving ? 'Menyimpan...' : 'Simpan Perubahan'}</span>
                     </button>
                 </div>
             </div>
 
-            <div className="editor-layout" style={{ gridTemplateColumns: '1fr' }}>
-                <div className="editor-panel animate-fade-in">
-                    <h4 className="panel-title">Overview Description</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                {/* 1. Overview Description */}
+                <div className="form-panel animate-fade-in">
+                    <h3 className="panel-heading">Deskripsi Profil Perusahaan</h3>
                     <div className="form-group">
-                        <label>About Description (HTML supported)</label>
-                        <textarea className="form-input" rows="5" value={bioDescription} onChange={(e) => setBioDescription(e.target.value)} placeholder="I research user behaviors and design intuitive digital experiences..."></textarea>
+                        <label className="form-label">Deskripsi Tentang Kami (Mendukung HTML & Teks)</label>
+                        <textarea
+                            className="form-input"
+                            rows={6}
+                            value={bioDescription}
+                            onChange={(e) => setBioDescription(e.target.value)}
+                            placeholder="PT ARSI KARYA UNGGUL adalah perusahaan kontraktor umum..."
+                        />
                     </div>
                 </div>
 
-                <div className="editor-panel animate-fade-in delay-100">
-                    <h4 className="panel-title">Tools & Skills Icons</h4>
-                    <p className="text-secondary" style={{ marginBottom: '16px', fontSize: '0.9rem' }}>Use typical React-Icons codes (e.g. 'SiFigma', 'FaWordpress'). Refer to react-icons directory.</p>
+                {/* 2. Tools & Skills */}
+                <div className="form-panel animate-fade-in delay-100">
+                    <h3 className="panel-heading">Alat, Keahlian & Teknologi</h3>
+                    <p className="field-help" style={{ marginBottom: '16px' }}>
+                        Gunakan kode ikon React-Icons (misal: 'SiFigma', 'FaWordpress', 'SiAutodesk', 'SiSketchup').
+                    </p>
                     <div className="blocks-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
                         {tools.map((tool, index) => (
                             <div key={tool.id || index} className="editor-block">
                                 <div className="block-header">
-                                    <span className="block-type-badge">Tool {index + 1}</span>
-                                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                        <button type="button" onClick={() => moveItemUp(tools, setTools, index)} disabled={index === 0} className="btn-icon" title="Move Up" style={{ opacity: index === 0 ? 0.3 : 1, cursor: index === 0 ? 'not-allowed' : 'pointer' }}>↑</button>
-                                        <button type="button" onClick={() => moveItemDown(tools, setTools, index)} disabled={index === tools.length - 1} className="btn-icon" title="Move Down" style={{ opacity: index === tools.length - 1 ? 0.3 : 1, cursor: index === tools.length - 1 ? 'not-allowed' : 'pointer' }}>↓</button>
-                                        <button type="button" onClick={() => removeTool(index)} className="btn-icon text-danger" title="Remove">&times;</button>
+                                    <span className="block-type-badge">Ikon #{index + 1}</span>
+                                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                        <button type="button" onClick={() => moveItemUp(tools, setTools, index)} disabled={index === 0} className="btn-icon" title="Pindah ke Atas">
+                                            <FiArrowUp size={14} />
+                                        </button>
+                                        <button type="button" onClick={() => moveItemDown(tools, setTools, index)} disabled={index === tools.length - 1} className="btn-icon" title="Pindah ke Bawah">
+                                            <FiArrowDown size={14} />
+                                        </button>
+                                        <button type="button" onClick={() => removeTool(index)} className="btn-icon text-danger" title="Hapus">
+                                            <FiTrash2 size={14} />
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="block-body">
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                     <div className="form-group">
-                                        <label>Tool Name</label>
-                                        <input type="text" className="form-input" value={tool.name || ''} onChange={(e) => updateTool(index, 'name', e.target.value)} />
+                                        <label className="form-label">Nama Keahlian / Alat</label>
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            value={tool.name || ''}
+                                            onChange={(e) => updateTool(index, 'name', e.target.value)}
+                                            placeholder="Contoh: Figma, AutoCAD"
+                                        />
                                     </div>
                                     <div className="form-group" style={{ marginBottom: 0 }}>
-                                        <label>React-Icon Code</label>
-                                        <input type="text" className="form-input" value={tool.iconCode || ''} onChange={(e) => updateTool(index, 'iconCode', e.target.value)} placeholder="SiFigma" />
+                                        <label className="form-label">Kode React-Icon</label>
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            value={tool.iconCode || ''}
+                                            onChange={(e) => updateTool(index, 'iconCode', e.target.value)}
+                                            placeholder="SiFigma"
+                                        />
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
-                    <button type="button" onClick={addTool} className="btn-outline" style={{ marginTop: '16px' }}>+ Add Tool Icon</button>
+                    <button type="button" onClick={addTool} className="btn-dashed">
+                        <FiPlus size={16} />
+                        <span>Tambah Ikon Alat / Keahlian</span>
+                    </button>
                 </div>
 
-                <div className="editor-panel animate-fade-in delay-100">
-                    <h4 className="panel-title">Experience</h4>
+                {/* 3. Experience */}
+                <div className="form-panel animate-fade-in delay-100">
+                    <h3 className="panel-heading">Riwayat Pengalaman & Portofolio Kerja</h3>
                     <div className="blocks-list">
                         {experiences.map((exp, index) => (
                             <div key={exp.id || index} className="editor-block">
                                 <div className="block-header">
-                                    <span className="block-type-badge">Experience {index + 1}</span>
-                                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                        <button type="button" onClick={() => moveItemUp(experiences, setExperiences, index)} disabled={index === 0} className="btn-icon" title="Move Up" style={{ opacity: index === 0 ? 0.3 : 1, cursor: index === 0 ? 'not-allowed' : 'pointer' }}>↑</button>
-                                        <button type="button" onClick={() => moveItemDown(experiences, setExperiences, index)} disabled={index === experiences.length - 1} className="btn-icon" title="Move Down" style={{ opacity: index === experiences.length - 1 ? 0.3 : 1, cursor: index === experiences.length - 1 ? 'not-allowed' : 'pointer' }}>↓</button>
-                                        <button type="button" onClick={() => removeExperience(index)} className="btn-icon text-danger" title="Remove">&times;</button>
+                                    <span className="block-type-badge">Pengalaman #{index + 1}</span>
+                                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                        <button type="button" onClick={() => moveItemUp(experiences, setExperiences, index)} disabled={index === 0} className="btn-icon" title="Pindah ke Atas">
+                                            <FiArrowUp size={14} />
+                                        </button>
+                                        <button type="button" onClick={() => moveItemDown(experiences, setExperiences, index)} disabled={index === experiences.length - 1} className="btn-icon" title="Pindah ke Bawah">
+                                            <FiArrowDown size={14} />
+                                        </button>
+                                        <button type="button" onClick={() => removeExperience(index)} className="btn-icon text-danger" title="Hapus">
+                                            <FiTrash2 size={14} />
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="block-body" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                                    <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                                        <label>Company Logo URL</label>
-                                        <input type="url" className="form-input" value={exp.logoUrl || ''} onChange={(e) => updateExperience(index, 'logoUrl', e.target.value)} placeholder="https://..." />
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+                                    <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                                        <label className="form-label">URL Logo Perusahaan (Opsional)</label>
+                                        <input
+                                            type="url"
+                                            className="form-input"
+                                            value={exp.logoUrl || ''}
+                                            onChange={(e) => updateExperience(index, 'logoUrl', e.target.value)}
+                                            placeholder="https://..."
+                                        />
                                     </div>
                                     <div className="form-group">
-                                        <label>Job Title</label>
-                                        <input type="text" className="form-input" value={exp.title || exp.jobTitle || ''} onChange={(e) => updateExperience(index, 'title', e.target.value)} />
+                                        <label className="form-label">Posisi / Jabatan</label>
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            value={exp.title || exp.jobTitle || ''}
+                                            onChange={(e) => updateExperience(index, 'title', e.target.value)}
+                                            placeholder="Contoh: General Contractor"
+                                        />
                                     </div>
                                     <div className="form-group">
-                                        <label>Company</label>
-                                        <input type="text" className="form-input" value={exp.company || ''} onChange={(e) => updateExperience(index, 'company', e.target.value)} />
+                                        <label className="form-label">Nama Perusahaan / Klien</label>
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            value={exp.company || ''}
+                                            onChange={(e) => updateExperience(index, 'company', e.target.value)}
+                                            placeholder="PT. Arsi Karya Unggul"
+                                        />
                                     </div>
                                     <div className="form-group">
-                                        <label>Start Date</label>
-                                        <input type="text" className="form-input" value={exp.dateStart || ''} onChange={(e) => updateExperience(index, 'dateStart', e.target.value)} placeholder="Jan 2024" />
+                                        <label className="form-label">Tahun / Tanggal Mulai</label>
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            value={exp.dateStart || ''}
+                                            onChange={(e) => updateExperience(index, 'dateStart', e.target.value)}
+                                            placeholder="Contoh: 2021"
+                                        />
                                     </div>
                                     <div className="form-group">
-                                        <label>End Date</label>
-                                        <input type="text" className="form-input" value={exp.dateEnd || ''} onChange={(e) => updateExperience(index, 'dateEnd', e.target.value)} placeholder="Present" />
+                                        <label className="form-label">Tahun / Tanggal Selesai</label>
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            value={exp.dateEnd || ''}
+                                            onChange={(e) => updateExperience(index, 'dateEnd', e.target.value)}
+                                            placeholder="Contoh: Sekarang / Present"
+                                        />
                                     </div>
                                     <div className="form-group">
-                                        <label>Contract Type</label>
-                                        <input type="text" className="form-input" value={exp.type || exp.contractType || ''} onChange={(e) => updateExperience(index, 'type', e.target.value)} placeholder="Contract" />
+                                        <label className="form-label">Tipe Kontrak</label>
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            value={exp.type || exp.contractType || ''}
+                                            onChange={(e) => updateExperience(index, 'type', e.target.value)}
+                                            placeholder="Contoh: Full-time / Project"
+                                        />
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
-                    <button type="button" onClick={addExperience} className="btn-outline">+ Add Experience</button>
+                    <button type="button" onClick={addExperience} className="btn-dashed">
+                        <FiPlus size={16} />
+                        <span>Tambah Pengalaman</span>
+                    </button>
                 </div>
 
-                <div className="editor-panel animate-fade-in delay-200">
-                    <h4 className="panel-title">Licenses & Certifications</h4>
+                {/* 4. Licenses & Certifications */}
+                <div className="form-panel animate-fade-in delay-200">
+                    <h3 className="panel-heading">Lisensi & Sertifikasi</h3>
                     <div className="blocks-list">
                         {licenses.map((lic, index) => (
                             <div key={lic.id || index} className="editor-block">
                                 <div className="block-header">
-                                    <span className="block-type-badge">License {index + 1}</span>
-                                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                        <button type="button" onClick={() => moveItemUp(licenses, setLicenses, index)} disabled={index === 0} className="btn-icon" title="Move Up" style={{ opacity: index === 0 ? 0.3 : 1, cursor: index === 0 ? 'not-allowed' : 'pointer' }}>↑</button>
-                                        <button type="button" onClick={() => moveItemDown(licenses, setLicenses, index)} disabled={index === licenses.length - 1} className="btn-icon" title="Move Down" style={{ opacity: index === licenses.length - 1 ? 0.3 : 1, cursor: index === licenses.length - 1 ? 'not-allowed' : 'pointer' }}>↓</button>
-                                        <button type="button" onClick={() => removeLicense(index)} className="btn-icon text-danger" title="Remove">&times;</button>
+                                    <span className="block-type-badge">Sertifikasi #{index + 1}</span>
+                                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                        <button type="button" onClick={() => moveItemUp(licenses, setLicenses, index)} disabled={index === 0} className="btn-icon" title="Pindah ke Atas">
+                                            <FiArrowUp size={14} />
+                                        </button>
+                                        <button type="button" onClick={() => moveItemDown(licenses, setLicenses, index)} disabled={index === licenses.length - 1} className="btn-icon" title="Pindah ke Bawah">
+                                            <FiArrowDown size={14} />
+                                        </button>
+                                        <button type="button" onClick={() => removeLicense(index)} className="btn-icon text-danger" title="Hapus">
+                                            <FiTrash2 size={14} />
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="block-body" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                                    <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                                        <label>Institution Logo URL</label>
-                                        <input type="url" className="form-input" value={lic.logoUrl || ''} onChange={(e) => updateLicense(index, 'logoUrl', e.target.value)} placeholder="https://..." />
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+                                    <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                                        <label className="form-label">URL Logo Instansi / Penerbit</label>
+                                        <input
+                                            type="url"
+                                            className="form-input"
+                                            value={lic.logoUrl || ''}
+                                            onChange={(e) => updateLicense(index, 'logoUrl', e.target.value)}
+                                            placeholder="https://..."
+                                        />
                                     </div>
                                     <div className="form-group">
-                                        <label>Certification Name</label>
-                                        <input type="text" className="form-input" value={lic.title || lic.name || ''} onChange={(e) => updateLicense(index, 'title', e.target.value)} />
+                                        <label className="form-label">Nama Sertifikasi / Lisensi</label>
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            value={lic.title || lic.name || ''}
+                                            onChange={(e) => updateLicense(index, 'title', e.target.value)}
+                                            placeholder="Contoh: Sertifikasi Keahlian Konstruksi"
+                                        />
                                     </div>
                                     <div className="form-group">
-                                        <label>Issuer Organization</label>
-                                        <input type="text" className="form-input" value={lic.issuer || ''} onChange={(e) => updateLicense(index, 'issuer', e.target.value)} />
+                                        <label className="form-label">Organisasi / Lembaga Penerbit</label>
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            value={lic.issuer || ''}
+                                            onChange={(e) => updateLicense(index, 'issuer', e.target.value)}
+                                            placeholder="Contoh: LPJK / BNSP"
+                                        />
                                     </div>
                                     <div className="form-group">
-                                        <label>Start/Issue Date</label>
-                                        <input type="text" className="form-input" value={lic.dateStart || lic.issueDate || ''} onChange={(e) => updateLicense(index, 'dateStart', e.target.value)} placeholder="Jul 2024" />
+                                        <label className="form-label">Tanggal Terbit</label>
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            value={lic.dateStart || lic.issueDate || ''}
+                                            onChange={(e) => updateLicense(index, 'dateStart', e.target.value)}
+                                            placeholder="Contoh: Jan 2023"
+                                        />
                                     </div>
                                     <div className="form-group">
-                                        <label>Expiration Date</label>
-                                        <input type="text" className="form-input" value={lic.dateEnd || ''} onChange={(e) => updateLicense(index, 'dateEnd', e.target.value)} placeholder="(Optional)" />
+                                        <label className="form-label">Tanggal Kedaluwarsa (Opsional)</label>
+                                        <input
+                                            type="text"
+                                            className="form-input"
+                                            value={lic.dateEnd || ''}
+                                            onChange={(e) => updateLicense(index, 'dateEnd', e.target.value)}
+                                            placeholder="Contoh: Des 2026 / Seumur Hidup"
+                                        />
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
-                    <button type="button" onClick={addLicense} className="btn-outline">+ Add License</button>
+                    <button type="button" onClick={addLicense} className="btn-dashed">
+                        <FiPlus size={16} />
+                        <span>Tambah Lisensi & Sertifikasi</span>
+                    </button>
                 </div>
 
-                <div className="editor-panel animate-fade-in delay-300">
-                    <h4 className="panel-title">Activity Gallery</h4>
-                    <p className="text-secondary" style={{ marginBottom: '16px', fontSize: '0.9rem' }}>These images will appear on the frontend as a sliding carousel with an image viewer lightbox.</p>
+                {/* 5. Activity Gallery */}
+                <div className="form-panel animate-fade-in delay-300">
+                    <h3 className="panel-heading">Galeri Aktivitas</h3>
+                    <p className="field-help" style={{ marginBottom: '16px' }}>
+                        Foto-foto ini akan tampil pada slider/carousel galeri aktivitas di halaman Tentang Kami.
+                    </p>
                     <div className="blocks-list">
                         {activities.map((act, index) => (
                             <div key={act.id || index} className="editor-block">
                                 <div className="block-header">
-                                    <span className="block-type-badge">Image {index + 1}</span>
-                                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                        <button type="button" onClick={() => moveItemUp(activities, setActivities, index)} disabled={index === 0} className="btn-icon" title="Move Up" style={{ opacity: index === 0 ? 0.3 : 1, cursor: index === 0 ? 'not-allowed' : 'pointer' }}>↑</button>
-                                        <button type="button" onClick={() => moveItemDown(activities, setActivities, index)} disabled={index === activities.length - 1} className="btn-icon" title="Move Down" style={{ opacity: index === activities.length - 1 ? 0.3 : 1, cursor: index === activities.length - 1 ? 'not-allowed' : 'pointer' }}>↓</button>
-                                        <button type="button" onClick={() => removeActivity(index)} className="btn-icon text-danger" title="Remove">&times;</button>
+                                    <span className="block-type-badge">Foto #{index + 1}</span>
+                                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                        <button type="button" onClick={() => moveItemUp(activities, setActivities, index)} disabled={index === 0} className="btn-icon" title="Pindah ke Atas">
+                                            <FiArrowUp size={14} />
+                                        </button>
+                                        <button type="button" onClick={() => moveItemDown(activities, setActivities, index)} disabled={index === activities.length - 1} className="btn-icon" title="Pindah ke Bawah">
+                                            <FiArrowDown size={14} />
+                                        </button>
+                                        <button type="button" onClick={() => removeActivity(index)} className="btn-icon text-danger" title="Hapus">
+                                            <FiTrash2 size={14} />
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="block-body">
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                     <div className="form-group" style={{ marginBottom: 0 }}>
-                                        <label>Image URL</label>
-                                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                                            <input type="url" className="form-input" value={act.imageUrl || act.url || ''} onChange={(e) => updateActivity(index, 'imageUrl', e.target.value)} placeholder="https://..." style={{ flex: 1 }} />
+                                        <label className="form-label">URL Foto / Gambar</label>
+                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                            {act.imageUrl && (
+                                                <img
+                                                    src={act.imageUrl}
+                                                    alt="Preview"
+                                                    style={{ width: '60px', height: '44px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #e5e7eb' }}
+                                                />
+                                            )}
+                                            <input
+                                                type="url"
+                                                className="form-input"
+                                                value={act.imageUrl || act.url || ''}
+                                                onChange={(e) => updateActivity(index, 'imageUrl', e.target.value)}
+                                                placeholder="https://..."
+                                                style={{ flex: 1 }}
+                                            />
                                             <CloudinaryUploadWidget onUploadSuccess={(url) => updateActivity(index, 'imageUrl', url)} />
                                         </div>
                                     </div>
@@ -268,7 +433,10 @@ export default function AdminAboutEditor() {
                             </div>
                         ))}
                     </div>
-                    <button type="button" onClick={addActivity} className="btn-outline">+ Add Activity Image</button>
+                    <button type="button" onClick={addActivity} className="btn-dashed">
+                        <FiPlus size={16} />
+                        <span>Tambah Foto Galeri</span>
+                    </button>
                 </div>
             </div>
         </div>

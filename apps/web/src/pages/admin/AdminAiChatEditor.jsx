@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { adminApi } from '../../lib/api';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import CloudinaryUploadWidget from '../../components/admin/CloudinaryUploadWidget';
+import { FiSave } from 'react-icons/fi';
 import './AdminProjectEditor.css';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
@@ -297,18 +298,20 @@ export default function AdminAiChatEditor() {
 
     return (
         <div className="admin-project-editor">
-            <div className="editor-header-bar">
-                <div className="header-left">
-                    <h3 className="section-title">AI Chat Settings</h3>
-                    {message && <span style={{ marginLeft: '16px', fontSize: '0.9rem' }}>{message}</span>}
+            <div className="admin-page-header">
+                <div>
+                    <h2 className="page-heading">Pengaturan AI Assistant Chat</h2>
+                    <p className="page-subheading">Kelola konfigurasi model Groq, basis pengetahuan sistem, dan riwayat obrolan pengunjung.</p>
                 </div>
-                <div className="header-actions">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    {message && <span style={{ fontSize: '0.88rem', fontWeight: 600, color: message.startsWith('✅') ? '#059669' : '#dc2626' }}>{message}</span>}
                     <button 
-                        className="btn-primary" 
+                        className="btn-cms btn-cms-primary" 
                         onClick={handleSave} 
                         disabled={saving}
                     >
-                        {saving ? 'Saving...' : 'Save Changes'}
+                        <FiSave size={16} />
+                        <span>{saving ? 'Menyimpan...' : 'Simpan Pengaturan'}</span>
                     </button>
                 </div>
             </div>

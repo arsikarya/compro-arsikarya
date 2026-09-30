@@ -43,7 +43,7 @@ export default function AdminDashboard() {
         return (
             <div className="error-box">
                 <p>{error}</p>
-                <button onClick={fetchStats} className="btn-outline" style={{ marginTop: '12px' }}>Coba Lagi</button>
+                <button onClick={fetchStats} className="btn-cms btn-cms-outline" style={{ marginTop: '12px' }}>Coba Lagi</button>
             </div>
         );
     }
