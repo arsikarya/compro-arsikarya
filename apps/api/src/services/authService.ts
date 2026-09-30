@@ -7,7 +7,7 @@ async function sendEmail({ to, subject, html, text }: { to: string; subject: str
     const host = process.env.SMTP_HOST || 'smtp.gmail.com';
     const port = Number(process.env.SMTP_PORT) || 465;
     const user = process.env.SMTP_USER || 'webarsikarya@gmail.com';
-    const pass = process.env.SMTP_PASS;
+    const pass = process.env.SMTP_PASS ? process.env.SMTP_PASS.replace(/\s+/g, '').trim() : undefined;
 
     if (!pass) {
         console.warn(`[EMAIL SKIPPED - NO SMTP_PASS] To: ${to} | Subject: ${subject}`);
