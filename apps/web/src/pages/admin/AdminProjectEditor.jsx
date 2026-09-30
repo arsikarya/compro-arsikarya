@@ -13,7 +13,8 @@ export default function AdminProjectEditor() {
     const isEditing = Boolean(id);
 
     const [title, setTitle] = useState('');
-    const [category, setCategory] = useState('Konstruksi');
+    const [category, setCategory] = useState('');
+    const [services, setServices] = useState([]);
     const [slug, setSlug] = useState('');
     const [location, setLocation] = useState('');
     const [year, setYear] = useState(new Date().getFullYear().toString());
@@ -37,6 +38,20 @@ export default function AdminProjectEditor() {
 
     const textareaRef = useRef(null);
 
+    // Fetch active services to dynamically populate categories
+    useEffect(() => {
+        adminApi.getServices()
+            .then((data) => {
+                if (Array.isArray(data) && data.length > 0) {
+                    setServices(data);
+                    if (!isEditing) {
+                        setCategory(prev => prev || data[0].title);
+                    }
+                }
+            })
+            .catch((err) => console.error('Gagal memuat layanan untuk kategori proyek:', err));
+    }, [isEditing]);
+
     // Rich Text insertion helpers for structured project editorial content
     const insertFormatting = (prefix, suffix = '') => {
         const textarea = textareaRef.current;
@@ -58,7 +73,7 @@ export default function AdminProjectEditor() {
             adminApi.getProject(id)
                 .then((project) => {
                     setTitle(project.title || '');
-                    setCategory(project.category || 'Konstruksi');
+                    setCategory(project.category || '');
                     setSlug(project.slug || '');
                     setLocation(project.location || '');
                     setYear(project.year || '');
@@ -215,13 +230,34 @@ export default function AdminProjectEditor() {
                         <div className="form-row-2">
                             <div className="form-group">
                                 <label className="form-label required">Kategori / Jenis Proyek</label>
-                                <select className="form-input" value={category} onChange={(e) => setCategory(e.target.value)}>
-                                    <option value="Perencanaan">Perencanaan</option>
-                                    <option value="Konstruksi">Konstruksi</option>
-                                    <option value="Design & Build">Design & Build</option>
-                                    <option value="Renovasi">Renovasi</option>
-                                    <option value="Landscape">Landscape</option>
+                                <select 
+                                    className="form-input" 
+                                    value={category} 
+                                    onChange={(e) => setCategory(e.target.value)}
+                                    required
+                                >
+                                    {services.length > 0 ? (
+                                        services.map((svc) => (
+                                            <option key={svc.id || svc.slug || svc.title} value={svc.title}>
+                                                {svc.title}
+                                            </option>
+                                        ))
+                                    ) : (
+                                        <>
+                                            <option value="Perencanaan">Perencanaan</option>
+                                            <option value="Konstruksi">Konstruksi</option>
+                                            <option value="Design & Build">Design & Build</option>
+                                            <option value="Renovasi">Renovasi</option>
+                                        </>
+                                    )}
+                                    {/* Fallback to preserve custom or legacy category on existing project */}
+                                    {category && services.length > 0 && !services.some(s => s.title?.toLowerCase() === category.toLowerCase()) && (
+                                        <option value={category}>{category}</option>
+                                    )}
                                 </select>
+                                <span className="form-hint" style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '4px', display: 'block' }}>
+                                    Kategori otomatis mengikuti data menu Layanan {services.length > 0 ? `(${services.length} layanan aktif)` : ''}
+                                </span>
                             </div>
 
                             <div className="form-group">

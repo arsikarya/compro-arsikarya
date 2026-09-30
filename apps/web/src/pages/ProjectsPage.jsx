@@ -17,12 +17,24 @@ export default function ProjectsPage() {
 
   const [activeCategory, setActiveCategory] = useState(lang === 'en' ? 'All' : 'Semua');
   const [apiProjectsList, setApiProjectsList] = useState([]);
+  const [servicesList, setServicesList] = useState([]);
   const [listLoading, setListLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
     setActiveCategory(lang === 'en' ? 'All' : 'Semua');
   }, [lang]);
+
+  // Fetch active services to dynamically build category filter tabs
+  useEffect(() => {
+    publicApi.getServices()
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setServicesList(data);
+        }
+      })
+      .catch((err) => console.error('Gagal memuat layanan:', err));
+  }, []);
 
   // Fetch list of projects from DB
   useEffect(() => {
@@ -82,24 +94,35 @@ export default function ProjectsPage() {
     }
   };
 
-  // 5 Official Service Categories (Perencanaan, Konstruksi, Design & Build, Renovasi, Landscape)
-  const categories = lang === 'en' 
-    ? ['All', 'Planning & Design', 'Construction', 'Design & Build', 'Renovation', 'Landscape']
-    : ['Semua', 'Perencanaan', 'Konstruksi', 'Design & Build', 'Renovasi', 'Landscape'];
+  // Dynamic categories derived from services
+  const defaultServices = [
+    { title: 'Perencanaan', titleEn: 'Planning & Design' },
+    { title: 'Konstruksi', titleEn: 'Construction' },
+    { title: 'Design & Build', titleEn: 'Design & Build' },
+    { title: 'Renovasi', titleEn: 'Renovation' }
+  ];
 
-  const categoryMap = {
-    'Planning & Design': 'Perencanaan',
-    'Construction': 'Konstruksi',
-    'Design & Build': 'Design & Build',
-    'Renovation': 'Renovasi',
-    'Landscape': 'Landscape',
-  };
+  const activeServices = servicesList.length > 0 ? servicesList : defaultServices;
+
+  const categories = [
+    lang === 'en' ? 'All' : 'Semua',
+    ...activeServices.map(s => (lang === 'en' ? (s.titleEn || s.title) : s.title))
+  ];
 
   const filteredProjects = (activeCategory === 'Semua' || activeCategory === 'All')
     ? apiProjectsList
     : apiProjectsList.filter((p) => {
-        const targetCategory = categoryMap[activeCategory] || activeCategory;
-        return p.category === targetCategory || p.category === activeCategory;
+        const cat = (p.category || '').toLowerCase().trim();
+        const active = activeCategory.toLowerCase().trim();
+        const matchingSvc = activeServices.find(s => 
+          (s.title && s.title.toLowerCase().trim() === active) ||
+          (s.titleEn && s.titleEn.toLowerCase().trim() === active)
+        );
+        if (matchingSvc) {
+          return cat === matchingSvc.title.toLowerCase().trim() || 
+                 (matchingSvc.titleEn && cat === matchingSvc.titleEn.toLowerCase().trim());
+        }
+        return cat === active;
       });
 
   return (
