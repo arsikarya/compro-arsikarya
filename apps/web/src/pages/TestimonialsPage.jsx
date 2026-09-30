@@ -6,6 +6,38 @@ import { publicApi } from '../lib/api';
 import { getTestimonialsData } from '../data/testimonialsData';
 import { useLanguage } from '../context/LanguageContext';
 
+function getYouTubeEmbedUrl(url) {
+  if (!url || typeof url !== 'string') return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+
+  if (trimmed.includes('youtube.com/embed/')) {
+    const match = trimmed.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]+)/);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : trimmed;
+  }
+
+  const shortMatch = trimmed.match(/youtu\.be\/([a-zA-Z0-9_-]+)/);
+  if (shortMatch) {
+    return `https://www.youtube.com/embed/${shortMatch[1]}`;
+  }
+
+  const watchMatch = trimmed.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+  if (watchMatch) {
+    return `https://www.youtube.com/embed/${watchMatch[1]}`;
+  }
+
+  const shortsMatch = trimmed.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/);
+  if (shortsMatch) {
+    return `https://www.youtube.com/embed/${shortsMatch[1]}`;
+  }
+
+  if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
+    return `https://www.youtube.com/embed/${trimmed}`;
+  }
+
+  return trimmed;
+}
+
 export default function TestimonialsPage() {
   const { lang, t } = useLanguage();
   const rawList = getTestimonialsData(lang);
@@ -19,6 +51,22 @@ export default function TestimonialsPage() {
 
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [videoUrl, setVideoUrl] = useState('');
+
+  // Fetch site settings for dynamic video testimonial link
+  useEffect(() => {
+    publicApi.getSettings()
+      .then((data) => {
+        if (data && typeof data.testimonialVideoUrl === 'string') {
+          setVideoUrl(data.testimonialVideoUrl);
+        } else {
+          setVideoUrl('');
+        }
+      })
+      .catch(() => {
+        setVideoUrl('');
+      });
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -52,6 +100,10 @@ export default function TestimonialsPage() {
 
   // Limit testimonials to maximum 4 items
   const displayedTestimonials = testimonials.slice(0, 4);
+
+  // Dynamic Video Testimonial Embed URL (hidden completely if empty or invalid)
+  const embedUrl = videoUrl ? getYouTubeEmbedUrl(videoUrl) : null;
+  const showVideoSection = Boolean(embedUrl);
 
   return (
     <>
@@ -176,76 +228,78 @@ export default function TestimonialsPage() {
         </div>
       </section>
 
-      {/* Video Testimonials YouTube Section */}
-      <section className="section-padding" style={{ backgroundColor: '#ffffff', borderTop: '1px solid var(--color-neutral-200)' }}>
-        <div className="container" style={{ maxWidth: '960px', textAlign: 'center' }}>
-          {/* Centered Line Accent & Tag */}
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-            <div style={{ width: '32px', height: '2px', backgroundColor: 'var(--color-primary-300)' }} />
-            <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--color-primary-300)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-              {lang === 'en' ? 'VIDEO TESTIMONIAL' : 'VIDEO TESTIMONI'}
-            </span>
-          </div>
+      {/* Video Testimonials YouTube Section - Only rendered if video link is filled and valid */}
+      {showVideoSection && (
+        <section className="section-padding" style={{ backgroundColor: '#ffffff', borderTop: '1px solid var(--color-neutral-200)' }}>
+          <div className="container" style={{ maxWidth: '960px', textAlign: 'center' }}>
+            {/* Centered Line Accent & Tag */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <div style={{ width: '32px', height: '2px', backgroundColor: 'var(--color-primary-300)' }} />
+              <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--color-primary-300)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                {lang === 'en' ? 'VIDEO TESTIMONIAL' : 'VIDEO TESTIMONI'}
+              </span>
+            </div>
 
-          {/* Section Title (Solid Black Text) */}
-          <h2
-            style={{
-              fontSize: 'clamp(2.1rem, 3.6vw, 2.8rem)',
-              fontWeight: 800,
-              color: '#0f172a',
-              margin: '0 0 16px 0',
-              lineHeight: 1.25,
-            }}
-          >
-            {lang === 'en' ? 'Real Stories from Our Clients' : 'Cerita Nyata dari Klien Kami'}
-          </h2>
-
-          {/* Subtitle */}
-          <p
-            style={{
-              fontSize: '1.05rem',
-              color: 'var(--color-neutral-600)',
-              maxWidth: '680px',
-              margin: '0 auto 44px auto',
-              lineHeight: 1.65,
-            }}
-          >
-            {lang === 'en' 
-              ? 'Hear directly about their experience working with Arsi Karya, from planning to final results.' 
-              : 'Dengarkan langsung pengalaman mereka bekerja sama dengan Arsi Karya, mulai dari proses perencanaan hingga hasil akhir.'}
-          </p>
-
-          {/* YouTube Video Player */}
-          <div
-            style={{
-              position: 'relative',
-              width: '100%',
-              paddingBottom: '56.25%', /* 16:9 Aspect Ratio */
-              height: 0,
-              borderRadius: '20px',
-              overflow: 'hidden',
-              boxShadow: '0 20px 50px rgba(15, 23, 42, 0.12)',
-              border: '1px solid #e2e8f0',
-              backgroundColor: '#0f172a',
-            }}
-          >
-            <iframe
-              src="https://www.youtube.com/embed/sDBl71I37UM"
-              title="Video Testimoni Arsi Karya"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
+            {/* Section Title (Solid Black Text) */}
+            <h2
               style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                border: 'none',
+                fontSize: 'clamp(2.1rem, 3.6vw, 2.8rem)',
+                fontWeight: 800,
+                color: '#0f172a',
+                margin: '0 0 16px 0',
+                lineHeight: 1.25,
               }}
-            />
+            >
+              {lang === 'en' ? 'Real Stories from Our Clients' : 'Cerita Nyata dari Klien Kami'}
+            </h2>
+
+            {/* Subtitle */}
+            <p
+              style={{
+                fontSize: '1.05rem',
+                color: 'var(--color-neutral-600)',
+                maxWidth: '680px',
+                margin: '0 auto 44px auto',
+                lineHeight: 1.65,
+              }}
+            >
+              {lang === 'en' 
+                ? 'Hear directly about their experience working with Arsi Karya, from planning to final results.' 
+                : 'Dengarkan langsung pengalaman mereka bekerja sama dengan Arsi Karya, mulai dari proses perencanaan hingga hasil akhir.'}
+            </p>
+
+            {/* YouTube Video Player */}
+            <div
+              style={{
+                position: 'relative',
+                width: '100%',
+                paddingBottom: '56.25%', /* 16:9 Aspect Ratio */
+                height: 0,
+                borderRadius: '20px',
+                overflow: 'hidden',
+                boxShadow: '0 20px 50px rgba(15, 23, 42, 0.12)',
+                border: '1px solid #e2e8f0',
+                backgroundColor: '#0f172a',
+              }}
+            >
+              <iframe
+                src={embedUrl}
+                title="Video Testimoni Arsi Karya"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                }}
+              />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <CTA />
     </>

@@ -21,6 +21,7 @@ export type SiteSettingsInput = {
     stat3Value?: string;
     stat3Label?: string;
     whatsappCtaText?: string;
+    testimonialVideoUrl?: string;
 };
 
 export const siteSettingsService = {
@@ -46,6 +47,7 @@ export const siteSettingsService = {
             stat3Value: '4',
             stat3Label: 'LAYANAN SPESIALIS',
             whatsappCtaText: 'Halo Arsi Karya, saya ingin berkonsultasi terkait kebutuhan proyek saya. Mohon informasi dan arahan mengenai langkah yang perlu saya siapkan.',
+            testimonialVideoUrl: 'https://www.youtube.com/watch?v=sDBl71I37UM',
         }).returning();
         return inserted;
     },
@@ -72,6 +74,7 @@ export const siteSettingsService = {
             stat3Value: data.stat3Value ?? existing.stat3Value,
             stat3Label: data.stat3Label ?? existing.stat3Label,
             whatsappCtaText: data.whatsappCtaText ?? existing.whatsappCtaText,
+            testimonialVideoUrl: data.testimonialVideoUrl !== undefined ? data.testimonialVideoUrl : existing.testimonialVideoUrl,
             updatedAt: new Date(),
         }).where(eq(siteSettings.id, existing.id)).returning();
 

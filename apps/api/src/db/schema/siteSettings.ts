@@ -20,5 +20,6 @@ export const siteSettings = pgTable('site_settings', {
     stat3Value: text('stat3_value').default('4'),
     stat3Label: text('stat3_label').default('LAYANAN SPESIALIS'),
     whatsappCtaText: text('whatsapp_cta_text').default('Halo Arsi Karya, saya ingin berkonsultasi terkait kebutuhan proyek saya. Mohon informasi dan arahan mengenai langkah yang perlu saya siapkan.'),
+    testimonialVideoUrl: text('testimonial_video_url').default('https://www.youtube.com/watch?v=sDBl71I37UM'),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
