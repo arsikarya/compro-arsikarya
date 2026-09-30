@@ -1,53 +1,64 @@
-const AUTH_BASE = (import.meta.env.VITE_API_URL || '') + '/api/auth';
+const API_BASE = import.meta.env.VITE_API_URL || '';
+const AUTH_BASE = API_BASE + '/api/auth';
 
 const getAuthHeaders = (extra = {}) => {
-    const token = localStorage.getItem('auth_token') || 'mock-admin-token';
+    const token = localStorage.getItem('auth_token');
     const headers = { 'Content-Type': 'application/json', ...extra };
     if (token) headers['Authorization'] = `Bearer ${token}`;
     return headers;
 };
 
-const MOCK_ADMIN_SESSION = {
-    user: {
-        id: '3tHOEuvWIvHOsbb5O9qWJ2NYp2Djpwj7',
-        name: 'Arsi Karya Admin',
-        email: 'webarsikarya@gmail.com',
-        role: 'SUPER_ADMIN',
-    },
-    session: {
-        id: 'mock-session-id',
-        userId: '3tHOEuvWIvHOsbb5O9qWJ2NYp2Djpwj7',
-    }
-};
-
 export const authClient = {
-    async signIn(email, password) {
-        // Direct click or instant login fallback
-        localStorage.setItem('auth_token', 'mock-admin-token');
-        localStorage.setItem('admin_logged_in', 'true');
+    // Step 1: Request 2FA Login OTP with Email & Password
+    async requestOtp(email, password) {
+        const res = await fetch(`${API_BASE}/api/auth-otp/request`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        });
 
-        if (email && password) {
-            try {
-                const res = await fetch(`${AUTH_BASE}/sign-in/email`, {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password }),
-                });
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.error || 'Email atau kata sandi tidak valid');
+        }
+        return data;
+    },
 
-                if (res.ok) {
-                    const authToken = res.headers.get('set-auth-token');
-                    const data = await res.json().catch(() => ({}));
-                    const token = authToken || data?.token || data?.session?.token || 'mock-admin-token';
-                    localStorage.setItem('auth_token', token);
-                    return data;
-                }
-            } catch (err) {
-                console.warn('Backend API login fallback activated:', err);
-            }
+    // Step 2: Verify 6-digit OTP and Issue Session
+    async verifyOtp(email, otp) {
+        const res = await fetch(`${API_BASE}/api/auth-otp/verify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, otp }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.error || 'Kode verifikasi tidak valid atau telah kedaluwarsa');
         }
 
-        return MOCK_ADMIN_SESSION;
+        if (data.token) {
+            localStorage.setItem('auth_token', data.token);
+            localStorage.setItem('admin_user', JSON.stringify(data.user));
+            localStorage.setItem('admin_logged_in', 'true');
+        }
+
+        return data;
+    },
+
+    // Step 3: Resend OTP
+    async resendOtp(email) {
+        const res = await fetch(`${API_BASE}/api/auth-otp/resend`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            throw new Error(data.error || 'Gagal mengirim ulang kode verifikasi');
+        }
+        return data;
     },
 
     async signOut() {
@@ -59,6 +70,7 @@ export const authClient = {
             }).catch(() => {});
         } finally {
             localStorage.removeItem('auth_token');
+            localStorage.removeItem('admin_user');
             localStorage.removeItem('admin_logged_in');
         }
     },
@@ -67,10 +79,8 @@ export const authClient = {
         const token = localStorage.getItem('auth_token');
         const isLoggedIn = localStorage.getItem('admin_logged_in');
 
-        if (!token && !isLoggedIn) {
-            // Auto login on dev / easy login
-            localStorage.setItem('auth_token', 'mock-admin-token');
-            localStorage.setItem('admin_logged_in', 'true');
+        if (!token || !isLoggedIn) {
+            return null;
         }
 
         try {
@@ -80,12 +90,28 @@ export const authClient = {
             });
             if (res.ok) {
                 const data = await res.json();
-                if (data && data.session) return data;
+                if (data && data.session && data.user) return data;
             }
-        } catch {
-            // Fallthrough to mock admin session
+        } catch (err) {
+            console.warn('Failed to verify session with backend:', err);
         }
 
-        return MOCK_ADMIN_SESSION;
+        // Check if stored admin_user is valid
+        const storedUser = localStorage.getItem('admin_user');
+        if (storedUser && token) {
+            try {
+                const userObj = JSON.parse(storedUser);
+                return {
+                    user: userObj,
+                    session: { id: 'local-session', token, userId: userObj.id }
+                };
+            } catch {}
+        }
+
+        // Invalid or expired token
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('admin_user');
+        localStorage.removeItem('admin_logged_in');
+        return null;
     },
 };

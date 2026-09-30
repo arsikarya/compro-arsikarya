@@ -249,4 +249,62 @@ router.post('/auth/reset-password', async (req, res) => {
     }
 });
 
+// ==================== 2FA EMAIL OTP AUTHENTICATION ====================
+
+// Step 1: Request Login OTP with Email & Password
+router.post('/auth-otp/request', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            res.status(400).json({ error: 'Email dan kata sandi wajib diisi' });
+            return;
+        }
+
+        const result = await authService.requestLoginOtp(email, password);
+        res.json(result);
+    } catch (error: any) {
+        console.error('Error requesting login OTP:', error);
+        res.status(401).json({ error: error?.message || 'Email atau kata sandi tidak valid' });
+    }
+});
+
+// Step 2: Verify Login OTP and Issue Session
+router.post('/auth-otp/verify', async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+        if (!email || !otp) {
+            res.status(400).json({ error: 'Email dan kode verifikasi wajib diisi' });
+            return;
+        }
+
+        const clientInfo = {
+            ip: req.ip || (req.headers['x-forwarded-for'] as string) || '',
+            userAgent: req.headers['user-agent'] || '',
+        };
+
+        const result = await authService.verifyLoginOtp(email, otp, clientInfo);
+        res.json(result);
+    } catch (error: any) {
+        console.error('Error verifying login OTP:', error);
+        res.status(400).json({ error: error?.message || 'Kode verifikasi tidak valid' });
+    }
+});
+
+// Step 3: Resend Login OTP
+router.post('/auth-otp/resend', async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            res.status(400).json({ error: 'Email wajib diisi' });
+            return;
+        }
+
+        const result = await authService.resendLoginOtp(email);
+        res.json(result);
+    } catch (error: any) {
+        console.error('Error resending login OTP:', error);
+        res.status(400).json({ error: error?.message || 'Gagal mengirim ulang kode' });
+    }
+});
+
 export default router;
