@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
+import { Analytics } from '@vercel/analytics/react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import FloatingWhatsApp from './components/ui/FloatingWhatsApp';
@@ -119,6 +120,7 @@ export default function App() {
           <Router>
             <ScrollToTop />
             <MainLayout />
+            <Analytics />
           </Router>
         </SiteSettingsProvider>
       </LanguageProvider>
