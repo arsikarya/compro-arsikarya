@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /admin
 
-Sitemap: https://afdalrdh.com/sitemap.xml
+Sitemap: https://arsikarya.vercel.app/sitemap.xml

@@ -310,8 +310,9 @@ export default function ServicesPage() {
   return (
     <>
       <SEOHead
-        title={lang === 'en' ? "Construction & Design-Build Services — Arsi Karya" : "Layanan Jasa Konstruksi & Design-Build — Arsi Karya"}
-        description={lang === 'en' ? "Arsi Karya integrated services: Planning, Construction, Design & Build, Renovation, and Landscape in Bandung, Java — Bali." : "Layanan terpadu Arsi Karya: Perencanaan, Konstruksi, Design & Build, Renovasi, dan Landscape di Bandung, Jawa — Bali."}
+        title={lang === 'en' ? "Construction & Design-Build Services — Arsi Karya" : "Jasa Bangun Rumah & Konstruksi di Bandung & Bali — Arsi Karya"}
+        description={lang === 'en' ? "Arsi Karya integrated services: Planning, Construction, Design & Build, Renovation, and Landscape in Bandung, Java — Bali." : "Layanan terpadu Arsi Karya: Jasa bangun rumah tinggal, villa, konstruksi, design & build, renovasi, dan arsitektur di Bandung & Bali."}
+        keywords="jasa bangun rumah bandung, jasa bangun rumah bali, kontraktor rumah bandung, kontraktor bali, jasa bangun villa bali, jasa renovasi rumah bandung, jasa konstruksi bandung"
       />
 
       <HeroBanner

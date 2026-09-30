@@ -105,8 +105,9 @@ export default function ProjectsPage() {
   return (
     <>
       <SEOHead
-        title={lang === 'en' ? "Verified Project Portfolio — Arsi Karya" : "Portofolio Proyek Terverifikasi — Arsi Karya"}
-        description={lang === 'en' ? "Arsi Karya track record of construction, ACP facade, residential houses, interior, and road paving projects." : "Daftar rekam jejak pekerjaan proyek Arsi Karya di bidang konstruksi, fasad ACP, rumah hunian, interior, dan pengaspalan jalan."}
+        title={lang === 'en' ? "Verified Project Portfolio — Arsi Karya" : "Portofolio Bangun Rumah & Konstruksi — Arsi Karya Bandung & Bali"}
+        description={lang === 'en' ? "Arsi Karya track record of residential houses, luxury villas, facade, interior, and construction projects in Bandung and Bali." : "Daftar rekam jejak pekerjaan proyek bangun rumah hunian, villa mewah, fasad, interior, dan konstruksi Arsi Karya di Bandung dan Bali."}
+        keywords="portofolio bangun rumah bandung, portofolio kontraktor bali, proyek rumah mewah bandung, kontraktor arsi karya"
       />
       <AlbionGridStyles />
 

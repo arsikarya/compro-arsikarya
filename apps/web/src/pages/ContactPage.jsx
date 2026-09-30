@@ -75,8 +75,9 @@ export default function ContactPage() {
   return (
     <>
       <SEOHead
-        title={lang === 'en' ? "Official Contact — Arsi Karya" : "Ajukan Kerja Sama — Arsi Karya"}
-        description={lang === 'en' ? "Official inquiry form for construction, design & build, renovation, and landscape projects with Arsi Karya in Bandung, Java — Bali." : "Formulir resmi pengajuan kerja sama proyek konstruksi, design & build, perancangan, renovasi, dan landscape bersama Arsi Karya di Bandung, Jawa — Bali."}
+        title={lang === 'en' ? "Contact Arsi Karya — Construction & Home Contractor Bandung & Bali" : "Kontak & Konsultasi Bangun Rumah — Arsi Karya Bandung & Bali"}
+        description={lang === 'en' ? "Consult your house construction, luxury villa, renovation, and architectural design project with Arsi Karya in Bandung and Bali. Fast response via WhatsApp." : "Konsultasikan kebutuhan bangun rumah, villa, renovasi, dan design & build Anda bersama tim ahli Arsi Karya Bandung & Bali. Respon cepat via WhatsApp."}
+        keywords="kontak kontraktor bandung, konsultasi bangun rumah bandung, kontak kontraktor bali, biaya bangun rumah bandung, kontraktor arsi karya whatsapp"
       />
 
       {/* Dark Architectural Hero Banner */}
