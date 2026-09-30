@@ -9,8 +9,8 @@
         "dev": "npm run dev:api & npm run dev:web",
         "dev:web": "npm run dev --workspace=web",
         "dev:api": "npm run dev --workspace=api",
-        "build:web": "npm run build --workspace=web && mkdir -p dist && cp -r apps/web/dist/* dist/",
-        "build": "npm run build --workspace=web && mkdir -p dist && cp -r apps/web/dist/* dist/",
+        "build:web": "npm run build --workspace=web && rm -rf dist && mkdir -p dist && cp -r apps/web/dist/* dist/",
+        "build": "npm run build --workspace=web && rm -rf dist && mkdir -p dist && cp -r apps/web/dist/* dist/",
         "db:push": "npx drizzle-kit push --config=apps/api/drizzle.config.ts",
         "db:seed": "npm run db:seed --workspace=api"
     },
