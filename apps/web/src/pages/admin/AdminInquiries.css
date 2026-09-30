@@ -5,8 +5,8 @@
 }
 
 .filter-bar-card {
-    background: #f5f5f5;
-    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
     border-radius: 12px;
     padding: 16px 20px;
     display: flex;
@@ -25,21 +25,23 @@
     left: 14px;
     top: 50%;
     transform: translateY(-50%);
-    color: #9ca3af;
+    color: #94a3b8;
 }
 
 .search-input {
     width: 100%;
     padding: 10px 14px 10px 42px;
     border-radius: 8px;
-    border: 1px solid #d1d5db;
+    border: 1px solid #cbd5e1;
     font-size: 0.9rem;
     box-sizing: border-box;
+    transition: border-color 0.15s ease;
 }
 
 .search-input:focus {
     outline: none;
-    border-color: #2563eb;
+    border-color: #005697;
+    box-shadow: 0 0 0 3px rgba(0, 86, 151, 0.1);
 }
 
 .status-tabs {
@@ -51,47 +53,78 @@
 
 .tab-btn {
     padding: 6px 14px;
-    border-radius: 6px;
+    border-radius: 9999px;
     font-size: 0.82rem;
     font-weight: 600;
-    border: 1px solid #e5e7eb;
-    background: #f9fafb;
-    color: #4b5563;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #475569;
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tab-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
 }
 
 .tab-btn:hover {
-    background: #f3f4f6;
-    color: #111827;
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #cbd5e1;
 }
 
 .tab-btn.active {
-    background: #111827;
+    background: #0f172a;
     color: #ffffff;
-    border-color: #111827;
+    border-color: #0f172a;
 }
 
 .wa-link {
     color: #059669;
     font-weight: 600;
     text-decoration: none;
+    transition: color 0.15s;
 }
 
 .wa-link:hover {
+    color: #047857;
     text-decoration: underline;
 }
 
-.status-select {
-    padding: 4px 8px;
+.service-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    background-color: #f1f5f9;
+    color: #1e293b;
     border-radius: 6px;
-    border: 1px solid #d1d5db;
     font-size: 0.8rem;
     font-weight: 600;
-    background: #f5f5f5;
-    color: #111827;
+    border: 1px solid #e2e8f0;
+}
+
+/* Status Select Colored Dropdown in Table */
+.status-select-colored {
+    padding: 5px 12px 5px 24px;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 700;
     cursor: pointer;
+    outline: none;
+    border-width: 1.5px;
+    border-style: solid;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.status-select-colored:hover {
+    filter: brightness(0.96);
 }
 
 /* Detail View Layout */
@@ -110,59 +143,58 @@
 .pesan-box {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
-    border-left: 4px solid #2563eb;
-    padding: 16px 20px;
+    border-left: 4px solid #005697;
+    padding: 18px 20px;
     border-radius: 8px;
-    font-size: 0.95rem;
-    line-height: 1.6;
+    font-size: 0.98rem;
+    line-height: 1.65;
     color: #1e293b;
     white-space: pre-line;
+    margin-bottom: 24px;
 }
 
 .inquiry-meta-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    margin-top: 12px;
+    gap: 20px;
+    padding-top: 12px;
+    border-top: 1px dashed #e2e8f0;
 }
 
 .meta-item {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
 }
 
 .meta-label {
     font-size: 0.78rem;
     color: #64748b;
     font-weight: 600;
-
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 .meta-val {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: #0f172a;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .client-info-block {
     text-align: center;
-    padding: 16px;
+    padding: 18px 16px;
     background: #f8fafc;
-    border-radius: 8px;
+    border-radius: 10px;
     border: 1px solid #e2e8f0;
+    margin-bottom: 16px;
 }
 
 .client-name {
-    margin: 0 0 4px 0;
-    font-size: 1.1rem;
-    font-weight: 700;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
     color: #0f172a;
-}
-
-.client-company {
-    font-size: 0.85rem;
-    color: #64748b;
 }
 
 .quick-actions-list {
@@ -175,6 +207,7 @@
     background: #059669;
     color: #ffffff;
     gap: 8px;
+    font-weight: 700;
 }
 
 .btn-wa-action:hover {
@@ -184,30 +217,23 @@
 .status-button-grid {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
-.btn-status-option {
+.btn-status-card {
     width: 100%;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 0.88rem;
-    font-weight: 600;
-    border: 1px solid #e2e8f0;
-    background: #f5f5f5;
-    color: #475569;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border-style: solid;
     cursor: pointer;
     text-align: left;
-    transition: all 0.15s ease;
+    transition: all 0.18s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
 
-.btn-status-option:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
-}
-
-.btn-status-option.active {
-    border-width: 2px;
+.btn-status-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
 }
 
 @media (max-width: 1024px) {
