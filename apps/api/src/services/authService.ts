@@ -324,14 +324,21 @@ export const authService = {
         return this.requestLoginOtp(email);
     },
 
-    async requestPasswordReset(email: string, baseUrl: string) {
-        const [targetUser] = await db.select().from(user).where(eq(user.email, email.toLowerCase().trim()));
+    async requestPasswordReset(email: string, baseUrl?: string) {
+        const cleanEmail = email.toLowerCase().trim();
+        const [targetUser] = await db.select().from(user).where(eq(user.email, cleanEmail));
         if (!targetUser) {
-            return { message: 'Jika email terdaftar, instruksi reset kata sandi telah dikirimkan.' };
+            return {
+                success: true,
+                message: 'Jika email terdaftar, tautan pemulihan kata sandi telah dikirimkan ke kotak masuk email Anda.',
+            };
         }
 
         const token = crypto.randomBytes(32).toString('hex');
         const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour token validity
+
+        // Invalidate any previous unused tokens for this email
+        await db.delete(passwordResetToken).where(eq(passwordResetToken.email, cleanEmail));
 
         await db.insert(passwordResetToken).values({
             id: crypto.randomUUID(),
@@ -341,35 +348,77 @@ export const authService = {
             used: false,
         });
 
-        const resetUrl = `${baseUrl}/admin/reset-password?token=${token}`;
+        // Determine frontend URL so the email link navigates directly to the web client
+        let resolvedBase = baseUrl || '';
+        if (!resolvedBase || resolvedBase.includes(':3001')) {
+            resolvedBase = process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production' ? 'https://arsikarya.id' : 'http://localhost:5173');
+        }
+        resolvedBase = resolvedBase.replace(/\/+$/, '');
+
+        const resetUrl = `${resolvedBase}/admin/reset-password?token=${token}`;
+
+        const html = `
+            <div style="max-width: 540px; margin: 0 auto; padding: 32px 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; color: #1e293b;">
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <span style="display: inline-block; background-color: #0f172a; color: #ffffff; padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; letter-spacing: 1px;">ARSI KARYA CMS</span>
+                    <h2 style="margin: 14px 0 6px 0; color: #0f172a; font-size: 22px; font-weight: 700;">Atur Ulang Kata Sandi Akun</h2>
+                    <p style="margin: 0; color: #64748b; font-size: 14px;">Permintaan pemulihan akses administrator</p>
+                </div>
+                
+                <p style="color: #334155; font-size: 14px; line-height: 1.6; margin: 0 0 16px 0;">
+                    Halo <strong>${targetUser.name}</strong>,
+                </p>
+                <p style="color: #334155; font-size: 14px; line-height: 1.6; margin: 0 0 24px 0;">
+                    Kami menerima permintaan untuk mengatur ulang kata sandi akun Admin Arsi Karya Anda (<strong>${targetUser.email}</strong>). Silakan klik tombol di bawah ini untuk membuat kata sandi baru:
+                </p>
+
+                <div style="text-align: center; margin: 28px 0;">
+                    <a href="${resetUrl}" style="display: inline-block; background-color: #0f172a; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px;">
+                        Atur Ulang Kata Sandi Sekarang &rarr;
+                    </a>
+                    <p style="margin: 10px 0 0 0; color: #ef4444; font-size: 12px; font-weight: 600;">Tautan ini hanya berlaku selama 1 jam</p>
+                </div>
+
+                <p style="color: #64748b; font-size: 13px; line-height: 1.6; margin: 0 0 8px 0;">
+                    Atau salin dan tempel tautan berikut di peramban (browser) Anda:
+                </p>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px; word-break: break-all; font-size: 12px; color: #2563eb; font-family: monospace; margin-bottom: 24px;">
+                    <a href="${resetUrl}" style="color: #2563eb; text-decoration: underline;">${resetUrl}</a>
+                </div>
+
+                <p style="color: #64748b; font-size: 12px; line-height: 1.5; margin: 0 0 16px 0;">
+                    <strong>Keamanan:</strong> Jika Anda tidak pernah mengajukan permintaan ini, abaikan email ini. Akun Anda tetap aman dan kata sandi Anda tidak akan berubah tanpa akses ke email ini.
+                </p>
+
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+                
+                <div style="text-align: center; color: #94a3b8; font-size: 12px;">
+                    &copy; ${new Date().getFullYear()} PT. Arsi Karya Unggul &bull; Membangun Tuntas, Unggul Dalam Kualitas
+                </div>
+            </div>
+        `;
 
         await sendEmail({
             to: targetUser.email,
-            subject: 'Reset Kata Sandi Admin — Arsi Karya',
-            html: `
-                <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-                    <h2>Reset Kata Sandi Admin Arsi Karya</h2>
-                    <p>Halo ${targetUser.name},</p>
-                    <p>Kami menerima permintaan untuk mereset kata sandi akun Admin Arsi Karya Anda.</p>
-                    <p>Klik tombol di bawah ini untuk membuat kata sandi baru (berlaku selama 1 jam):</p>
-                    <p style="margin: 24px 0;">
-                        <a href="${resetUrl}" style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Reset Kata Sandi</a>
-                    </p>
-                    <p>Atau salin tautan berikut ke peramban Anda:</p>
-                    <p><a href="${resetUrl}">${resetUrl}</a></p>
-                    <hr style="margin-top: 30px; border: none; border-top: 1px solid #eee;" />
-                    <p style="font-size: 0.85rem; color: #777;">Jika Anda tidak merasa meminta reset kata sandi, abaikan email ini.</p>
-                </div>
-            `,
-            text: `Tautan reset kata sandi: ${resetUrl}`,
+            subject: 'Tautan Pemulihan Kata Sandi Akun — Arsi Karya',
+            html,
+            text: `Halo ${targetUser.name}, silakan buka tautan berikut untuk mengatur ulang kata sandi Anda: ${resetUrl} (Berlaku 1 jam). Jika bukan Anda yang meminta, abaikan email ini.`,
         });
 
+        console.log(`\n========================================`);
+        console.log(`📬 [PASSWORD RESET] Permintaan reset untuk ${cleanEmail}`);
+        if (!process.env.SMTP_PASS) {
+            console.log(`⚠️  [DEV LOG ONLY] SMTP_PASS belum diset di .env.`);
+            console.log(`🔗 Link Reset (HANYA di log server backend): ${resetUrl}`);
+        } else {
+            console.log(`✅ Email berhasil dikirim via SMTP ke ${cleanEmail}`);
+        }
+        console.log(`========================================\n`);
+
+        // Strictly return NO token and NO url in the HTTP response
         return {
             success: true,
-            token,
-            resetUrl,
-            message: `Tautan reset kata sandi telah diproses untuk ${targetUser.email}.`,
-            devResetUrl: resetUrl,
+            message: `Tautan pemulihan kata sandi telah dikirimkan ke email ${targetUser.email}. Silakan periksa kotak masuk atau spam email Anda.`,
         };
     },
 
