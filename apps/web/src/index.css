@@ -380,9 +380,12 @@ h6 { font-size: 1rem; font-family: var(--font-body); font-weight: 800; }
 }
 
 .rich-text-block figure,
-.rich-text-block .w-richtext-figure {
-  margin: 40px 0;
-  width: 100%;
+.rich-text-block .w-richtext-figure,
+.rich-text-block .blog-media-block,
+.rich-text-block .article-image-figure {
+  margin: 40px auto;
+  max-width: 100%;
+  text-align: center;
 }
 
 .rich-text-block figure img,

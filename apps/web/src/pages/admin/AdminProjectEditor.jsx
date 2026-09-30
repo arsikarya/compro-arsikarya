@@ -4,6 +4,7 @@ import { adminApi } from '../../lib/api';
 import CloudinaryUploadWidget from '../../components/admin/CloudinaryUploadWidget';
 import MediaPickerModal from '../../components/admin/MediaPickerModal';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import RichTextEditor from '../../components/admin/RichTextEditor';
 import { FiArrowLeft, FiAlertTriangle, FiPlus, FiTrash2, FiArrowUp, FiArrowDown, FiBold, FiItalic, FiList, FiLink } from 'react-icons/fi';
 import './AdminProjectEditor.css';
 
@@ -328,29 +329,11 @@ export default function AdminProjectEditor() {
                     {/* Project Description & Rich Text Content */}
                     <div className="form-panel">
                         <h4 className="panel-heading">3. Konten Detail Proyek</h4>
-                        <p className="field-help" style={{ marginBottom: '10px' }}>Gunakan formatting bar di bawah untuk menyusun deskripsi dan konten detail proyek.</p>
+                        <p className="field-help" style={{ marginBottom: '10px' }}>Tuliskan cerita proyek, latar belakang, dan metode eksekusi menggunakan editor visual WYSIWYG di bawah ini.</p>
 
-                        {/* Rich Editorial Toolbar */}
-                        <div className="editorial-toolbar" style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '10px', background: '#f3f4f6', padding: '8px 12px', borderRadius: '6px', flexWrap: 'wrap' }}>
-                            <button type="button" onClick={() => insertFormatting('<h2>', '</h2>')} className="tool-btn" title="Heading 2" style={{ padding: '4px 10px', fontWeight: 'bold' }}>H2</button>
-                            <button type="button" onClick={() => insertFormatting('<h3>', '</h3>')} className="tool-btn" title="Heading 3" style={{ padding: '4px 10px', fontWeight: 'bold' }}>H3</button>
-                            <span className="tool-divider" style={{ width: '1px', height: '18px', background: '#d1d5db', margin: '0 4px' }} />
-                            <button type="button" onClick={() => insertFormatting('<strong>', '</strong>')} className="tool-btn" title="Tebal" style={{ padding: '4px 8px' }}><FiBold size={14} /></button>
-                            <button type="button" onClick={() => insertFormatting('<em>', '</em>')} className="tool-btn" title="Miring" style={{ padding: '4px 8px' }}><FiItalic size={14} /></button>
-                            <span className="tool-divider" style={{ width: '1px', height: '18px', background: '#d1d5db', margin: '0 4px' }} />
-                            <button type="button" onClick={() => insertFormatting('<ul>\n  <li>', '</li>\n</ul>')} className="tool-btn" title="Daftar" style={{ padding: '4px 8px' }}><FiList size={14} /></button>
-                            <button type="button" onClick={() => insertFormatting('<blockquote>', '</blockquote>')} className="tool-btn" title="Kutipan" style={{ padding: '4px 8px', fontSize: '0.85rem' }}>Kutipan</button>
-                            <button type="button" onClick={() => insertFormatting('<a href="https://">', '</a>')} className="tool-btn" title="Link" style={{ padding: '4px 8px' }}><FiLink size={14} /></button>
-                            <span className="tool-divider" style={{ width: '1px', height: '18px', background: '#d1d5db', margin: '0 4px' }} />
-                            <CloudinaryUploadWidget onUploadSuccess={(url) => insertFormatting(`<figure className="w-richtext-figure"><div><img src="${url}" alt="${title || 'Foto Proyek'}" loading="lazy" /></div></figure>\n`)} />
-                        </div>
-
-                        <textarea 
-                            ref={textareaRef}
-                            className="form-input editorial-textarea" 
-                            rows="14" 
+                        <RichTextEditor 
                             value={description} 
-                            onChange={(e) => setDescription(e.target.value)}
+                            onChange={(html) => setDescription(html)}
                             placeholder="Tuliskan cerita proyek, latar belakang, tantangan, dan metode eksekusi di sini..."
                         />
 

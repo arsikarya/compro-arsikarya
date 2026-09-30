@@ -223,6 +223,35 @@ export default function ArticlesPage() {
             .medium-article-reader em {
               font-style: italic;
             }
+
+            .medium-article-reader figure,
+            .medium-article-reader .blog-media-block,
+            .medium-article-reader .article-image-figure {
+              margin: 36px auto;
+              text-align: center;
+              max-width: 100%;
+            }
+
+            .medium-article-reader figure img,
+            .medium-article-reader .blog-media-block img,
+            .medium-article-reader .article-image-figure img {
+              max-width: 100%;
+              height: auto;
+              border-radius: 12px;
+              box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+              display: block;
+              margin: 0 auto;
+            }
+
+            .medium-article-reader figure figcaption,
+            .medium-article-reader .blog-media-block figcaption,
+            .medium-article-reader .article-image-figure figcaption {
+              font-size: 0.9rem;
+              color: var(--color-neutral-500, #64748b);
+              margin-top: 10px;
+              font-style: italic;
+              text-align: center;
+            }
           `}</style>
         </>
       );
@@ -230,12 +259,8 @@ export default function ArticlesPage() {
   }
 
   // Articles Directory View (/artikel)
-  const staticCategories = lang === 'en' 
-    ? ['All', 'Construction Guide', 'Renovation Tips', 'Design Innovation']
-    : ['Semua', 'Panduan Konstruksi', 'Tips Renovasi', 'Inovasi Desain'];
-
   const dynamicCategories = Array.from(new Set(articlesList.map((a) => a.category))).filter(Boolean);
-  const categories = Array.from(new Set([lang === 'en' ? 'All' : 'Semua', ...staticCategories.slice(1), ...dynamicCategories]));
+  const categories = [lang === 'en' ? 'All' : 'Semua', ...dynamicCategories];
 
   const filtered = (activeCat === 'Semua' || activeCat === 'All')
     ? articlesList

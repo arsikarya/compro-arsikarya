@@ -16,17 +16,6 @@ import {
 } from 'react-icons/fi';
 import './AdminArticleEditor.css';
 
-const ARTICLE_CATEGORIES = [
-    'Layanan',
-    'Renovasi',
-    'Material',
-    'Desain',
-    'Konstruksi',
-    'Budget & Perencanaan',
-    'Project Story',
-    'Tips'
-];
-
 import RichTextEditor from '../../components/admin/RichTextEditor';
 
 export default function AdminArticleEditor() {
@@ -41,8 +30,8 @@ export default function AdminArticleEditor() {
     const [coverImageUrl, setCoverImageUrl] = useState('');
     const [coverImageId, setCoverImageId] = useState('');
     const [showMediaPicker, setShowMediaPicker] = useState(false);
-    const [category, setCategory] = useState('Tips');
-    const [availableCategories, setAvailableCategories] = useState(ARTICLE_CATEGORIES);
+    const [category, setCategory] = useState('');
+    const [availableCategories, setAvailableCategories] = useState([]);
     const [isCustomCategory, setIsCustomCategory] = useState(false);
     const [author, setAuthor] = useState('Arsi Karya Team');
     const [publishedDate, setPublishedDate] = useState(new Date().toISOString().substring(0, 10));
@@ -57,20 +46,30 @@ export default function AdminArticleEditor() {
 
     const textareaRef = useRef(null);
 
-    // Fetch all existing articles to collect all previously used categories
+    // Fetch all existing articles to collect all actively used categories
     useEffect(() => {
         adminApi.getArticles()
             .then((articles) => {
                 if (Array.isArray(articles) && articles.length > 0) {
-                    const fromDb = articles
-                        .map(a => a.category)
-                        .filter(Boolean)
-                        .map(c => c.trim());
-                    setAvailableCategories(prev => Array.from(new Set([...prev, ...fromDb])));
+                    const fromDb = Array.from(new Set(
+                        articles
+                            .map(a => a.category)
+                            .filter(Boolean)
+                            .map(c => c.trim())
+                    )).filter(Boolean);
+                    setAvailableCategories(fromDb);
+                    if (!isEditing) {
+                        setCategory(prev => prev || fromDb[0] || '');
+                        if (fromDb.length === 0) {
+                            setIsCustomCategory(true);
+                        }
+                    }
+                } else if (!isEditing) {
+                    setIsCustomCategory(true);
                 }
             })
             .catch(err => console.error('Gagal memuat kategori artikel:', err));
-    }, []);
+    }, [isEditing]);
 
     useEffect(() => {
         if (isEditing) {
@@ -82,9 +81,11 @@ export default function AdminArticleEditor() {
                     setContent(article.content || '');
                     setCoverImageUrl(article.coverImageUrl || '');
                     setCoverImageId(article.coverImageId || '');
-                    const currentCat = article.category || 'Tips';
+                    const currentCat = (article.category || '').trim();
                     setCategory(currentCat);
-                    setAvailableCategories(prev => Array.from(new Set([...prev, currentCat])));
+                    if (currentCat) {
+                        setAvailableCategories(prev => Array.from(new Set([...prev, currentCat])));
+                    }
                     setAuthor(article.author || 'Arsi Karya Team');
                     setPublishedDate(article.publishedDate ? new Date(article.publishedDate).toISOString().substring(0, 10) : new Date().toISOString().substring(0, 10));
                     setPublished(article.published || false);
@@ -332,9 +333,13 @@ export default function AdminArticleEditor() {
                                         }
                                     }}
                                 >
-                                    {availableCategories.map(cat => (
-                                        <option key={cat} value={cat}>{cat}</option>
-                                    ))}
+                                    {availableCategories.length === 0 ? (
+                                        <option value="" disabled>Belum ada kategori yang pernah dipakai</option>
+                                    ) : (
+                                        availableCategories.map(cat => (
+                                            <option key={cat} value={cat}>{cat}</option>
+                                        ))
+                                    )}
                                     {category && !availableCategories.includes(category) && (
                                         <option value={category}>{category}</option>
                                     )}

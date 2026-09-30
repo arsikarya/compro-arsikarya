@@ -4,12 +4,23 @@ import CloudinaryUploadWidget from './CloudinaryUploadWidget';
 import { FiX, FiSearch, FiCheck, FiImage, FiUploadCloud } from 'react-icons/fi';
 import './MediaPickerModal.css';
 
-export default function MediaPickerModal({ isOpen, onClose, onSelect, title = "Pilih Gambar dari Media Library" }) {
+export default function MediaPickerModal({ 
+    isOpen, 
+    onClose, 
+    onSelect, 
+    title = "Pilih Gambar dari Media Library",
+    subtitle = "Pilih gambar yang sudah ada di Cloudinary atau unggah gambar baru",
+    allowCaption = false,
+    confirmText = "Gunakan Gambar Ini"
+}) {
     const [mediaItems, setMediaItems] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedUrl, setSelectedUrl] = useState('');
     const [selectedItem, setSelectedItem] = useState(null);
+    const [caption, setCaption] = useState('');
+    const [altText, setAltText] = useState('');
+    const [directUrl, setDirectUrl] = useState('');
 
     const loadMedia = () => {
         setLoading(true);
@@ -25,6 +36,9 @@ export default function MediaPickerModal({ isOpen, onClose, onSelect, title = "P
             setSelectedUrl('');
             setSelectedItem(null);
             setSearchQuery('');
+            setCaption('');
+            setAltText('');
+            setDirectUrl('');
         }
     }, [isOpen]);
 
@@ -44,18 +58,28 @@ export default function MediaPickerModal({ isOpen, onClose, onSelect, title = "P
     const handleItemClick = (item) => {
         setSelectedUrl(item.url);
         setSelectedItem(item);
+        if (item.altText && !altText) {
+            setAltText(item.altText);
+        }
     };
 
     const handleConfirm = () => {
         if (selectedUrl && onSelect) {
-            onSelect(selectedUrl, selectedItem);
+            onSelect(selectedUrl, {
+                ...(selectedItem || {}),
+                caption: caption.trim(),
+                altText: (altText || caption || selectedItem?.publicId?.split('/')?.pop() || 'Foto').trim()
+            });
             onClose();
         }
     };
 
     const handleUploadSuccess = (url, result) => {
         loadMedia();
-        if (onSelect) {
+        if (allowCaption) {
+            setSelectedUrl(url);
+            setSelectedItem(result?.info || { url });
+        } else if (onSelect) {
             onSelect(url, result?.info);
             onClose();
         }
@@ -70,7 +94,7 @@ export default function MediaPickerModal({ isOpen, onClose, onSelect, title = "P
                         <FiImage className="media-picker-icon" />
                         <div>
                             <h4>{title}</h4>
-                            <p>Pilih gambar yang sudah ada di Cloudinary atau unggah gambar baru</p>
+                            <p>{subtitle}</p>
                         </div>
                     </div>
                     <button className="btn-close-modal" onClick={onClose} aria-label="Tutup modal">
@@ -99,6 +123,38 @@ export default function MediaPickerModal({ isOpen, onClose, onSelect, title = "P
                     </div>
                 </div>
 
+                {/* Direct Image URL Bar */}
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '8px 24px',
+                    backgroundColor: '#f8fafc',
+                    borderBottom: '1px solid #e2e8f0',
+                    fontSize: '0.8rem'
+                }}>
+                    <span style={{ color: '#64748b', fontWeight: 600, whiteSpace: 'nowrap' }}>Atau Masukkan URL Gambar:</span>
+                    <input 
+                        type="url"
+                        placeholder="https://example.com/foto.jpg..."
+                        value={directUrl}
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            setDirectUrl(val);
+                            setSelectedUrl(val);
+                            setSelectedItem(val ? { url: val, publicId: val.split('/').pop() } : null);
+                        }}
+                        style={{
+                            flex: 1,
+                            padding: '6px 12px',
+                            border: '1px solid #cbd5e1',
+                            borderRadius: '6px',
+                            fontSize: '0.8rem',
+                            outline: 'none'
+                        }}
+                    />
+                </div>
+
                 {/* Content Body */}
                 <div className="media-picker-body">
                     {loading ? (
@@ -116,8 +172,14 @@ export default function MediaPickerModal({ isOpen, onClose, onSelect, title = "P
                                         className={`media-picker-card ${isSelected ? 'selected' : ''}`}
                                         onClick={() => handleItemClick(item)}
                                         onDoubleClick={() => {
-                                            onSelect(item.url, item);
-                                            onClose();
+                                            if (onSelect) {
+                                                onSelect(item.url, {
+                                                    ...item,
+                                                    caption: caption.trim(),
+                                                    altText: (altText || caption || item.publicId?.split('/')?.pop() || 'Foto').trim()
+                                                });
+                                                onClose();
+                                            }
                                         }}
                                         title="Klik untuk memilih, klik 2x untuk langsung gunakan"
                                     >
@@ -150,13 +212,64 @@ export default function MediaPickerModal({ isOpen, onClose, onSelect, title = "P
                     )}
                 </div>
 
+                {/* Optional Caption & Alt-text Box */}
+                {allowCaption && selectedUrl && (
+                    <div style={{
+                        padding: '12px 24px',
+                        backgroundColor: '#f0fdf4',
+                        borderTop: '1px solid #bbf7d0',
+                        display: 'flex',
+                        gap: '12px',
+                        flexWrap: 'wrap'
+                    }}>
+                        <div style={{ flex: '1 1 260px' }}>
+                            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#166534', marginBottom: '4px' }}>
+                                Keterangan Foto / Caption (Opsional — Tampil di bawah gambar)
+                            </label>
+                            <input 
+                                type="text"
+                                placeholder="Contoh: Proses perakitan struktur baja proyek..."
+                                value={caption}
+                                onChange={(e) => setCaption(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    padding: '6px 12px',
+                                    border: '1px solid #86efac',
+                                    borderRadius: '6px',
+                                    fontSize: '0.85rem',
+                                    backgroundColor: '#ffffff'
+                                }}
+                            />
+                        </div>
+                        <div style={{ flex: '1 1 200px' }}>
+                            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#166534', marginBottom: '4px' }}>
+                                Alt-Text / SEO (Opsional)
+                            </label>
+                            <input 
+                                type="text"
+                                placeholder="Deskripsi untuk pembaca layar..."
+                                value={altText}
+                                onChange={(e) => setAltText(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    padding: '6px 12px',
+                                    border: '1px solid #86efac',
+                                    borderRadius: '6px',
+                                    fontSize: '0.85rem',
+                                    backgroundColor: '#ffffff'
+                                }}
+                            />
+                        </div>
+                    </div>
+                )}
+
                 {/* Footer */}
                 <div className="media-picker-footer">
                     <div className="media-picker-selected-info">
                         {selectedItem ? (
-                            <span>Terpilih: <strong>{selectedItem.publicId?.split('/').pop()}</strong></span>
+                            <span>Terpilih: <strong>{selectedItem.publicId?.split('/').pop() || selectedUrl}</strong></span>
                         ) : (
-                            <span style={{ color: '#9ca3af' }}>Pilih satu gambar dari galeri di atas</span>
+                            <span style={{ color: '#9ca3af' }}>Pilih satu gambar dari galeri di atas atau unggah gambar baru</span>
                         )}
                     </div>
                     <div className="media-picker-actions">
@@ -169,7 +282,7 @@ export default function MediaPickerModal({ isOpen, onClose, onSelect, title = "P
                             disabled={!selectedUrl}
                             onClick={handleConfirm}
                         >
-                            Gunakan Gambar Ini
+                            {confirmText}
                         </button>
                     </div>
                 </div>

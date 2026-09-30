@@ -6,12 +6,17 @@ import {
   FiCode, 
   FiEye, 
   FiRotateCcw,
-  FiType
+  FiType,
+  FiImage
 } from 'react-icons/fi';
+import MediaPickerModal from './MediaPickerModal';
 
 export default function RichTextEditor({ value, onChange, placeholder }) {
   const [mode, setMode] = useState('visual'); // 'visual' | 'html'
+  const [showMediaPicker, setShowMediaPicker] = useState(false);
   const editorRef = useRef(null);
+  const textareaRef = useRef(null);
+  const savedRangeRef = useRef(null);
 
   // Sync initial or external value changes to contentEditable container
   useEffect(() => {
@@ -22,17 +27,113 @@ export default function RichTextEditor({ value, onChange, placeholder }) {
     }
   }, [value, mode]);
 
+  // Track and save active selection range inside contentEditable
+  const saveSelection = () => {
+    if (mode === 'visual' && editorRef.current) {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) {
+        const range = sel.getRangeAt(0);
+        if (editorRef.current.contains(range.commonAncestorContainer)) {
+          savedRangeRef.current = range.cloneRange();
+          return;
+        }
+      }
+    }
+  };
+
   const handleExecCommand = (command, arg = null) => {
     if (mode !== 'visual') return;
     document.execCommand(command, false, arg);
     if (editorRef.current) {
       onChange(editorRef.current.innerHTML);
     }
+    saveSelection();
   };
 
   const handleInput = () => {
     if (editorRef.current) {
       onChange(editorRef.current.innerHTML);
+    }
+    saveSelection();
+  };
+
+  const handleInsertImage = (url, metadata = {}) => {
+    if (!url) return;
+
+    const caption = (metadata?.caption || '').trim();
+    const altText = (metadata?.altText || caption || metadata?.publicId?.split('/')?.pop() || 'Gambar Konten').trim();
+
+    // Standard, clean, responsive figure HTML
+    const figureHtml = `
+<figure class="blog-media-block" style="margin: 28px auto; text-align: center; max-width: 100%;">
+  <img src="${url}" alt="${altText}" loading="lazy" style="max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: block; margin: 0 auto;" />
+  ${caption ? `<figcaption style="font-size: 0.85rem; color: #64748b; margin-top: 8px; font-style: italic; text-align: center;">${caption}</figcaption>` : ''}
+</figure>
+<p><br></p>`;
+
+    if (mode === 'visual' && editorRef.current) {
+      editorRef.current.focus();
+      const sel = window.getSelection();
+
+      let range = savedRangeRef.current;
+      if (!range && sel && sel.rangeCount > 0) {
+        const testRange = sel.getRangeAt(0);
+        if (editorRef.current.contains(testRange.commonAncestorContainer)) {
+          range = testRange;
+        }
+      }
+
+      if (range) {
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+
+      let inserted = false;
+      try {
+        inserted = document.execCommand('insertHTML', false, figureHtml);
+      } catch (e) {
+        inserted = false;
+      }
+
+      if (!inserted) {
+        if (range) {
+          const temp = document.createElement('div');
+          temp.innerHTML = figureHtml;
+          const frag = document.createDocumentFragment();
+          let node;
+          let lastNode = null;
+          while ((node = temp.firstChild)) {
+            lastNode = frag.appendChild(node);
+          }
+          range.deleteContents();
+          range.insertNode(frag);
+          if (lastNode) {
+            const newRange = document.createRange();
+            newRange.setStart(lastNode, 0);
+            newRange.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(newRange);
+          }
+        } else {
+          editorRef.current.innerHTML = (editorRef.current.innerHTML || '') + figureHtml;
+        }
+      }
+
+      const updatedHtml = editorRef.current.innerHTML;
+      onChange(updatedHtml);
+      saveSelection();
+    } else {
+      // HTML textarea mode
+      const textarea = textareaRef.current;
+      if (textarea) {
+        const start = textarea.selectionStart || 0;
+        const end = textarea.selectionEnd || 0;
+        const currentVal = value || '';
+        const newVal = currentVal.substring(0, start) + '\n' + figureHtml + '\n' + currentVal.substring(end);
+        onChange(newVal);
+      } else {
+        onChange((value || '') + '\n' + figureHtml);
+      }
     }
   };
 
@@ -197,8 +298,38 @@ export default function RichTextEditor({ value, onChange, placeholder }) {
               >
                 <FiRotateCcw size={13} />
               </button>
+
+              <div style={{ width: '1px', height: '20px', backgroundColor: '#cbd5e1', margin: '0 4px' }} />
             </>
           )}
+
+          {/* Image Insertion Button - Available for both Visual and HTML mode */}
+          <button
+            type="button"
+            onMouseDown={() => saveSelection()}
+            onClick={() => {
+              saveSelection();
+              setShowMediaPicker(true);
+            }}
+            title="Sisipkan Gambar ke Posisi Kursor"
+            style={{
+              padding: '6px 12px',
+              borderRadius: '4px',
+              border: '1px solid #bfdbfe',
+              backgroundColor: '#eff6ff',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '0.825rem',
+              fontWeight: 600,
+              color: '#005697',
+              transition: 'background-color 0.15s'
+            }}
+          >
+            <FiImage size={15} style={{ color: '#005697' }} />
+            <span>Sisipkan Gambar</span>
+          </button>
         </div>
 
         {/* Mode Switcher: Visual Editor vs Kode HTML */}
@@ -254,8 +385,10 @@ export default function RichTextEditor({ value, onChange, placeholder }) {
           contentEditable
           onInput={handleInput}
           onBlur={handleInput}
+          onKeyUp={saveSelection}
+          onMouseUp={saveSelection}
           style={{
-            minHeight: '260px',
+            minHeight: '280px',
             padding: '16px 20px',
             outline: 'none',
             fontFamily: 'var(--font-body)',
@@ -268,6 +401,7 @@ export default function RichTextEditor({ value, onChange, placeholder }) {
         />
       ) : (
         <textarea
+          ref={textareaRef}
           className="form-input"
           rows="14"
           value={value || ''}
@@ -285,6 +419,17 @@ export default function RichTextEditor({ value, onChange, placeholder }) {
           }}
         />
       )}
+
+      {/* Media Picker Modal for Image Insertion */}
+      <MediaPickerModal 
+        isOpen={showMediaPicker}
+        onClose={() => setShowMediaPicker(false)}
+        onSelect={(url, meta) => handleInsertImage(url, meta)}
+        title="Sisipkan Gambar ke Konten"
+        subtitle="Pilih dari Media Library atau unggah gambar baru untuk disisipkan di tengah teks"
+        allowCaption={true}
+        confirmText="Sisipkan Gambar ke Konten"
+      />
 
       {/* CSS Helper for WYSIWYG Editable Area */}
       <style>{`
@@ -311,6 +456,33 @@ export default function RichTextEditor({ value, onChange, placeholder }) {
         }
         [contenteditable] li {
           margin-bottom: 4px;
+        }
+        [contenteditable] figure,
+        [contenteditable] .blog-media-block,
+        [contenteditable] .article-image-figure {
+          margin: 24px auto;
+          text-align: center;
+          max-width: 100%;
+        }
+        [contenteditable] figure img,
+        [contenteditable] .blog-media-block img,
+        [contenteditable] .article-image-figure img {
+          max-width: 100%;
+          max-height: 480px;
+          height: auto;
+          border-radius: 8px;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+          display: block;
+          margin: 0 auto;
+          object-fit: contain;
+        }
+        [contenteditable] figcaption {
+          font-size: 0.85rem;
+          color: #64748b;
+          margin-top: 8px;
+          font-style: italic;
+          text-align: center;
+          padding: 4px;
         }
       `}</style>
     </div>
