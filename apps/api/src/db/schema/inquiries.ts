@@ -4,7 +4,7 @@ export const inquiries = pgTable('inquiries', {
     id: serial('id').primaryKey(),
     nama: text('nama').notNull(),
     perusahaan: text('perusahaan'),
-    email: text('email').notNull(),
+    email: text('email').default('-'),
     whatsapp: text('whatsapp').notNull(),
     jenisKerjasama: text('jenis_kerjasama'),
     jenisProyek: text('jenis_proyek'),

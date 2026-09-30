@@ -50,9 +50,9 @@ router.get('/contact', async (_req, res) => {
 // Contact form / Inquiry submission
 router.post('/inquiries', async (req, res) => {
     try {
-        const { nama, email, whatsapp } = req.body;
-        if (!nama || !email || !whatsapp) {
-            res.status(400).json({ error: 'Nama, Email, dan WhatsApp wajib diisi' });
+        const { nama, whatsapp } = req.body;
+        if (!nama || !whatsapp) {
+            res.status(400).json({ error: 'Nama Lengkap dan Nomor WhatsApp wajib diisi' });
             return;
         }
         const record = await inquiryService.createInquiry(req.body);

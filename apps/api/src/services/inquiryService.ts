@@ -6,9 +6,10 @@ import nodemailer from 'nodemailer';
 export type InquiryInput = {
     nama: string;
     perusahaan?: string;
-    email: string;
+    email?: string;
     whatsapp: string;
     jenisKerjasama?: string;
+    jenisLayanan?: string;
     jenisProyek?: string;
     lokasi?: string;
     budget?: string;
@@ -31,9 +32,9 @@ export const inquiryService = {
         const [record] = await db.insert(inquiries).values({
             nama: data.nama,
             perusahaan: data.perusahaan || '',
-            email: data.email,
+            email: data.email || '-',
             whatsapp: data.whatsapp,
-            jenisKerjasama: data.jenisKerjasama || '',
+            jenisKerjasama: data.jenisKerjasama || data.jenisLayanan || '',
             jenisProyek: data.jenisProyek || '',
             lokasi: data.lokasi || '',
             budget: data.budget || '',
