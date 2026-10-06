@@ -11,7 +11,7 @@ import { FiArrowRight } from 'react-icons/fi';
 import SEOHead from '../components/ui/SEOHead';
 import FAQ from '../components/ui/FAQ';
 import HeroBanner from '../components/ui/HeroBanner';
-import ProjectCard, { ProjectGridStyles } from '../components/ui/ProjectCard';
+import ProjectCard, { ProjectGridStyles, ProjectSkeletonCard } from '../components/ui/ProjectCard';
 import ProjectLightboxModal from '../components/ui/ProjectLightboxModal';
 import CTA from '../components/CTA';
 import { getServicesData, getSeoLandingServices } from '../data/servicesData';
@@ -32,13 +32,40 @@ export default function ServicesPage() {
   const { serviceSlug } = useParams();
   const { lang, t } = useLanguage();
 
-  const [apiServices, setApiServices] = useState([]);
-  const [apiProjects, setApiProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const cachedInitialServices = publicApi.getCachedServices?.() || [];
+  const cachedInitialProjects = publicApi.getCachedProjects?.() || [];
+
+  const [apiServices, setApiServices] = useState(cachedInitialServices);
+  const [apiProjects, setApiProjects] = useState(() => {
+    if (Array.isArray(cachedInitialProjects) && cachedInitialProjects.length > 0) {
+      return cachedInitialProjects.map((item) => ({
+        id: item.id,
+        title: lang === 'en' ? (item.titleEn || item.title) : item.title,
+        slug: item.slug,
+        category: item.category || 'Design & Build',
+        categoryEn: item.categoryEn || item.category,
+        location: item.location || 'Bandung, Jawa Barat',
+        client: item.clientName || item.client,
+        year: item.year,
+        thumbnail: item.coverImageUrl || item.thumbnail || '/projects/project_1.jpg',
+        coverImageUrl: item.coverImageUrl || item.thumbnail || '/projects/project_1.jpg',
+        description: lang === 'en' ? (item.descriptionEn || item.description) : item.description,
+        scope: item.scope,
+        process: item.process,
+        features: item.features || [],
+        gallery: item.gallery || [],
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+      }));
+    }
+    return [];
+  });
+
+  const [loading, setLoading] = useState(cachedInitialServices.length === 0);
+  const [projectsLoading, setProjectsLoading] = useState(cachedInitialProjects.length === 0);
   const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
-    setLoading(true);
     Promise.all([
       publicApi.getServices().catch((err) => {
         console.error('Failed to load services from API:', err);
@@ -76,14 +103,18 @@ export default function ServicesPage() {
           setApiProjects(mapped);
         }
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setProjectsLoading(false);
+      });
   }, [lang]);
 
   const defaultServices = getServicesData(lang);
   const seoLandingServices = getSeoLandingServices(lang);
   const allDefaultServices = [...defaultServices, ...seoLandingServices];
   const staticProjects = getProjectsData(lang);
-  const allProjects = apiProjects.length > 0 ? apiProjects : staticProjects;
+  // Only use static projects as last resort if fetch completely failed, NEVER while loading!
+  const allProjects = apiProjects.length > 0 ? apiProjects : (!projectsLoading ? staticProjects : []);
 
   // Ensure all default services (including Landscape) are always present, merged with API data
   const allServices = allDefaultServices.map((defSvc) => {
@@ -285,7 +316,7 @@ export default function ServicesPage() {
           </section>
 
           {/* Related Projects */}
-          {relatedProjects.length > 0 && (
+          {(projectsLoading || relatedProjects.length > 0) && (
             <section className="section-padding" style={{ backgroundColor: '#ffffff', borderTop: '1px solid #e2e8f0' }}>
               <div className="container">
                 <ProjectGridStyles />
@@ -313,9 +344,15 @@ export default function ServicesPage() {
                   </Link>
                 </div>
                 <div className="albion-projects-grid">
-                  {relatedProjects.map((rp) => (
-                    <ProjectCard key={rp.id || rp.slug} proj={rp} onClick={(p) => setSelectedProject(p)} />
-                  ))}
+                  {projectsLoading ? (
+                    Array.from({ length: 4 }).map((_, idx) => (
+                      <ProjectSkeletonCard key={`rel-skel-${idx}`} />
+                    ))
+                  ) : (
+                    relatedProjects.map((rp) => (
+                      <ProjectCard key={rp.id || rp.slug} proj={rp} onClick={(p) => setSelectedProject(p)} />
+                    ))
+                  )}
                 </div>
               </div>
             </section>

@@ -67,9 +67,49 @@ export function ProjectCard({ project, proj, onClick }) {
   );
 }
 
+export function ProjectSkeletonCard() {
+  return (
+    <div className="albion-card-wrapper horizontal-project-card" style={{ pointerEvents: 'none' }}>
+      <div className="albion-img-container horizontal-project-img-wrapper" style={{ background: '#f1f5f9' }}>
+        <div className="skeleton-shimmer" style={{ width: '100%', height: '100%' }} />
+      </div>
+      <div className="horizontal-project-content">
+        <div>
+          <div className="skeleton-shimmer" style={{ height: '22px', width: '85%', borderRadius: '4px', marginBottom: '10px' }} />
+          <div className="skeleton-shimmer" style={{ height: '18px', width: '60%', borderRadius: '4px', marginBottom: '22px' }} />
+          <div className="horizontal-meta-block">
+            <div className="skeleton-shimmer" style={{ height: '12px', width: '35%', borderRadius: '4px', marginBottom: '6px' }} />
+            <div className="skeleton-shimmer" style={{ height: '16px', width: '65%', borderRadius: '4px', marginBottom: '14px' }} />
+            <div className="skeleton-shimmer" style={{ height: '12px', width: '45%', borderRadius: '4px', marginBottom: '6px' }} />
+            <div className="skeleton-shimmer" style={{ height: '16px', width: '55%', borderRadius: '4px' }} />
+          </div>
+        </div>
+        <div className="skeleton-shimmer" style={{ height: '16px', width: '90px', borderRadius: '4px', marginTop: 'auto' }} />
+      </div>
+    </div>
+  );
+}
+
 export function ProjectGridStyles() {
   return (
     <style>{`
+      @keyframes skeletonShimmerAnim {
+        0% {
+          background-color: #f1f5f9;
+        }
+        50% {
+          background-color: #e2e8f0;
+        }
+        100% {
+          background-color: #f1f5f9;
+        }
+      }
+
+      .skeleton-shimmer {
+        animation: skeletonShimmerAnim 1.4s ease-in-out infinite;
+        background-color: #f1f5f9;
+      }
+
       /* 2 Cards Per Row Grid Layout */
       .albion-projects-grid {
         display: grid;

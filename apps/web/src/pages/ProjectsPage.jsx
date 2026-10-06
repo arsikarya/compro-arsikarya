@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import SEOHead from '../components/ui/SEOHead';
 import HeroBanner from '../components/ui/HeroBanner';
-import ProjectCard, { ProjectGridStyles as AlbionGridStyles } from '../components/ui/ProjectCard';
+import ProjectCard, { ProjectGridStyles as AlbionGridStyles, ProjectSkeletonCard } from '../components/ui/ProjectCard';
 import ProjectLightboxModal from '../components/ui/ProjectLightboxModal';
 import CTA from '../components/CTA';
 import { getProjectsData } from '../data/projectsData';
@@ -15,10 +15,32 @@ export default function ProjectsPage() {
   const { lang, t } = useLanguage();
   const staticProjects = getProjectsData(lang);
 
+  const cachedProjects = publicApi.getCachedProjects?.() || [];
   const [activeCategory, setActiveCategory] = useState(lang === 'en' ? 'All' : 'Semua');
-  const [apiProjectsList, setApiProjectsList] = useState([]);
-  const [servicesList, setServicesList] = useState([]);
-  const [listLoading, setListLoading] = useState(true);
+  const [apiProjectsList, setApiProjectsList] = useState(() => {
+    if (Array.isArray(cachedProjects) && cachedProjects.length > 0) {
+      return cachedProjects.map((item) => ({
+        id: item.id,
+        title: lang === 'en' ? (item.titleEn || item.title) : item.title,
+        slug: item.slug,
+        category: item.category || 'Design & Build',
+        categoryEn: item.categoryEn || item.category,
+        location: item.location,
+        client: item.clientName || item.client,
+        year: item.year,
+        thumbnail: item.coverImageUrl || item.thumbnail || '/projects/project_1.jpg',
+        coverImageUrl: item.coverImageUrl || item.thumbnail || '/projects/project_1.jpg',
+        description: lang === 'en' ? (item.descriptionEn || item.description) : item.description,
+        scope: item.scope,
+        process: item.process,
+        features: item.features || [],
+        gallery: item.gallery || [],
+      }));
+    }
+    return [];
+  });
+  const [servicesList, setServicesList] = useState(publicApi.getCachedServices?.() || []);
+  const [listLoading, setListLoading] = useState(cachedProjects.length === 0);
   const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
@@ -150,9 +172,10 @@ export default function ProjectsPage() {
         <div className="container">
           {/* Albion Projects Grid */}
           {listLoading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
-              <div className="spinner" style={{ width: '40px', height: '40px', border: '3px solid #e2e8f0', borderTop: '3px solid var(--color-primary-300)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-              <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+            <div className="albion-projects-grid">
+              {Array.from({ length: 4 }).map((_, idx) => (
+                <ProjectSkeletonCard key={`proj-page-skel-${idx}`} />
+              ))}
             </div>
           ) : (
             <div className="albion-projects-grid">

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Button from './ui/Button';
-import ProjectCard, { ProjectGridStyles } from './ui/ProjectCard';
+import ProjectCard, { ProjectGridStyles, ProjectSkeletonCard } from './ui/ProjectCard';
 import ProjectLightboxModal from './ui/ProjectLightboxModal';
 import { publicApi } from '../lib/api';
 import { useLanguage } from '../context/LanguageContext';
@@ -8,12 +8,25 @@ import { getProjectsData } from '../data/projectsData';
 
 export default function Projects() {
   const { lang, t } = useLanguage();
-  const [featuredProjects, setFeaturedProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const cachedProjects = publicApi.getCachedProjects?.() || [];
+  const [featuredProjects, setFeaturedProjects] = useState(() => {
+    if (Array.isArray(cachedProjects) && cachedProjects.length > 0) {
+      return cachedProjects.slice(0, 4).map(p => ({
+        ...p,
+        title: lang === 'en' ? (p.titleEn || p.title) : p.title,
+        category: lang === 'en' ? (p.categoryEn || p.category) : p.category,
+        description: lang === 'en' ? (p.descriptionEn || p.description) : p.description,
+      }));
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(featuredProjects.length === 0);
   const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
-    setLoading(true);
+    if (featuredProjects.length === 0) {
+      setLoading(true);
+    }
     publicApi.getProjects()
       .then(data => {
         if (Array.isArray(data) && data.length > 0) {
@@ -29,12 +42,14 @@ export default function Projects() {
             return p;
           });
           setFeaturedProjects(transformed);
-        } else {
+        } else if (featuredProjects.length === 0) {
           setFeaturedProjects(getProjectsData(lang).slice(0, 4));
         }
       })
       .catch(() => {
-        setFeaturedProjects(getProjectsData(lang).slice(0, 4));
+        if (featuredProjects.length === 0) {
+          setFeaturedProjects(getProjectsData(lang).slice(0, 4));
+        }
       })
       .finally(() => setLoading(false));
   }, [lang]);
@@ -77,9 +92,10 @@ export default function Projects() {
 
         {/* 4 Featured Projects (2x2 Grid) */}
         {loading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '260px' }}>
-            <div className="spinner" style={{ width: '40px', height: '40px', border: '3px solid #e2e8f0', borderTop: '3px solid var(--color-primary-300)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-            <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+          <div className="albion-projects-grid">
+            {Array.from({ length: 4 }).map((_, idx) => (
+              <ProjectSkeletonCard key={`home-skel-${idx}`} />
+            ))}
           </div>
         ) : (
           <div className="albion-projects-grid">

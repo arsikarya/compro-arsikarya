@@ -24,14 +24,56 @@ export async function api(path, options = {}) {
     return res.json();
 }
 
+let memoryCache = {
+    projects: null,
+    services: null,
+};
+
+let inFlightPromises = {
+    projects: null,
+    services: null,
+};
+
 export const publicApi = {
     getHome: () => api('/home'),
     getAbout: () => api('/about'),
     getContact: () => api('/contact'),
     submitInquiry: (data) => api('/inquiries', { method: 'POST', body: JSON.stringify(data) }),
-    getProjects: () => api('/projects'),
+    getProjects: async (force = false) => {
+        if (!force && memoryCache.projects) {
+            return memoryCache.projects;
+        }
+        if (!inFlightPromises.projects) {
+            inFlightPromises.projects = api('/projects').then((data) => {
+                memoryCache.projects = data;
+                inFlightPromises.projects = null;
+                return data;
+            }).catch((err) => {
+                inFlightPromises.projects = null;
+                throw err;
+            });
+        }
+        return inFlightPromises.projects;
+    },
+    getCachedProjects: () => memoryCache.projects,
     getProject: (slug) => api(`/projects/${slug}`),
-    getServices: () => api('/services'),
+    getServices: async (force = false) => {
+        if (!force && memoryCache.services) {
+            return memoryCache.services;
+        }
+        if (!inFlightPromises.services) {
+            inFlightPromises.services = api('/services').then((data) => {
+                memoryCache.services = data;
+                inFlightPromises.services = null;
+                return data;
+            }).catch((err) => {
+                inFlightPromises.services = null;
+                throw err;
+            });
+        }
+        return inFlightPromises.services;
+    },
+    getCachedServices: () => memoryCache.services,
     getService: (slug) => api(`/services/${slug}`),
     getArticles: () => api('/articles'),
     getArticle: (slug) => api(`/articles/${slug}`),
