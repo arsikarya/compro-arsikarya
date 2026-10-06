@@ -33,24 +33,57 @@ export default function ServicesPage() {
   const { lang, t } = useLanguage();
 
   const [apiServices, setApiServices] = useState([]);
+  const [apiProjects, setApiProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
-    publicApi.getServices()
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setApiServices(data);
+    setLoading(true);
+    Promise.all([
+      publicApi.getServices().catch((err) => {
+        console.error('Failed to load services from API:', err);
+        return [];
+      }),
+      publicApi.getProjects().catch((err) => {
+        console.error('Failed to load projects from API:', err);
+        return [];
+      }),
+    ])
+      .then(([servicesData, projectsDataResponse]) => {
+        if (Array.isArray(servicesData) && servicesData.length > 0) {
+          setApiServices(servicesData);
+        }
+        if (Array.isArray(projectsDataResponse) && projectsDataResponse.length > 0) {
+          const mapped = projectsDataResponse.map((item) => ({
+            id: item.id,
+            title: lang === 'en' ? (item.titleEn || item.title) : item.title,
+            slug: item.slug,
+            category: item.category || 'Design & Build',
+            categoryEn: item.categoryEn || item.category,
+            location: item.location || 'Bandung, Jawa Barat',
+            client: item.clientName || item.client,
+            year: item.year,
+            thumbnail: item.coverImageUrl || item.thumbnail || '/projects/project_1.jpg',
+            coverImageUrl: item.coverImageUrl || item.thumbnail || '/projects/project_1.jpg',
+            description: lang === 'en' ? (item.descriptionEn || item.description) : item.description,
+            scope: item.scope,
+            process: item.process,
+            features: item.features || [],
+            gallery: item.gallery || [],
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+          }));
+          setApiProjects(mapped);
         }
       })
-      .catch((err) => console.error('Failed to load services from API:', err))
       .finally(() => setLoading(false));
-  }, []);
+  }, [lang]);
 
   const defaultServices = getServicesData(lang);
   const seoLandingServices = getSeoLandingServices(lang);
   const allDefaultServices = [...defaultServices, ...seoLandingServices];
-  const projectsData = getProjectsData(lang);
+  const staticProjects = getProjectsData(lang);
+  const allProjects = apiProjects.length > 0 ? apiProjects : staticProjects;
 
   // Ensure all default services (including Landscape) are always present, merged with API data
   const allServices = allDefaultServices.map((defSvc) => {
@@ -90,12 +123,51 @@ export default function ServicesPage() {
     const service = allServices.find((s) => s.slug === serviceSlug) || allDefaultServices.find((s) => s.slug === serviceSlug);
 
     if (service) {
-      const matchProjects = projectsData.filter((p) =>
-        p.category.toLowerCase().includes(service.title.split(' ')[0].toLowerCase()) ||
-        p.title.toLowerCase().includes(service.slug.split('-')[0])
+      const cleanServiceTitle = (service.title || '').toLowerCase().trim();
+      const cleanServiceSlug = (service.slug || '').toLowerCase().trim();
+      const cleanServiceCat = (service.category || '').toLowerCase().trim();
+
+      const serviceKeywords = [
+        service.title,
+        service.titleEn,
+        service.slug ? service.slug.replace(/-/g, ' ') : '',
+        service.category,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .split(/\s+/)
+        .filter((w) => w.length >= 3 && !['dan', 'and', 'the', 'for', 'jasa'].includes(w));
+
+      const isCategoryMatch = (p) => {
+        const pCat = (p.category || '').toLowerCase().trim();
+        const pCatEn = (p.categoryEn || '').toLowerCase().trim();
+        if (!pCat && !pCatEn) return false;
+
+        // 1. Direct equality or substring in category
+        if (cleanServiceCat && (pCat === cleanServiceCat || pCat.includes(cleanServiceCat) || cleanServiceCat.includes(pCat))) {
+          return true;
+        }
+        if (cleanServiceTitle && (pCat === cleanServiceTitle || cleanServiceTitle.includes(pCat) || pCat.includes(cleanServiceTitle))) {
+          return true;
+        }
+        if (cleanServiceSlug && (pCat.includes(cleanServiceSlug) || cleanServiceSlug.includes(pCat))) {
+          return true;
+        }
+
+        // 2. Keyword matching across categories and titles
+        return serviceKeywords.some((kw) => pCat.includes(kw) || pCatEn.includes(kw));
+      };
+
+      const matchProjects = allProjects.filter(isCategoryMatch);
+      const otherProjects = allProjects.filter(
+        (p) => !matchProjects.some((m) => String(m.id || m.slug) === String(p.id || p.slug))
       );
-      const otherProjects = projectsData.filter((p) => !matchProjects.some((m) => m.id === p.id));
-      const relatedProjects = [...matchProjects, ...otherProjects].slice(0, 3);
+
+      // Prioritas 1: Proyek yang cocok dengan kategori layanan.
+      // Prioritas 2: Lengkapi dengan proyek terbaru lainnya agar selalu menampilkan 4 proyek.
+      const relatedProjects = [...matchProjects, ...otherProjects].slice(0, 4);
 
       const defaultFaqs = lang === 'en' ? [
         {
@@ -241,8 +313,8 @@ export default function ServicesPage() {
                   </Link>
                 </div>
                 <div className="albion-projects-grid">
-                  {relatedProjects.slice(0, 3).map((rp) => (
-                    <ProjectCard key={rp.id} proj={rp} onClick={(p) => setSelectedProject(p)} />
+                  {relatedProjects.map((rp) => (
+                    <ProjectCard key={rp.id || rp.slug} proj={rp} onClick={(p) => setSelectedProject(p)} />
                   ))}
                 </div>
               </div>
@@ -251,6 +323,13 @@ export default function ServicesPage() {
 
           {/* Bottom Albion CTA */}
           <CTA />
+
+          {selectedProject && (
+            <ProjectLightboxModal
+              project={selectedProject}
+              onClose={() => setSelectedProject(null)}
+            />
+          )}
 
           <style>{`
             .wysiwyg-service-body {

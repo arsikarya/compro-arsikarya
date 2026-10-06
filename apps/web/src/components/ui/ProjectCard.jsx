@@ -98,8 +98,9 @@ export function ProjectGridStyles() {
         border: 1px solid #e2e8f0;
         border-radius: 16px;
         overflow: hidden;
-        min-height: 250px;
-        height: 100%;
+        height: 257.86px;
+        min-height: 257.86px;
+        max-height: 257.86px;
         box-shadow: none;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       }
@@ -114,17 +115,21 @@ export function ProjectGridStyles() {
       .horizontal-project-img-wrapper {
         width: 40%;
         min-width: 40%;
+        max-width: 40%;
         height: 100%;
-        min-height: 250px;
         overflow: hidden;
         position: relative;
         background-color: #0f172a;
       }
 
       .horizontal-project-img {
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
         object-fit: cover;
+        object-position: center;
         transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
@@ -135,10 +140,12 @@ export function ProjectGridStyles() {
       /* Details Column */
       .horizontal-project-content {
         width: 60%;
+        height: 100%;
         padding: 24px 24px 22px 24px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        overflow: hidden;
       }
 
       .horizontal-title {
@@ -177,6 +184,8 @@ export function ProjectGridStyles() {
         color: #94a3b8;
         font-weight: 600;
         margin-bottom: 2px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
       }
 
       .meta-value {
@@ -215,18 +224,33 @@ export function ProjectGridStyles() {
       @media (max-width: 640px) {
         .horizontal-project-card {
           flex-direction: column;
+          height: auto;
           min-height: auto;
+          max-height: none;
         }
 
         .horizontal-project-img-wrapper {
           width: 100%;
           min-width: 100%;
+          max-width: 100%;
           height: 200px;
           min-height: 200px;
+          position: relative;
+        }
+
+        .horizontal-project-img {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
         }
 
         .horizontal-project-content {
           width: 100%;
+          height: auto;
           padding: 20px;
         }
       }
